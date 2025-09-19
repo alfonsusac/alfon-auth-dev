@@ -40,15 +40,24 @@ body {
   p-2 px-3.5 rounded-lg
   text-sm 
 
+  
+
   text-foreground-body
   bg-background hover:bg-backgroud-hover active:bg-backgroud-active
 
   cursor-pointer;
 }
-
 .button.primary {
   @apply font-medium
+  shadow-md
   border-foreground
   bg-foreground text-background 
   hover:bg-foreground/90 active:bg-foreground/80;
+}
+.button.ghost {
+  @apply border-none
+}
+
+.page-h1 {
+  @apply text-2xl font-semibold tracking-tight;
 }
