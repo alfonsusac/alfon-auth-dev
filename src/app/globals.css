@@ -33,31 +33,69 @@ body {
 }
 
 
-
-.button {
-  @apply 
-  border border-border 
-  p-2 px-3.5 rounded-lg
-  text-sm 
-
+/* - Tailwind Tips - */
+/* Putting it in layer components makes it possible */
+/* to override in classNames */
+@layer components {
   
+  .button {
+    @apply 
+    border border-border 
+    p-2 px-3.5 rounded-lg
+    text-sm 
+  
+    self-start
+  
+    text-foreground-body
+    bg-background hover:bg-backgroud-hover active:bg-backgroud-active
+  
+    cursor-pointer;
+  }
+  .button.primary {
+    @apply font-medium
+    shadow-md
+    border-foreground
+    bg-foreground text-background 
+    hover:bg-foreground/90 active:bg-foreground/80;
+  }
+  .button.ghost {
+    @apply border-none
+  }
+  
+  .page-h1 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  .label {
+    @apply text-xs text-foreground-body
+  }
+  .input {
+    @apply border border-border p-2 rounded-md
+    focus-visible:outline-none!
+    focus-within:outline-none!
+  }
+  .label-helper {
+    @apply text-[0.65rem] text-foreground-body
+  }
 
-  text-foreground-body
-  bg-background hover:bg-backgroud-hover active:bg-backgroud-active
+  input {
+    @apply focus-visible:outline-none
+  }
+  input::placeholder {
+    @apply text-foreground-body/25
+  }
 
-  cursor-pointer;
-}
-.button.primary {
-  @apply font-medium
-  shadow-md
-  border-foreground
-  bg-foreground text-background 
-  hover:bg-foreground/90 active:bg-foreground/80;
-}
-.button.ghost {
-  @apply border-none
-}
+  .callout {
+    @apply rounded-md px-4 py-2 text-xs max-w-80
+  }
+  .callout.error {
+    @apply bg-red-100 text-red-500
+  }
+  .callout.success {
+    @apply bg-emerald-100 text-emerald-700
+  }
 
-.page-h1 {
-  @apply text-2xl font-semibold tracking-tight;
+  .category-title {
+    @apply text-pretty text-sm text-foreground-body
+  }
+
 }

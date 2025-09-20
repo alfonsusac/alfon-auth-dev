@@ -128,3 +128,10 @@ export async function logout() {
   await deleteCookie('auth_token')
   return redirect('/')
 }
+
+// -----
+
+export function isAdmin(user: User | null) {
+  if (!user) return false
+  return user.id === process.env.ADMIN_USER_ID
+}

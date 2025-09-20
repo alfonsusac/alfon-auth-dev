@@ -1,4 +1,4 @@
-import 'dotenv/config'
+// import 'dotenv/config'
 // import { PrismaClient } from '@prisma/client'
 import { PrismaNeon } from '@prisma/adapter-neon'
 import { neonConfig } from '@neondatabase/serverless'
@@ -11,16 +11,16 @@ neonConfig.webSocketConstructor = ws
 neonConfig.poolQueryViaFetch = true
 
 // Type definitions
-declare global {
-  var prisma: PrismaClient | undefined
-}
+// declare global {
+//   var prisma: PrismaClient | undefined
+// }
 
 let prisma: PrismaClient;
 
 
 const connectionString = `${ process.env.DB_URL }`
 const adapter = new PrismaNeon({ connectionString })
-prisma = global.prisma || new PrismaClient({ adapter }) 
-if (process.env.NODE_ENV === 'development') global.prisma = prisma
+prisma = (global as any).prisma || new PrismaClient({ adapter }) 
+if (process.env.NODE_ENV === 'development') (global as any).prisma = prisma
 
 export default prisma

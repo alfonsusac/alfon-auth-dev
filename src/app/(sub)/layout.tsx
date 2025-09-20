@@ -7,7 +7,7 @@ export default function SubLayout(props: { children: React.ReactNode }) {
         {'<-'} <span className="tracking-tight font-medium">Home</span>
       </a>
 
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 w-full">
         {props.children}
       </div>
 

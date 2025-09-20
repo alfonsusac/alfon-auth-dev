@@ -1,4 +1,5 @@
 import { type User } from "@/lib/auth"
+import prisma from "@/lib/db"
 import { randomBytes } from "crypto"
 
 
