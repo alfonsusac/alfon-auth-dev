@@ -6,7 +6,7 @@ import { decodeJwt, SignJWT } from "jose"
 const google = new arctic.Google(
   process.env.GOOGLE_CLIENT_ID!,
   process.env.GOOGLE_CLIENT_SECRET!,
-  `${ process.env.BASE_URL || "https://" + process.env.VERCEL_PROJECT_PRODUCTION_URL }/auth/google/callback`
+  `${ process.env.BASE_URL }/auth/google/callback`
 )
 
 export async function signIn(redirectTo?: string) {
