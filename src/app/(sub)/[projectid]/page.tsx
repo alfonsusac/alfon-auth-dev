@@ -1,6 +1,10 @@
 import { data } from "@/data"
-import { getCurrentUser, isAdmin } from "@/lib/auth"
+import { $getCurrentUser, adminOnly, isAdmin } from "@/lib/auth"
+import BackButton from "@/lib/BackButton"
 import prisma from "@/lib/db"
+import { FormButton } from "@/lib/FormButton"
+import { resolveError, unauthorizedAction } from "@/lib/redirects"
+import { createProjectKeys, deleteProjectKeys } from "@/services/projects"
 import { randomBytes } from "crypto"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
@@ -32,9 +36,10 @@ export default async function ProjectPage(props: {
   const sp = await props.searchParams
   const info = sp['info']
 
-  const user = await getCurrentUser()
+  const user = await $getCurrentUser()
 
   return <>
+    <BackButton href="/">Home</BackButton>
     {
       info === "new" && <>
         <div className="callout success">
@@ -49,6 +54,10 @@ export default async function ProjectPage(props: {
       </code>
     </header>
 
+    <section className="flex flex-col gap-2">
+      <a className="button destructive small" href={`/${ projectid }/delete`}>Delete Project</a>
+    </section>
+
     {
       isAdmin(user) &&
       <>
@@ -58,23 +67,31 @@ export default async function ProjectPage(props: {
           <ul className="flex flex-col gap-2">
             {project.ProjectKey.map((key) => <li key={key.id}>
               <div
-                className="rounded-md p-4 flex gap-2 bg-foreground-body/5 group items-center"
+                className="card"
               >
-                <div className="flex flex-col items-start gap-1 grow ">
-                  <div className="font-mono font-semibold leading-3 text-xs rounded-sm">{key.key}</div>
-                  <div className="text-foreground-body text-xs">{key.description}</div>
+                <div className="flex flex-col items-start gap-1 grow min-w-0">
+                  <div className="font-mono font-semibold leading-3 text-xs rounded-sm truncate min-w-0 w-full">
+                    {key.key}
+                  </div>
+                  <div className="text-foreground-body leading-3 text-xs">
+                    {key.description}
+                  </div>
+                  <div className="text-foreground-body/75 leading-3 text-xs">
+                    {key.createdAt.toDateString()}
+                  </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   <form action={async () => {
                     "use server"
-                    const user = await getCurrentUser()
-                    if (!isAdmin(user)) redirect(`/${ projectid }?error=not_authorized`)
-                    await prisma.projectKey.delete({
-                      where: { id: key.id }
-                    })
+                    await adminOnly(`/${ projectid }`)
+                    const res = await deleteProjectKeys(key.id)
+                    resolveError(`/${ projectid }`, res)
                     revalidatePath(`/${ projectid }`)
                   }}>
-                    <button className="button small opacity-0 group-hover:opacity-100">Delete</button>
+                    <FormButton className="button small -mr-2 -mt-2"
+                      loading="Deleting...">
+                      Delete
+                    </FormButton>
                   </form>
                 </div>
               </div>
@@ -82,27 +99,57 @@ export default async function ProjectPage(props: {
           </ul>
           <form action={async () => {
             "use server"
-            const user = await getCurrentUser()
-            if (!isAdmin(user)) redirect(`/${ projectid }?error=not_authorized`)
-            await prisma.projectKey.create({
-              data: {
-                projectId: project.id,
-                description: "New API Key",
-                key: randomBytes(16).toString('hex')
-              }
-            })
+            await adminOnly(`/${ projectid }`)
+            const res = await createProjectKeys(project.id, "New API Key")
+            resolveError(`/${ projectid }`, res)
             revalidatePath(`/${ projectid }`)
           }} className="w-full self-stretch">
-            <button className="button ghost w-full text-start text-xs flex gap-2">
+            <FormButton className="button list"
+              loading={"Creating..."}>
               <div>+</div>
               <div>Create API Key</div>
-            </button>
+            </FormButton>
           </form>
         </section>
-        <section className="flex flex-col gap-2">
+        <section className="flex flex-col gap-2 max-w-120">
           <p className="text-pretty text-sm text-foreground-body">api references ↓</p>
-          <div className="">
-
+          <div className="flex flex-col gap-2">
+            <div className="card">
+              <div className="flex flex-col gap-2.5">
+                <div className="flex flex-col gap-1.5">
+                  <div className="font-mono font-semibold leading-3">
+                    GET /authorize
+                  </div>
+                  <div className="font-mono text-xs leading-3 tracking-tight text-foreground-body">
+                    auth.alfon.dev/{projectid}/authorize
+                  </div>
+                </div>
+                <p className="text-xs text-foreground-body">
+                  Redirects to the OAuth provider for authentication. Requires an API key in the Authorization header.
+                </p>
+                <div className="flex gap-2">
+                  <button className="button small">
+                    Copy URL
+                  </button>
+                  <a className="button small" href={`/${ projectid }/login`}>
+                    Log In to Project
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div className="card">
+              <div className="flex flex-col gap-1">
+                <div className="font-mono font-semibold">
+                  POST /token
+                </div>
+                <p className="text-xs text-foreground-body">
+                  Exchanges an authorization code for an access token. Requires an API key in the Authorization header.
+                </p>
+                <button className="button small mt-2">
+                  Copy URL
+                </button>
+              </div>
+            </div>
           </div>
         </section>
       </>

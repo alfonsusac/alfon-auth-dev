@@ -1,5 +1,6 @@
-import { data } from "@/data"
-import { getCurrentUser, isAdmin } from "@/lib/auth"
+import { $getCurrentUser, isAdmin } from "@/lib/auth"
+import BackButton from "@/lib/BackButton"
+import { FormButton } from "@/lib/FormButton"
 import { createProject } from "@/services/projects"
 import { redirect } from "next/navigation"
 
@@ -9,7 +10,7 @@ export default async function ProjectPage({
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
 
-  const user = await getCurrentUser()
+  const user = await $getCurrentUser()
 
   if (!user || !isAdmin(user)) return <>
     <section>
@@ -26,24 +27,23 @@ export default async function ProjectPage({
   const error = sp['error']
 
   return <>
+    <BackButton href="/">Home</BackButton>
+
     <header>
       <h1 className="page-h1">Create Project</h1>
     </header>
 
     <form className="flex flex-col gap-6 max-w-80" action={async (form: FormData) => {
       "use server"
-      const user = await getCurrentUser()
-
+      const user = await $getCurrentUser()
       if (!user) redirect('/create-project')
 
       const id = form.get("id")?.toString()
       const name = form.get("name")?.toString()
 
-      if (!id || !name) redirect('/create-project?error=missing_fields')
-
-      const res = await createProject(user, id, name, "")
-
-      if (res === "id_exists") redirect('/create-project?error=id_exists')
+      const res = await createProject(id, name, "")
+      if (typeof res === "string")
+        redirect(`/create-project?error=${ res }`)
 
       redirect(`/${ id }?info=new`)
     }}>
@@ -67,7 +67,9 @@ export default async function ProjectPage({
           </div>
         </>
       }
-      <button className="button primary px-6 mt-4">Create</button>
+      <FormButton className="button primary px-6 mt-4 w-30"
+        loading="Creating..."
+      >Create</FormButton>
     </form>
   </>
 

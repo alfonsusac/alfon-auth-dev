@@ -1,27 +1,7 @@
-import { type User } from "@/lib/auth"
+import { $getCurrentUser, adminOnly, isAdmin, type User } from "@/lib/auth"
 import prisma from "@/lib/db"
 import { randomBytes } from "crypto"
-
-
-// function createProjectsTable() {
-//   return sql`CREATE TABLE IF NOT EXISTS projects (
-//     id SERIAL PRIMARY KEY, 
-//     user_id TEXT, 
-//     name TEXT, 
-//     desc TEXT,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-//   )`
-// }
-
-// function createProjectKeysTable() {
-//   return sql`CREATE TABLE IF NOT EXISTS project_keys (
-//     id SERIAL PRIMARY KEY, 
-//     project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE, 
-//     name TEXT, 
-//     value TEXT,
-//     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-//   )`
-// }
+import { cache } from "react"
 
 export async function getProjects(user: User) {
   const projects = await prisma?.project.findMany({
@@ -31,39 +11,29 @@ export async function getProjects(user: User) {
   return projects
 }
 
-export async function getProjectKeys(user: User, project_id: string) {
-  const keys = await prisma?.projectKey.findMany({
-    where: { project: { user_id: user.id, id: project_id } },
-    orderBy: { createdAt: 'desc' },
-  })
-  return keys
-}
+const $findProject = cache(async (project_id: string) => {
+  const project = await prisma?.project.findFirst({ where: { id: project_id } })
+  return project
+})
 
-export async function createProject(user: User, id: string, name: string, desc: string) {
+export async function createProject(project_id?: string, name?: string, desc?: string) {
+  const user = await $getCurrentUser()
+  if (!user || !isAdmin(user)) return "unauthorized"
+  if (!project_id || !name) return "missing_fields"
 
-  const existing = await prisma?.project.findFirst({
-    where: { user_id: user.id, id },
-  })
-  if (existing)
-    return "id_exists"
-
+  const existing = await $findProject(project_id)
+  if (existing) return "id_exists"
 
   const project = await prisma?.project.create({
     data: {
-      id,
+      id: project_id,
       user_id: user.id,
       name,
       description: desc,
     },
   })
 
-  const key = await prisma?.projectKey.create({
-    data: {
-      projectId: id,
-      description: 'Default API Key',
-      key: randomBytes(32).toString('hex'),
-    },
-  })
+  const key = await createProjectKeys(project.id, "Default API Key")
 
   return {
     ...project,
@@ -71,26 +41,50 @@ export async function createProject(user: User, id: string, name: string, desc: 
   }
 }
 
+export async function deleteProject(project_id?: string) {
+  const user = await $getCurrentUser()
+  if (!user || !isAdmin(user)) return "unauthorized"
+  if (!project_id) return "missing_fields"
+
+  const existing = await $findProject(project_id)
+  if (!existing) return "not_found"
+
+  await prisma?.project.deleteMany({ where: { id: project_id } })
+  return true
+}
 
 
-// export async function createProject(user: User, id: string, name: string, desc: string) {
-//   await createProjectsTable()
 
-//   const existing = await sql`SELECT * FROM projects WHERE user_id = ${ user.id } AND id = ${ id }`
+export async function getProjectKeys(project_id: string) {
+  const user = await $getCurrentUser()
+  const keys = await prisma?.projectKey.findMany({
+    where: { project: { user_id: user?.id, id: project_id } },
+    orderBy: { createdAt: 'desc' },
+  })
+  return keys
+}
 
-//   if (existing.length === 0) {
+export async function createProjectKeys(project_id: string, description: string) {
+  await adminOnly()
+  const project = await $findProject(project_id)
+  if (!project) return "not_found"
+  const key = await prisma.projectKey.create({
+    data: {
+      projectId: project_id,
+      description: description,
+      key: randomBytes(32).toString('hex'),
+    },
+  })
+  return key
+}
 
-//     const project = await sql`INSERT INTO projects (user_id, name, string) VALUES (${ user.id }, ${ name }, ${ desc }) RETURNING *`
-
-//     await createProjectKeysTable()
-//     const key = await sql`INSERT INTO project_keys (project_id, name, value) VALUES (${ project[0].id }, 'Default API Key', ${ randomBytes(32).toString('hex') }) RETURNING *`
-
-//     return {
-//       ...project[0],
-//       key,
-//     }
-//   }
-
-//   else
-//     return "id_exists"
-// }
+export async function deleteProjectKeys(project_key_id: string) {
+  await adminOnly()
+  const existing = await prisma.projectKey.findFirst({
+    where: { id: project_key_id }
+  })
+  if (!existing) return "not_found"
+  await prisma.projectKey.delete({
+    where: { id: project_key_id }
+  })
+}

@@ -39,7 +39,7 @@ body {
 @layer components {
   
   .button {
-    @apply 
+    @apply block
     border border-border 
     p-2 px-3.5 rounded-lg
     text-sm 
@@ -49,7 +49,11 @@ body {
     text-foreground-body
     bg-background hover:bg-backgroud-hover active:bg-backgroud-active
   
-    cursor-pointer;
+    cursor-pointer
+    
+    disabled:pointer-events-none
+    disabled:bg-backgroud-hover
+    ;
   }
   .button.primary {
     @apply font-medium
@@ -63,6 +67,13 @@ body {
   }
   .button.small {
     @apply p-1 px-2.5 text-xs rounded-md
+  }
+  .button.destructive {
+    @apply border-red-300 text-red-600
+    hover:bg-red-50 active:bg-red-100;
+  }
+  .button.list {
+    @apply border-none w-full text-start text-xs flex gap-2;
   }
   
   .page-h1 {
@@ -85,6 +96,9 @@ body {
   }
   input::placeholder {
     @apply text-foreground-body/25
+  }
+  .card {
+    @apply rounded-md p-4 flex gap-2 bg-foreground-body/5
   }
 
   .callout {

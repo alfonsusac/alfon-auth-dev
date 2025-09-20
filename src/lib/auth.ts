@@ -2,6 +2,7 @@ import * as arctic from "arctic"
 import { redirect } from "next/navigation"
 import { deleteCookie, getSecureCookie, setSecureCookie } from "./cookie"
 import { decodeJwt, SignJWT } from "jose"
+import { cache } from "react"
 
 const google = new arctic.Google(
   process.env.GOOGLE_CLIENT_ID!,
@@ -26,8 +27,6 @@ export async function signInHandleCallback(code?: string, received_state?: strin
 
   const [state, redirectTo] = (received_state ?? '').split(' | ')
 
-  console.log(JSON.stringify(redirectTo))
-
   const storedState = await getSecureCookie('oauth_state')
   const storedCodeVerifier = await getSecureCookie('oauth_code_verifier')
 
@@ -38,12 +37,10 @@ export async function signInHandleCallback(code?: string, received_state?: strin
   try {
 
     const tokens = await google.validateAuthorizationCode(code, storedCodeVerifier)
-    // console.log("tokenData", tokens.data)
+
     const accessToken = tokens.accessToken()
-    // console.log("access token", accessToken)
 
     const decodedIdToken = decodeJwt(tokens.idToken())
-    // console.log("decodedIdToken", decodedIdToken)
 
     const userId = decodedIdToken.sub
 
@@ -57,6 +54,7 @@ export async function signInHandleCallback(code?: string, received_state?: strin
       },
       cache: 'no-store'
     })
+
     const google_user_json = await google_user_res.json()
 
     if (!google_user_json.verified_email) {
@@ -107,7 +105,7 @@ export async function issueAuthorizationJWT(id: string, email: string, pfp: stri
 
 // ------
 
-export async function getCurrentUser() {
+export const $getCurrentUser = cache(async () => {
   const token = await getSecureCookie('auth_token')
   if (!token) return null
 
@@ -118,9 +116,9 @@ export async function getCurrentUser() {
   } catch (e) {
     return null
   }
-}
+})
 
-export type User = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
+export type User = NonNullable<Awaited<ReturnType<typeof $getCurrentUser>>>
 
 // ------
 
@@ -134,4 +132,12 @@ export async function logout() {
 export function isAdmin(user: User | null) {
   if (!user) return false
   return user.id === process.env.ADMIN_USER_ID
+}
+
+export async function adminOnly(path: string = '/unauthorized') {
+  const user = await $getCurrentUser()
+  if (!isAdmin(user)) {
+    return redirect(path === '/unauthorized' ? `/unauthorized?redirect=${ encodeURIComponent(path) }` : `${path}?error=unauthorized`)
+  }
+  return true
 }
