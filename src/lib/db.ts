@@ -18,7 +18,7 @@ neonConfig.poolQueryViaFetch = true
 let prisma: PrismaClient;
 
 
-const connectionString = `${ process.env.DB_URL }`
+const connectionString = `${ process.env.DATABASE_URL }`
 const adapter = new PrismaNeon({ connectionString })
 prisma = (global as any).prisma || new PrismaClient({ adapter }) 
 if (process.env.NODE_ENV === 'development') (global as any).prisma = prisma

@@ -61,6 +61,9 @@ body {
   .button.ghost {
     @apply border-none
   }
+  .button.small {
+    @apply p-1 px-2.5 text-xs rounded-md
+  }
   
   .page-h1 {
     @apply text-2xl font-semibold tracking-tight;
