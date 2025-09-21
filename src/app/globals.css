@@ -41,7 +41,7 @@ body {
   .button {
     @apply block
     border border-border 
-    p-2 px-3.5 rounded-lg
+    p-1.5 px-3.5 rounded-md
     text-sm 
   
     self-start
@@ -54,6 +54,9 @@ body {
     disabled:pointer-events-none
     disabled:bg-backgroud-hover
     ;
+  }
+  .button.lg {
+    @apply p-2 px-3.5 rounded-lg
   }
   .button.primary {
     @apply font-medium
@@ -76,19 +79,24 @@ body {
     @apply border-none w-full text-start text-xs flex gap-2;
   }
   
-  .page-h1 {
-    @apply text-2xl font-semibold tracking-tight;
-  }
+
   .label {
     @apply text-xs text-foreground-body
+  }
+  .input-group {
+    @apply flex flex-col gap-0.5
   }
   .input {
     @apply border border-border p-2 rounded-md
     focus-visible:outline-none!
     focus-within:outline-none!
+    bg-background
   }
   .label-helper {
-    @apply text-[0.65rem] text-foreground-body
+    @apply text-[0.65rem] text-foreground-body mb-1.5
+  }
+  .input.small {
+    @apply py-1 text-sm
   }
 
   input {
@@ -97,10 +105,12 @@ body {
   input::placeholder {
     @apply text-foreground-body/25
   }
+  .breadcrumb {
+    @apply flex gap-2 mb-2 text-foreground-body text-xs
+  }
   .card {
     @apply rounded-md p-4 flex gap-2 bg-foreground-body/5
   }
-
   .callout {
     @apply rounded-md px-4 py-2 text-xs max-w-80
   }
@@ -111,8 +121,30 @@ body {
     @apply bg-emerald-100 text-emerald-700
   }
 
-  .category-title {
-    @apply text-pretty text-sm text-foreground-body
+  .category {
+    @apply max-w-120 flex flex-col gap-4
   }
+  .category-title {
+    @apply text-pretty text-sm text-foreground-body py-1 -my-2.5
+  }
+
+  hr {
+    @apply border-foreground-body/10
+  }
+
+  .page-header{
+    @apply max-w-120
+  }
+  .page-h1 {
+    @apply text-2xl font-semibold tracking-tight;
+  }
+  .page-subtitle {
+    @apply text-xs text-foreground-body leading-normal
+  }
+  .page-subtitle-code {
+    @apply font-mono text-xs tracking-tight text-foreground-body
+  }
+
+
 
 }

@@ -1,7 +1,10 @@
+import { adminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
-import prisma from "@/lib/db"
+import { DangerSymbol } from "@/lib/DangerSymbol"
+import { DeleteAlert } from "@/lib/DeleteAlert"
+import { NotFoundLayout } from "@/lib/NotFound"
 import { resolveError } from "@/lib/redirects"
-import { deleteProject } from "@/services/projects"
+import { deleteProject, getProject } from "@/services/projects"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 
@@ -10,49 +13,36 @@ export default async function DeleteProjectPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const projectid = (await props.params).projectid
-  const project = await prisma.project.findFirst({ where: { id: projectid } })
+  await adminOnly(`/${ projectid }`)
 
-  if (!project) return <>
-    <section>
-      <h1 className="page-h1">Project Not Found</h1>
-      <p className="text-pretty text-sm max-w-80 text-foreground-body">
-        The project with ID <span>{projectid}</span> does not exist.
-      </p>
-    </section>
-
-    <a href="/" className="button primary">{'<-'} Back to Home</a>
-  </>
+  const project = await getProject(projectid)
+  if (!project) return <NotFoundLayout
+    title="Project Not Found"
+    info={`The project with ID "${ projectid }" does not exist.`}
+    backLabel="Back to Home"
+    backHref="/"
+  />
 
   return <>
     <BackButton href={`/${ projectid }`}>{project.name}</BackButton>
 
     <header>
       <h1 className="page-h1">{project.name}</h1>
-      <code className="font-mono text-xs tracking-tight text-foreground-body">
-        auth.alfon.dev/{projectid}
-      </code>
+      <code className="page-subtitle-code">auth.alfon.dev/{projectid}</code>
     </header>
 
-    <section className="flex flex-col gap-2">
-      <p className="text-pretty font-semibold tracking-tight max-w-120 text-foreground-body">
-        Are you sure you want to delete the project <span className="font-semibold">{project.name}</span>? This action cannot be undone.
-      </p>
-      <p className="text-pretty text-xs max-w-120 text-foreground-body">
-        All associated data, including users and keys, will be permanently removed.
-      </p>
-    </section>
-
-    <div className="flex gap-2">
-      <a href={`/${ projectid }`} className="button small">Cancel</a>
-      <form action={async () => {
+    <DeleteAlert
+      title={`Are you sure you want to permanently delete "${ project.name }"?`}
+      description="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
+      backHref={`/${ projectid }`}
+      actionLabel="Delete Project"
+      action={async () => {
         "use server"
         const res = await deleteProject(projectid)
-        resolveError(`/${projectid}/delete`, res)
+        resolveError(`/${ projectid }/delete`, res)
         revalidatePath('/')
         redirect(`/?info=deleted`)
-      }}>
-        <button className="button destructive small">Delete Project</button>
-      </form>
-    </div>
+      }}
+    />
   </>
 }

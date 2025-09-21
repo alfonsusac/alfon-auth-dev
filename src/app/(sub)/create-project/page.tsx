@@ -47,7 +47,7 @@ export default async function ProjectPage({
 
       redirect(`/${ id }?info=new`)
     }}>
-      <div className="flex flex-col gap-0.5">
+      <div className="input-group">
         <label className="label" >project id</label>
         <p className="label-helper">will be used at the auth url</p>
         <div className="flex items-center gap-2 input">
@@ -55,7 +55,7 @@ export default async function ProjectPage({
           <input className="grow -my-2 py-2 pr-2 -mr-2" name="id" placeholder="project_id" required />
         </div>
       </div>
-      <div className="flex flex-col gap-0.5">
+      <div className="input-group">
         <label className="label" >project name</label>
         <p className="label-helper">will be used as the display of the project</p>
         <input className="input" name="name" placeholder="My Project" required />

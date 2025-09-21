@@ -134,10 +134,11 @@ export function isAdmin(user: User | null) {
   return user.id === process.env.ADMIN_USER_ID
 }
 
-export async function adminOnly(path: string = '/unauthorized') {
+export async function adminOnly(redirect_path_on_fail: string = '/unauthorized') {
   const user = await $getCurrentUser()
   if (!isAdmin(user)) {
-    return redirect(path === '/unauthorized' ? `/unauthorized?redirect=${ encodeURIComponent(path) }` : `${path}?error=unauthorized`)
+    // return redirect(redirect_path_on_fail === '/unauthorized' ? `/unauthorized?redirect=${ encodeURIComponent(redirect_path_on_fail) }` : `${redirect_path_on_fail}?error=unauthorized`)
+    return redirect(redirect_path_on_fail)
   }
-  return true
+  return user
 }

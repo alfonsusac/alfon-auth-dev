@@ -1,14 +1,8 @@
 import { redirect, RedirectType } from "next/navigation"
+import { navigate } from "./resolveAction"
 
-export function displayError(path: string, msg: string): never {
-  redirect(`${ path }?error=${ msg }`, RedirectType.replace)
-}
-
-export function resolveError(path: string, res: any) {
+export function resolveError<T>(path: string, res: T, inputs?: object) {
   if (typeof res === "string")
-    redirect(`${ path }?error=${ res }`, RedirectType.replace)
-}
-
-export function unauthorizedAction(path: string) {
-  redirect(`${ path }?error=unauthorized`, RedirectType.replace)
+    navigate(`?error=${ res }${ inputs ? '&' + new URLSearchParams(inputs as Record<string, string>).toString() : '' }`, RedirectType.replace)
+  else return res as Exclude<T, string>
 }
