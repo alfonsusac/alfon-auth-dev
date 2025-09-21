@@ -5,8 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider        = "prisma-client-js"
-  output          = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -32,7 +32,9 @@ model ProjectKey {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  domain      String?
+  callbackURI String?
+
   projectId String
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 }
- 
