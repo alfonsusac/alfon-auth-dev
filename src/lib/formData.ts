@@ -11,5 +11,6 @@ export function getStringInputs<const T extends string[]>(form: FormData, fields
       inputs[field] = undefined
     }
   }
+  // return inputs as { [K in T[number]]: string }
   return inputs as { [K in T[number]]: string }
 }

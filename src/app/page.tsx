@@ -1,34 +1,19 @@
-import { data } from "@/data"
-import { $getCurrentUser, isAdmin, logout, signIn } from "@/lib/auth"
-import prisma from "@/lib/db"
+import { getCurrentUser, isAdmin, logout, signIn } from "@/lib/auth"
+import { Form } from "@/lib/Form"
+import { SPCallout } from "@/lib/SPCallout"
 import { meta } from "@/meta"
+import { getAllProjects } from "@/services/projects"
 
-export default async function Home(props: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
+export default async function Home(props: PageProps<'/'>) {
 
-  const user = await $getCurrentUser()
-
-  const projects = await prisma.project.findMany({
-    where: {
-      user_id: process.env.ADMIN_USER_ID
-    }
-  }) ?? []
-
+  const user = await getCurrentUser()
+  const projects = await getAllProjects()
   const no_projects = projects.length === 0
-
-  const sp = await props.searchParams
-  const info = sp['info']
-
 
   return (
     <main className="font-sans flex flex-col gap-16">
 
-      {
-        info === "deleted" && <>
-          <div className="callout success">
-            project deleted successfully!
-          </div>
-        </>
-      }
+      <SPCallout sp={props.searchParams} match="info=deleted" className="success">project deleted successfully!</SPCallout>
 
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">
@@ -39,34 +24,34 @@ export default async function Home(props: { searchParams: Promise<{ [key: string
         </p>
       </header>
 
-      <div className="flex flex-col gap-2">
+      <div className="category">
         <p className="category-title">manage your accounts ↓</p>
         {
-          user
-            ? <div className="flex gap-2">
+          user ?
+            <div className="flex gap-2">
               <a className="button primary px-12!">
                 My Account
               </a>
-              <form action={async () => {
+              <Form action={async () => {
                 "use server"
                 await logout()
               }}>
                 <button className="button">
                   Log Out
                 </button>
-              </form>
+              </Form>
             </div>
-            : <form action={async () => {
+            :
+            <Form action={async () => {
               "use server"
               await signIn()
             }}>
               <button className="button primary">Login via Google</button>
-            </form>
+            </Form>
         }
       </div>
 
-
-      <section className="max-w-120 flex flex-col gap-2">
+      <section className="category">
         <p className="category-title">my projects ↓</p>
         {no_projects && <div className="text-xs text-foreground-body my-4">no projects found.</div>}
 

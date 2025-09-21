@@ -1,156 +1,144 @@
-import type { Prisma } from "@/generated/prisma"
-import { $getCurrentUser, adminOnly, isAdmin, type User } from "@/lib/auth"
+import { adminOnly, requireAdmin } from "@/lib/auth"
 import prisma from "@/lib/db"
-import { validateURL } from "@/lib/url"
-import { randomBytes } from "crypto"
+import { generateSecret } from "@/lib/token"
+import { validation } from "@/lib/validation"
 import { cache } from "react"
 
-export async function getProjects(user: User) {
-  return prisma?.project.findMany({
-    where: { user_id: user.id },
-    orderBy: { createdAt: 'desc' },
+
+
+// Project
+
+export const getProject = cache(get_project)
+export const getAllProjects = cache(get_all_projects)
+
+async function get_project(id: string) {
+  const res = await prisma.project.findFirst({
+    where: { id },
+    include: { keys: { orderBy: { createdAt: 'desc' } }, domains: { orderBy: { createdAt: 'desc' } } }
   })
-}
-
-export async function getProject(projectid: string) {
-  return prisma?.project.findFirst({ where: { id: projectid } })
-}
-export async function getProjectWithKeys(projectid: string) {
-  await adminOnly()
-  return prisma?.project.findFirst({
-    where: { id: projectid },
-    include: {
-      ProjectKey: {
-        orderBy: { createdAt: 'desc' }
-      }
-    },
-  })
-}
-
-const $findProject = cache(async (project_id: string) => {
-  const project = await prisma?.project.findFirst({ where: { id: project_id } })
-  return project
-})
-
-export async function createProject(project_id?: string, name?: string, desc?: string) {
-  const user = await $getCurrentUser()
-  if (!user || !isAdmin(user)) return "unauthorized"
-  if (!project_id || !name) return "missing_fields"
-
-  const existing = await $findProject(project_id)
-  if (existing) return "id_exists"
-
-  const project = await prisma?.project.create({
-    data: {
-      id: project_id,
-      user_id: user.id,
-      name,
-      description: desc,
-    },
-  })
-
-  const key = await createProjectKey(project.id, "Default API Key")
-
+  if (!res) return null
+  const { keys, domains, ...project } = res
   return {
     ...project,
-    key,
+    keys: requireAdmin(keys),
+    domains: requireAdmin(domains),
   }
 }
 
-export async function deleteProject(project_id?: string) {
-  const user = await $getCurrentUser()
-  if (!user || !isAdmin(user)) return "unauthorized"
-  if (!project_id) return "missing_fields"
-
-  const existing = await $findProject(project_id)
-  if (!existing) return "not_found"
-
-  await prisma?.project.deleteMany({ where: { id: project_id } })
-  return true
+async function get_all_projects() {
+  return prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
 }
 
-export async function updateProject(project_id?: string, data: Prisma.ProjectUpdateInput = {}) {
-  const user = await $getCurrentUser()
-  if (!user || !isAdmin(user)) return "unauthorized"
-  if (!project_id) return "missing_fields"
 
-  const existing = await $findProject(project_id)
-  if (!existing) return "not_found"
 
-  return prisma?.project.update({
-    where: { id: project_id },
-    data
+// Project Mutations
+
+export type ProjectInput = { id?: string, name?: string }
+
+const validateProjectInput = validation(async (input: ProjectInput) => {
+  if (!input.name || !input.id) return "missing_fields"
+  if (await getProject(input.id)) return "id_exists"
+  return input as Required<ProjectInput>
+})
+
+export async function createProject(input: ProjectInput) {
+  const user = await adminOnly()
+  const { error, data } = await validateProjectInput(input)
+  if (error) return error
+  await prisma.project.create({
+    data: {
+      ...data,
+      user_id: user.id,
+      keys: {
+        create: {
+          name: "Default Key",
+          client_secret: generateSecret(),
+        }
+      }
+    }
   })
 }
+
+export async function updateProject(input: ProjectInput, id: string) {
+  await adminOnly()
+  const { error, data } = await validateProjectInput(input)
+  if (error) return error
+  if (!await getProject(id)) return "not_found"
+  await prisma.project.update({ where: { id }, data })
+}
+
+export async function deleteProject(id: string) {
+  await adminOnly()
+  if (!await getProject(id)) return "not_found"
+  await prisma.project.delete({ where: { id } })
+}
+
+
+
 
 
 // Project Keys
 
+export const getProjectKey = cache(get_project_key)
+export const getAllProjectKeys = cache(get_all_project_keys)
 
-export async function getProjectKeys(project_id: string) {
-  const user = await $getCurrentUser()
+
+async function get_project_key(project_key_id: string) {
   await adminOnly()
-  return prisma?.projectKey.findMany({
-    where: { project: { user_id: user?.id, id: project_id } },
+
+  return prisma.projectKey.findFirst({
+    where: { id: project_key_id },
+  })
+}
+
+async function get_all_project_keys(project_id: string) {
+  await adminOnly()
+
+  return prisma.projectKey.findMany({
+    where: { project: { id: project_id } },
     orderBy: { createdAt: 'desc' },
   })
 }
 
-export async function createProjectKey(project_id: string, description: string, domain?: string, callbackURI?: string) {
-  await adminOnly()
-  const project = await $findProject(project_id)
-  if (!project) return "not_found"
 
-  if (!description || !domain || !callbackURI) return "missing_fields"
 
-  const domainURL = validateURL("https://" + domain)
-  if (!domainURL) return "invalid_domain"
+// Project Keys Mutations
 
-  const callbackURL = validateURL("https://" + callbackURI)
-  if (!callbackURL) return "invalid_callbackURI"
-
-  if (callbackURL.origin !== domainURL.origin)
-    return "callbackURI_must_match_domain"
-
-  return prisma.projectKey.create({
-    data: {
-      projectId: project_id,
-      description: description,
-      key: randomBytes(32).toString('hex'),
-      domain,
-      callbackURI,
-    },
-  })
+export type ProjectKeyInput = {
+  name: string
+  project_id: string
 }
 
-export async function updateProjectKey(project_key_id: string, data: Prisma.ProjectKeyUpdateInput) {
+const validateProjectKeyInput = validation(async (input: ProjectKeyInput) => {
+  if (!input.name || !input.project_id) return "missing_fields"
+  if (!await getProject(input.project_id)) return "project_not_found"
+  return input as Required<ProjectKeyInput>
+})
+
+export async function createProjectKey(input: ProjectKeyInput) {
   await adminOnly()
-  const existing = await prisma.projectKey.findFirst({ where: { id: project_key_id } })
-  if (!existing) return "not_found"
-
-  const domainURL = validateURL("https://" + data.domain)
-  if (!domainURL) return "invalid_domain"
-
-  const callbackURL = validateURL("https://" + data.callbackURI)
-  if (!callbackURL) return "invalid_callbackURI"
-
-  if (callbackURL.origin !== domainURL.origin)
-    return "callbackURI_must_match_domain"
-
-  const updated = await prisma.projectKey.update({
-    where: { id: project_key_id },
-    data
-  })
-  return updated
+  const { error, data } = await validateProjectKeyInput(input)
+  if (error) return error
+  // todo: remove
+  return await prisma.projectKey.create({ data: { ...data, client_secret: generateSecret() } })
 }
 
-export async function deleteProjectKey(project_key_id: string) {
+export async function updateProjectKey(input: ProjectKeyInput, id: string) {
   await adminOnly()
-  const existing = await prisma.projectKey.findFirst({
-    where: { id: project_key_id }
-  })
-  if (!existing) return "not_found"
-  await prisma.projectKey.delete({
-    where: { id: project_key_id }
-  })
+  const { error, data } = await validateProjectKeyInput(input)
+  if (error) return error
+  if (!await getProjectKey(id)) return "not_found"
+  await prisma.projectKey.update({ where: { id }, data })
+}
+
+export async function regenerateProjectKeySecret(id: string) {
+  await adminOnly()
+  if (!await getProjectKey(id)) return "not_found"
+  await prisma.projectKey.update({ where: { id }, data: { client_secret: generateSecret() } })
+}
+
+export async function deleteProjectKey(id: string) {
+  await adminOnly()
+  if (!await getProjectKey(id)) return "not_found"
+  await prisma.projectKey.delete({ where: { id } })
 }

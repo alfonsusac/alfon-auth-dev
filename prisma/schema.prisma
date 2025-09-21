@@ -15,26 +15,37 @@ datasource db {
 }
 
 model Project {
-  id          String   @id @default(uuid())
+  id          String   @id @unique
   name        String
   description String?
   user_id     String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  ProjectKey ProjectKey[]
+  keys    ProjectKey[]
+  domains Domain[]
 }
 
 model ProjectKey {
-  id          String   @id @default(uuid())
-  key         String   @unique
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(uuid())
+  name          String
+  client_secret String   @unique
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  domain      String?
-  callbackURI String?
+  project_id String
+  project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+}
 
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+model Domain {
+  id           String   @id @default(uuid())
+  redirect_url String
+  callback_url String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  Project    Project @relation(fields: [project_id], references: [id])
+  project_id String
+
+  @@unique([project_id, redirect_url])
 }

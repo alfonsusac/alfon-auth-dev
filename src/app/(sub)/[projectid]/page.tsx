@@ -1,6 +1,5 @@
-import { $getCurrentUser, adminOnly, isAdmin } from "@/lib/auth"
+import { getCurrentUser, adminOnly, isAdmin } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
-import { getProject, getProjectKeys, updateProject } from "@/services/projects"
 import { ProjectNotFound } from "./shared"
 import { SPCallout } from "@/lib/SPCallout"
 import { FormButton } from "@/lib/FormButton"
@@ -8,16 +7,17 @@ import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { redirect, RedirectType } from "next/navigation"
 import { formatDate } from "@/lib/date"
+import { navigate } from "@/lib/resolveAction"
+import { getAllProjectKeys, getProject, updateProject } from "@/services/projects"
+import { getStringInputs } from "@/lib/formData"
 
-export default async function ProjectPage(props: {
-  params: Promise<{ projectid: string }>,
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
+export default async function ProjectPage(props: PageProps<"/[projectid]">) {
+
   const projectid = (await props.params).projectid
   const project = await getProject(projectid)
   if (!project) return <ProjectNotFound id={projectid} />
 
-  const user = await $getCurrentUser()
+  const user = await getCurrentUser()
 
   return <>
     <BackButton href="/">Home</BackButton>
@@ -43,12 +43,11 @@ export default async function ProjectPage(props: {
             action={async (form: FormData) => {
               "use server"
               await adminOnly(`/${ projectid }`)
-              const name = form.get("name")?.toString()
-              const id = form.get("domain")?.toString()
-              const res = await updateProject(project.id, { name, id })
+              const inputs = getStringInputs(form, ["name", "id"])
+              const res = await updateProject(inputs, project.id)
               resolveError(`/${ projectid }`, res)
               revalidatePath(`/${ projectid }`, 'layout')
-              redirect(`/${ id }?info=updated`, RedirectType.replace)
+              navigate(`?info=updated`)
             }}
           >
 
@@ -139,9 +138,9 @@ export default async function ProjectPage(props: {
 
 async function ProjectKeysList(props: { projectid: string }) {
   const { projectid } = props
-  const user = await $getCurrentUser()
+  const user = await getCurrentUser()
   if (!isAdmin(user)) return null
-  const ProjectKeys = await getProjectKeys(projectid)
+  const ProjectKeys = await getAllProjectKeys(projectid)
   return (
     <section className="category">
       <p className="category-title">project keys ↓</p>
@@ -151,10 +150,10 @@ async function ProjectKeysList(props: { projectid: string }) {
           <a href={`/${ projectid }/key/${ key.id }`} className="button ghost flex flex-row py-3">
             <div className="flex flex-col items-start gap-1 grow min-w-0">
               <div className="text-foreground-body font-semibold leading-3 text-xs">
-                {key.description}
+                {key.name}
               </div>
               <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0 w-full">
-                {key.key}
+                {key.client_secret}
               </div>
               <div className="text-foreground-body/75 leading-3 text-xs">
                 {formatDate(key.createdAt)}

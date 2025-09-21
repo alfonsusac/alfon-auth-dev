@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { DangerSymbol } from "./DangerSymbol"
+import { Form } from "./Form"
 
 export function DeleteAlert(props: {
   title: ReactNode,
@@ -19,9 +20,9 @@ export function DeleteAlert(props: {
       </p>
       <div className="flex gap-2 my-2">
         <a href={props.backHref} className="button">Cancel</a>
-        <form action={props.action}>
+        <Form action={props.action}>
           <button className="button destructive">{props.actionLabel}</button>
-        </form>
+        </Form>
       </div>
     </section>
   )

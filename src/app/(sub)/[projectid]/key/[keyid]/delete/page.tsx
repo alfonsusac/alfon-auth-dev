@@ -1,12 +1,13 @@
 import { adminOnly } from "@/lib/auth"
 import { Breadcrumb } from "@/lib/Breadcrumb"
-import { deleteProjectKey, getProject, getProjectWithKeys } from "@/services/projects"
+import { deleteProjectKey, getProject } from "@/services/projects"
 import { ProjectKeyNotFound, ProjectNotFound } from "../../../shared"
 import BackButton from "@/lib/BackButton"
 import { DeleteAlert } from "@/lib/DeleteAlert"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+import { navigate } from "@/lib/resolveAction"
 
 export default async function DeleteProjectKeyPage(props: {
   params: Promise<{ projectid: string, keyid: string }>,
@@ -17,10 +18,10 @@ export default async function DeleteProjectKeyPage(props: {
   const keyid = params.keyid
   await adminOnly(`/${ projectid }`)
 
-  const project = await getProjectWithKeys(projectid)
+  const project = await getProject(projectid)
   if (!project) return <ProjectNotFound id={projectid} />
 
-  const key = project.ProjectKey.find(k => k.id === keyid)
+  const key = (await project.keys()).find(k => k.id === keyid)
   if (!key) return <ProjectKeyNotFound key_id={keyid} project_id={projectid} />
 
   return (
@@ -29,8 +30,8 @@ export default async function DeleteProjectKeyPage(props: {
 
       <header>
         <Breadcrumb items={[project.name, "Key"]} />
-        <h1 className="page-h1">{key.description}</h1>
-        <code className="page-subtitle-code">key secret: {key.key}</code>
+        <h1 className="page-h1">{key.name}</h1>
+        <code className="page-subtitle-code">key secret: {key.client_secret}</code>
         <p className="page-subtitle ">Created: {key.createdAt.toLocaleString()}</p>
       </header>
 
@@ -41,10 +42,11 @@ export default async function DeleteProjectKeyPage(props: {
         actionLabel="Delete Project Key"
         action={async () => {
           "use server"
+          await adminOnly()
           const res = await deleteProjectKey(keyid)
           resolveError(`/${ projectid }/key/${ keyid }`, res)
           revalidatePath(`/${ projectid }`)
-          redirect(`/${ projectid }?info=key_deleted`)
+          navigate(`/${ projectid }?info=key_deleted`)
         }}
       />
     </>

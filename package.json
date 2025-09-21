@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
-    "start": "next start"
+    "start": "next start",
+    "migrate": "prisma migrate dev"
   },
   "dependencies": {
     "@neondatabase/serverless": "^1.0.1",

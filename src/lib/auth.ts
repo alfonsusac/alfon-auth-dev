@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { deleteCookie, getSecureCookie, setSecureCookie } from "./cookie"
 import { decodeJwt, SignJWT } from "jose"
 import { cache } from "react"
+import { navigate } from "./resolveAction"
 
 const google = new arctic.Google(
   process.env.GOOGLE_CLIENT_ID!,
@@ -19,7 +20,7 @@ export async function signIn(redirectTo?: string) {
 
   const scopes: string[] = ['openid', 'email']
   const url = google.createAuthorizationURL(state + ' | ' + (redirectTo ?? ''), codeVerifier, scopes)
-  return redirect(url.toString())
+  redirect(url.toString())
 }
 
 
@@ -105,7 +106,8 @@ export async function issueAuthorizationJWT(id: string, email: string, pfp: stri
 
 // ------
 
-export const $getCurrentUser = cache(async () => {
+
+export const getCurrentUser = cache(async () => {
   const token = await getSecureCookie('auth_token')
   if (!token) return null
 
@@ -118,13 +120,13 @@ export const $getCurrentUser = cache(async () => {
   }
 })
 
-export type User = NonNullable<Awaited<ReturnType<typeof $getCurrentUser>>>
+export type User = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
 
 // ------
 
 export async function logout() {
   await deleteCookie('auth_token')
-  return redirect('/')
+  return navigate('/')
 }
 
 // -----
@@ -135,10 +137,15 @@ export function isAdmin(user: User | null) {
 }
 
 export async function adminOnly(redirect_path_on_fail: string = '/unauthorized') {
-  const user = await $getCurrentUser()
-  if (!isAdmin(user)) {
-    // return redirect(redirect_path_on_fail === '/unauthorized' ? `/unauthorized?redirect=${ encodeURIComponent(redirect_path_on_fail) }` : `${redirect_path_on_fail}?error=unauthorized`)
-    return redirect(redirect_path_on_fail)
+  const user = await getCurrentUser()
+  if (!isAdmin(user))
+    navigate(redirect_path_on_fail)
+  return user as User
+}
+
+export function requireAdmin<T>(value: T) {
+  return async () => {
+    await adminOnly()
+    return value
   }
-  return user
 }

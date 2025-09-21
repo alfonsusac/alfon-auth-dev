@@ -3,15 +3,14 @@ import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"
 import { FormButton } from "@/lib/FormButton"
 import { createProjectKey, getProject } from "@/services/projects"
-import { redirect } from "next/navigation"
 import { ProjectNotFound } from "../../shared"
 import { ErrorCallout } from "@/lib/SPCallout"
-import { KeyCallbackURIInputField, KeyDescriptionInputField, KeyDomainInputField } from "../form"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { getStringInputs } from "@/lib/formData"
 import { navigate } from "@/lib/resolveAction"
 import { Form } from "@/lib/Form"
+import { KeyNameInputField } from "../form"
 
 export default async function CreateProjectKeyPage({
   params,
@@ -41,29 +40,22 @@ export default async function CreateProjectKeyPage({
     <Form className="flex flex-col gap-6 max-w-80" action={async (form: FormData) => {
       "use server"
       await adminOnly(`/${ param.projectid }`)
-      const inputs = getStringInputs(form, ["description", "domain", "callbackURI"])
-      const res = await createProjectKey(param.projectid, inputs.description, inputs.domain, inputs.callbackURI)
+      const inputs = getStringInputs(form, ["name", "project_id"])
+      const res = await createProjectKey(inputs)
       const key = resolveError(`/${ param.projectid }/key/create`, res, inputs)
       revalidatePath(`/${ param.projectid }`, 'layout')
       navigate(`./${ key.id }?info=new`)
     }}>
 
-      <KeyDescriptionInputField
-        name="description"
-        defaultValue={sp['description']?.toString()} />
-      <KeyDomainInputField
-        name="domain"
-        defaultValue={sp['domain']?.toString()} />
-      <KeyCallbackURIInputField
-        name="callbackURI"
-        defaultValue={sp['callbackURI']?.toString()} />
+      <input readOnly hidden name="project_id" value={project.id} />
+
+      <KeyNameInputField
+        name="name"
+        defaultValue={sp['name']?.toString()} />
 
       <ErrorCallout<typeof createProjectKey> sp={searchParams} messages={{
-        not_found: "project not found.",
-        invalid_domain: "invalid domain.",
         missing_fields: "missing required fields.",
-        invalid_callbackURI: "invalid callback URI.",
-        callbackURI_must_match_domain: "callback URI must match the domain.",
+        project_not_found: "project not found.",
       }} />
 
       <FormButton className="button primary px-6 mt-4 w-30"
