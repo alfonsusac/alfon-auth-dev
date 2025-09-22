@@ -120,10 +120,10 @@ body {
     @apply text-foreground-body/25
   }
   .breadcrumb {
-    @apply flex gap-2 mb-2 text-foreground-body text-xs
+    @apply flex gap-2 mb-2 text-foreground-body text-xs 
   }
   .card {
-    @apply rounded-md p-4 flex gap-2 bg-foreground-body/5
+    @apply rounded-md p-4 flex gap-2 bg-background border border-border
   }
   .callout {
     @apply rounded-md px-3 py-2 text-xs max-w-80
@@ -154,6 +154,9 @@ body {
     @apply flex flex-row items-center p-3 gap-1 grow min-w-0
     hover:bg-foreground/5 rounded-lg relative
     active:bg-foreground/8
+  }
+  .list-empty {
+    @apply text-xs p-2 text-foreground-body/80
   }
   /* .button.list-add {
     @apply border-none self-stretch text-start text-xs flex gap-2 justify-start

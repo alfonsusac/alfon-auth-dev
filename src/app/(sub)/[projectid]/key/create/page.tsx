@@ -31,7 +31,7 @@ export default async function CreateProjectKeyPage({
 
     <header className="page-header">
       <Breadcrumb items={[project.name, "Create Key"]} />
-      <h1 className="page-h1">Create Project Key</h1>
+      <h1 className="page-h1">Create Secret Key</h1>
       <p className="text-foreground-body">
         Project keys are used to authorize your application to use the authentication services.
       </p>

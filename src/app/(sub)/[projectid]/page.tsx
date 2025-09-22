@@ -85,8 +85,11 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
         <ProjectKeysList projectid={projectid} />
 
-        <section className="category">
-          <p className="category-title">api references ↓</p>
+        {/* <section className="category">
+          <p className="category-title">
+            api references ↓
+          </p>
+
           <div className="flex flex-col gap-2">
             <div className="card">
               <div className="flex flex-col gap-2.5">
@@ -125,7 +128,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
         <section className="category">
           <p className="category-title">danger zone ↓</p>
@@ -152,26 +155,32 @@ async function ProjectDomainsList(props: { projectid: string }) {
     <section className="category">
       <div className="category-title">
         authorized domains ↓
-        <p className="text-xxs">
-          these domains are authorized to redirect to after authentication.
-        </p>
       </div>
-      {/* <hr /> */}
-      <ul className="flex flex-col gap-px -ml-3 -mt-3">
-        {domains.map(domain => <li key={domain.id}>
-          <a className="button ghost flex flex-row py-3">
-            <div className="text-foreground-body font-semibold leading-3 text-xs">
-              {domain.redirect_url}
-            </div>
-            <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0 w-full">
-              {domain.redirect_url}
-            </div>
-            <div className="text-foreground-body/75 leading-3 text-xs">
-              {formatDate(domain.createdAt)}
-            </div>
-          </a>
-        </li>)}
+      <p className="category-title text-xxs">
+        these domains are authorized to redirect to after authentication.
+      </p>
+
+      <ul className="list">
+        {domains.length === 0 && <div className="list-empty">Domains not yet set up.</div>}
+        {domains.map(domain =>
+          <li className="relative group" key={domain.id} >
+            <a className="button ghost flex flex-row py-3" href={`/${ projectid }/domain/${ domain.id }`}>
+              <div className="text-foreground-body font-semibold leading-3 text-xs">
+                {domain.redirect_url}
+              </div>
+              <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0 w-full">
+                {domain.redirect_url}
+              </div>
+              <div className="text-foreground-body/75 leading-3 text-xs">
+                {formatDate(domain.createdAt)}
+              </div>
+            </a>
+          </li>
+        )}
       </ul>
+      <a className="button primary small -mt-1" href={`/${ projectid }/domain/create`}>
+        Add Domain
+      </a>
     </section>
   )
 }
@@ -185,7 +194,7 @@ async function ProjectKeysList(props: { projectid: string }) {
   return (
     <section className="category">
       <div className="category-title">
-        project keys ↓
+        secret keys ↓
       </div>
       <p className="category-title text-xxs">
         you can create multiple keys for different environments (e.g. development, staging, production).
@@ -193,30 +202,33 @@ async function ProjectKeysList(props: { projectid: string }) {
       </p>
 
       <ul className="list">
-        {project_keys.map((key) => <li key={key.id} className="relative">
-          <a href={`/${ projectid }/key/${ key.id }`} className="list-row">
-            <div className="flex flex-col gap-1 min-w-0">
-              <div className="text-foreground-body font-semibold leading-3 text-xs">
-                🔑 {key.name}
-                <span className="text-foreground-body/75 font-normal leading-3 text-xs">
-                  {' - '}{formatDate(key.createdAt)}
-                </span>
+        {project_keys.length === 0 && <div className="list-empty">No API keys present</div>}
+        {project_keys.map((key) =>
+          <li className="relative group" key={key.id} >
+            <a className="list-row" href={`/${ projectid }/key/${ key.id }`} >
+              <div className="flex flex-col gap-1 min-w-0">
+                <div className="text-foreground-body font-semibold leading-3 text-xs">
+                  🔑 {key.name}
+                  <span className="text-foreground-body/75 font-normal leading-3 text-xs">
+                    {' - '}{formatDate(key.createdAt)}
+                  </span>
+                </div>
+                <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0 w-full">
+                  {key.client_secret}
+                </div>
               </div>
-              <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0 w-full">
-                {key.client_secret}
-              </div>
+            </a>
+            <div className="absolute top-1 right-1">
+              <CopyButton text={key.client_secret} className="button small floating opacity-0 group-hover:opacity-100">
+                copy
+              </CopyButton>
             </div>
-          </a>
-          <div className="absolute top-1 right-1">
-            <CopyButton text={key.client_secret} className="button small floating">
-              copy
-            </CopyButton>
-          </div>
-        </li>)}
+          </li>
+        )}
       </ul>
 
       <a className="button primary small -mt-1" href={`/${ projectid }/key/create`}>
-        <div>Create API Key</div>
+        Create API Key
       </a>
     </section>
   )
