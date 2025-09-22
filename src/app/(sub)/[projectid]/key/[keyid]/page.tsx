@@ -61,7 +61,6 @@ export default async function ProjectKeyPage(props: {
 
     <section className="category">
       <p className="category-title">edit details ↓</p>
-      <hr />
       <Form className="flex flex-col gap-6"
         action={async (form: FormData) => {
           "use server"
@@ -94,7 +93,6 @@ export default async function ProjectKeyPage(props: {
 
     <section className="category">
       <p className="category-title">danger zone ↓</p>
-      <hr />
       <a className="button destructive"
         href={`/${ projectid }/key/${ key.id }/delete`}>
         Delete Project Key

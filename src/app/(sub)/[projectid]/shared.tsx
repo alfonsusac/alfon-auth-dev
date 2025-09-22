@@ -12,8 +12,8 @@ export function ProjectNotFound(props: { id: string }) {
 export function ProjectKeyNotFound(props: { key_id: string, project_id: string }) {
   return <NotFoundLayout
     title="Project Key Not Found"
-    info={`The project key with ID "${ props.key_id }" does not exist in project "${props.project_id}".`}
+    info={`The project key with ID "${ props.key_id }" does not exist in project "${ props.project_id }".`}
     backLabel="Back to Project"
-    backHref={`/${props.project_id}`}
+    backHref={`/${ props.project_id }`}
   />
 }

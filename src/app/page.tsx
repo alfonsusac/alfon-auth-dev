@@ -56,15 +56,15 @@ export default async function Home(props: PageProps<'/'>) {
         {no_projects && <div className="text-xs text-foreground-body my-4">no projects found.</div>}
 
         <div className="flex flex-col gap-px">
-          <ul className="flex flex-col">
+          <ul className="list">
             {projects.map(project => {
               return <li key={project.id}>
-                <a
+                <a 
                   href={`/${ project.id }`}
-                  className="hover:bg-backgroud-hover active:bg-backgroud-active block  rounded-md cursor-pointer -mx-3 px-3 py-2">
+                  className="list-row">
                   <div>
                     <p className="font-medium text-sm leading-tight tracking-tight">{project.name}</p>
-                    <p className="text-sm text-foreground-body min-h-lh">
+                    <p className="text-sm text-foreground-body min-h-lh leading-3">
                       {project.description ? project.description : <span className=" text-foreground-body/50 text-xs">No description</span>}
                     </p>
                   </div>
@@ -72,14 +72,12 @@ export default async function Home(props: PageProps<'/'>) {
               </li>
             })}
           </ul>
-          {
-            isAdmin(user) &&
-            <a className="button list -mx-3" href="/create-project">
-              + Create Project
-            </a>
-          }
         </div>
-
+        {isAdmin(user) &&
+          <a className="button primary small" href="/create-project">
+            Create Project
+          </a>
+        }
       </section>
 
     </main>

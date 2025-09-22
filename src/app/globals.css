@@ -7,27 +7,21 @@
 
 @theme inline {
   --color-background: var(--background);
-  --color-backgroud-hover: color-mix(in oklab, var(--color-background) 97%, var(--color-foreground));
-  --color-backgroud-active: color-mix(in oklab, var(--color-background) 95%, var(--color-foreground));
 
   --color-foreground: var(--foreground);
   --color-foreground-body: color-mix(in oklab, var(--color-foreground) 75%, var(--color-background));
-  --color-border: color-mix(in oklab, var(--color-foreground) 25%, var(--color-background));
+  --color-border: color-mix(in oklab, var(--color-foreground) 5%, var(--color-background));
 
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  --text-xxs: 0.625rem; /* 10px */
 }
 
-/* @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-} */
-
 body {
-  background: var(--background);
+  @apply bg-foreground/2;
+  /* background: var(--background); */
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -40,7 +34,7 @@ body {
   
   .button {
     @apply block
-    border border-border 
+    border border-foreground/10 
     p-1.5 px-3.5 rounded-md
     text-sm 
     flex gap-1 justify-center
@@ -48,13 +42,23 @@ body {
     self-start
   
     text-foreground-body
-    bg-background hover:bg-backgroud-hover active:bg-backgroud-active
+    hover:bg-foreground/3 active:bg-foreground/5
   
     cursor-pointer
     
     disabled:pointer-events-none
-    disabled:bg-backgroud-hover
-    ;
+    disabled:bg-foreground/2
+
+    focus-visible:outline-4
+    focus-visible:outline-foreground/10
+    focus-visible:ring-offset-0
+    focus-visible:outline-offset-0
+  }
+  .button.floating {
+    @apply shadow-md bg-background z-10
+    hover:bg-[color-mix(in_oklab,_var(--color-foreground)_3%,_var(--color-background))] 
+    active:bg-[color-mix(in_oklab,_var(--color-foreground)_5%,_var(--color-background))] 
+    disabled:bg-[color-mix(in_oklab,_var(--color-foreground)_2%,_var(--color-background))] 
   }
   .button.lg {
     @apply p-2 px-3.5 rounded-lg
@@ -76,26 +80,32 @@ body {
     @apply border-red-300 text-red-600
     hover:bg-red-50 active:bg-red-100;
   }
-  .button.list {
-    @apply border-none w-full text-start text-xs flex gap-2 justify-start;
-  }
+
   .button .icon-end {
     @apply ml-1
   }
   
 
   .label {
-    @apply text-xs text-foreground-body
+    @apply text-xs
   }
   .input-group {
     @apply flex flex-col gap-0.5
   }
   .input {
-    @apply border border-border p-2 rounded-md
+    @apply border border-foreground/15 p-2 px-2.5 rounded-md
     focus-visible:outline-none!
     focus-within:outline-none!
+    /* bg-foreground/2 */
     bg-background
+    focus-within:border-foreground/20
+    focus-within:shadow-xs
   }
+  .input.as-box {
+    @apply flex items-center
+    [&_input]:p-1 [&_input]:-my-1;
+  }
+
   .label-helper {
     @apply text-[0.65rem] text-foreground-body mb-1.5
   }
@@ -116,7 +126,7 @@ body {
     @apply rounded-md p-4 flex gap-2 bg-foreground-body/5
   }
   .callout {
-    @apply rounded-md px-4 py-2 text-xs max-w-80
+    @apply rounded-md px-3 py-2 text-xs max-w-80
   }
   .callout.error {
     @apply bg-red-100 text-red-500
@@ -129,12 +139,26 @@ body {
     @apply max-w-120 flex flex-col gap-4
   }
   .category-title {
-    @apply text-pretty text-sm text-foreground-body py-1 -my-2.5
+    @apply text-pretty text-xs text-foreground-body/40 font-medium py-1 -my-2.5 flex flex-col gap-0.5
   }
 
   hr {
     @apply border-foreground-body/10
   }
+
+  .list {
+    @apply flex flex-col p-1
+    border border-border rounded-xl bg-background
+  }
+  .list-row {
+    @apply flex flex-row items-center p-3 gap-1 grow min-w-0
+    hover:bg-foreground/5 rounded-lg relative
+    active:bg-foreground/8
+  }
+  /* .button.list-add {
+    @apply border-none self-stretch text-start text-xs flex gap-2 justify-start
+    -mx-2 px-4 block -mb-2 pb-4 leading-0
+  } */
 
   .page-header{
     @apply max-w-120

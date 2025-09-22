@@ -17,6 +17,7 @@ export function CopyButton(props: React.ComponentProps<"button"> & {
   return <button {...props} onClick={async function (ev) {
     props.onClick?.(ev)
     if (ev.defaultPrevented) return
+    ev.stopPropagation()
     await navigator.clipboard.writeText(props.text)
     setCopied(true)
     setTimeout(() => {
