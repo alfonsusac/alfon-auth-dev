@@ -1,6 +1,6 @@
 import { getCurrentUser, isAdmin, logout, signIn } from "@/lib/auth"
 import { Form } from "@/lib/Form"
-import { SPCallout } from "@/lib/SPCallout"
+import { SPCallout } from "@/lib/SearchParamsCallout"
 import { meta } from "@/meta"
 import { getAllProjects } from "@/services/projects"
 

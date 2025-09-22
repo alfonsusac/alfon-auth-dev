@@ -5,14 +5,13 @@ import { FormButton } from "@/lib/FormButton"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { ProjectKeyNotFound, ProjectNotFound } from "../../shared"
-import { ErrorCallout, SPCallout } from "@/lib/SPCallout"
-import { KeyNameInputField } from "../form"
+import { SPCallout } from "@/lib/SearchParamsCallout"
 import { formatDate } from "@/lib/date"
-import { getStringInputs } from "@/lib/formData"
 import { CopyButton } from "@/lib/CopyButton"
 import { Form } from "@/lib/Form"
 import { navigate } from "@/lib/resolveAction"
 import { getProject, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
+import { form } from "@/lib/FormBasic"
 
 export default async function ProjectKeyPage(props: {
   params: Promise<{ projectid: string, keyid: string }>,
@@ -28,6 +27,7 @@ export default async function ProjectKeyPage(props: {
   const key = (await project.keys()).find(k => k.id === params.keyid)
   if (!key) return <ProjectKeyNotFound key_id={params.keyid} project_id={projectid} />
 
+
   return <>
     <BackButton href={`/${ projectid }`}>Back to Project</BackButton>
 
@@ -37,8 +37,19 @@ export default async function ProjectKeyPage(props: {
     <header>
       <Breadcrumb items={[project.name, "Key"]} />
       <h1 className="page-h1">{key.name}</h1>
-      <code className="page-subtitle-code">key secret: {key.client_secret}</code>
-      <p className="page-subtitle ">Created: {formatDate(key.createdAt)}</p>
+
+      <div className="grid grid-cols-[auto_1fr] page-subtitle mt-3 gap-1 gap-x-4">
+
+        <div className="opacity-50">key secret</div>
+        <div>{key.client_secret}</div>
+
+        <div className="opacity-50">created at</div>
+        <div>{formatDate(key.createdAt)}</div>
+
+        <div className="opacity-50">updated at</div>
+        <div>{formatDate(key.updatedAt)}</div>
+
+      </div>
     </header>
 
     <div className="flex gap-2">
@@ -61,34 +72,31 @@ export default async function ProjectKeyPage(props: {
 
     <section className="category">
       <p className="category-title">edit details ↓</p>
-      <Form className="flex flex-col gap-6"
-        action={async (form: FormData) => {
+
+      <form.EditForm
+        name={"edit project key"}
+        action={async (inputs) => {
           "use server"
           await adminOnly(`/${ projectid }`)
-          const inputs = getStringInputs(form, ["name", "project_id"])
           const res = await updateProjectKey(inputs, key.id)
           resolveError(`/${ projectid }/key/${ key.id }`, res)
           revalidatePath(`/${ projectid }`, 'layout')
           navigate(`?info=updated`, "replace")
         }}
-      >
-        <input readOnly hidden name="project_id" value={project.id} />
-
-        <KeyNameInputField
-          name="name"
-          defaultValue={key.name} />
-
-        <ErrorCallout<typeof updateProjectKey> sp={props.searchParams} messages={{
-          not_found: "project key not found.",
-          project_not_found: "project not found.",
-          missing_fields: "some fields are missing.",
-        }} />
-
-        <FormButton className="button primary px-6 self-end"
-          loading="Saving..."
-          type="submit"
-        >Save</FormButton>
-      </Form>
+        fields={{
+          name: {
+            label: "key name",
+            type: "text",
+            defaultValue: key.name,
+            helper: "describe your project key to differentiate with other keys",
+            required: true,
+          },
+          project_id: {
+            type: 'readonly',
+            value: project.id,
+          }
+        }}
+      />
     </section>
 
     <section className="category">

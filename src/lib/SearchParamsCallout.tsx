@@ -16,7 +16,7 @@ export async function SPCallout(props: {
 }
 
 export async function ErrorCallout<T extends (...args: any) => any>(props: {
-  sp: Promise<{ [key: string]: string | string[] | undefined }>
+  sp: PageProps<any>['searchParams']
   messages: {
     [K in Extract<Awaited<ReturnType<T>>, string>]: string
   }
@@ -26,6 +26,19 @@ export async function ErrorCallout<T extends (...args: any) => any>(props: {
   if (typeof error === 'string') {
     const message = props.messages?.[error as Extract<Awaited<ReturnType<T>>, string>] ?? error
     return <div className="callout error">{message}</div>
+  }
+  return <></>
+}
+
+export async function SuccessCallout(props: {
+  sp: PageProps<any>['searchParams']
+  messages: Record<string, string>
+}) {
+  const sp = await props.sp
+  const info = sp['success']
+  if (typeof info === 'string') {
+    const message = props.messages?.[info] ?? info
+    return <div className="callout success">{message}</div>
   }
   return <></>
 }
