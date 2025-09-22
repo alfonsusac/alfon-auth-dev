@@ -43,6 +43,7 @@ body {
     border border-border 
     p-1.5 px-3.5 rounded-md
     text-sm 
+    flex gap-1 justify-center
   
     self-start
   
@@ -76,7 +77,10 @@ body {
     hover:bg-red-50 active:bg-red-100;
   }
   .button.list {
-    @apply border-none w-full text-start text-xs flex gap-2;
+    @apply border-none w-full text-start text-xs flex gap-2 justify-start;
+  }
+  .button .icon-end {
+    @apply ml-1
   }
   
 

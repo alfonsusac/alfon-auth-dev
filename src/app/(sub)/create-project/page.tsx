@@ -5,14 +5,11 @@ import { FormButton } from "@/lib/FormButton"
 import { getStringInputs } from "@/lib/formData"
 import { resolveError } from "@/lib/redirects"
 import { navigate } from "@/lib/resolveAction"
+import { ErrorCallout } from "@/lib/SPCallout"
 import { createProject } from "@/services/projects"
 import { redirect } from "next/navigation"
 
-export default async function ProjectPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
+export default async function ProjectPage(props: PageProps<'/create-project'>) {
 
   const user = await getCurrentUser()
 
@@ -26,9 +23,6 @@ export default async function ProjectPage({
 
     <a href="/" className="button primary">{'<-'} Back to Home</a>
   </>
-
-  const sp = await searchParams
-  const error = sp['error']
 
   return <>
     <BackButton href="/">Home</BackButton>
@@ -53,18 +47,18 @@ export default async function ProjectPage({
           <input className="grow -my-2 py-2 pr-2 -mr-2" name="id" placeholder="project_id" required />
         </div>
       </div>
+      
       <div className="input-group">
         <label className="label" >project name</label>
         <p className="label-helper">will be used as the display of the project</p>
         <input className="input" name="name" placeholder="My Project" required />
       </div>
-      {
-        error === "id_exists" && <>
-          <div className="callout error">
-            project id already exists.
-          </div>
-        </>
-      }
+
+      <ErrorCallout<typeof createProject> sp={props.searchParams} messages={{
+        id_exists: "project id already exists.",
+        missing_fields: "missing required fields.",
+      }} />
+
       <FormButton className="button primary px-6 mt-4 w-30"
         loading="Creating..."
       >Create</FormButton>

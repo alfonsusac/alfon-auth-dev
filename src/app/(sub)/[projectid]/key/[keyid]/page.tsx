@@ -12,7 +12,7 @@ import { getStringInputs } from "@/lib/formData"
 import { CopyButton } from "@/lib/CopyButton"
 import { Form } from "@/lib/Form"
 import { navigate } from "@/lib/resolveAction"
-import { getProject, updateProjectKey } from "@/services/projects"
+import { getProject, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
 
 export default async function ProjectKeyPage(props: {
   params: Promise<{ projectid: string, keyid: string }>,
@@ -41,9 +41,23 @@ export default async function ProjectKeyPage(props: {
       <p className="page-subtitle ">Created: {formatDate(key.createdAt)}</p>
     </header>
 
-    <CopyButton className="button primary" text={key.client_secret}>
-      Copy Key
-    </CopyButton>
+    <div className="flex gap-2">
+      <CopyButton className="button primary" text={key.client_secret}>
+        Copy Key
+      </CopyButton>
+      <Form action={async () => {
+        "use server"
+        await adminOnly(`/${ projectid }`)
+        const res = await regenerateProjectKeySecret(key.id)
+        resolveError(`/${ projectid }/key/${ key.id }`, res)
+        revalidatePath(`/${ projectid }`, 'layout')
+        navigate(`./${ key.id }?info=updated`, "replace")
+      }}>
+        <FormButton className="button" loading="Regenerating...">
+          Regenerate Secret <div className="icon-end">🔄</div>
+        </FormButton>
+      </Form>
+    </div>
 
     <section className="category">
       <p className="category-title">edit details ↓</p>
