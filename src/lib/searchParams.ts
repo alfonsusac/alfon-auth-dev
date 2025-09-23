@@ -1,4 +1,5 @@
 export function toNativeSearchParams(sp: Awaited<PageProps<any>['searchParams']>) {
+  if (!sp) return undefined
 
   const usp = new URLSearchParams()
   for (const [k, v] of Object.entries(sp)) {

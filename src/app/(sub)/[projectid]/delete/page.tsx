@@ -1,6 +1,5 @@
 import { adminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
-import { DangerSymbol } from "@/lib/DangerSymbol"
 import { DeleteAlert } from "@/lib/DeleteAlert"
 import { NotFoundLayout } from "@/lib/NotFound"
 import { resolveError } from "@/lib/redirects"
@@ -12,7 +11,7 @@ export default async function DeleteProjectPage(props: {
   params: Promise<{ projectid: string }>,
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const projectid = (await props.params).projectid
+  const projectid = decodeURIComponent((await props.params).projectid)
   await adminOnly(`/${ projectid }`)
 
   const project = await getProject(projectid)

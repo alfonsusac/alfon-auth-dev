@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto"
 import { redirect, RedirectType } from "next/navigation"
 
 export function navigate(path: string, mode: "push" | "replace" = "push"): never {
@@ -5,6 +6,10 @@ export function navigate(path: string, mode: "push" | "replace" = "push"): never
     redirect('/___resolve___' + path, RedirectType.push)
   else
     redirect('/___resolve___' + path, RedirectType.replace)
+}
+
+export function navigateWithSuccess(path: string, code: string) {
+  navigate(`${ path }?success=${ code }+${ randomBytes(3).toString('hex') }`, "push")
 }
 
 export function resolveRedirectError(error: any) {

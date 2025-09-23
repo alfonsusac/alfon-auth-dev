@@ -1,12 +1,9 @@
 import { adminOnly } from "@/lib/auth"
-import { Breadcrumb } from "@/lib/Breadcrumb"
 import { deleteProjectKey, getProject } from "@/services/projects"
 import { ProjectKeyNotFound, ProjectNotFound } from "../../../shared"
-import BackButton from "@/lib/BackButton"
 import { DeleteAlert } from "@/lib/DeleteAlert"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 import { navigate } from "@/lib/resolveAction"
 
 export default async function DeleteProjectKeyPage(props: {
@@ -26,15 +23,6 @@ export default async function DeleteProjectKeyPage(props: {
 
   return (
     <>
-      <BackButton href={`/${ projectid }/key/${ keyid }`}>{project.name}</BackButton>
-
-      <header>
-        <Breadcrumb items={[project.name, "Key"]} />
-        <h1 className="page-h1">{key.name}</h1>
-        <code className="page-subtitle-code">key secret: {key.client_secret}</code>
-        <p className="page-subtitle ">Created: {key.createdAt.toLocaleString()}</p>
-      </header>
-
       <DeleteAlert
         title={`Are you sure you want to permanently this API key?`}
         description="This action cannot be undone. All existing integrations that uses this API key will stop working."

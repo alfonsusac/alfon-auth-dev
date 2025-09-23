@@ -1,14 +1,10 @@
 import { adminOnly, getCurrentUser, isAdmin } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
-import { Form } from "@/lib/Form"
 import { form } from "@/lib/FormBasic"
-import { FormButton } from "@/lib/FormButton"
-import { getStringInputs } from "@/lib/formData"
 import { resolveError } from "@/lib/redirects"
-import { navigate } from "@/lib/resolveAction"
-import { ErrorCallout } from "@/lib/SearchParamsCallout"
+import { navigateWithSuccess } from "@/lib/resolveAction"
+import { ErrorCallout } from "@/lib/SearchParamsCalloutClient"
 import { createProject } from "@/services/projects"
-import { redirect } from "next/navigation"
 
 export default async function ProjectPage(props: PageProps<'/create-project'>) {
 
@@ -56,12 +52,13 @@ export default async function ProjectPage(props: PageProps<'/create-project'>) {
         await adminOnly()
         const res = await createProject(inputs)
         resolveError(`/create-project`, res, inputs)
-        navigate(`/${ inputs.id }?info=new`)
+        navigateWithSuccess(`/${ inputs.id }`, "created")
       }}
       errorCallout={
-        <ErrorCallout<typeof createProject> sp={props.searchParams} messages={{
+        <ErrorCallout<typeof createProject> messages={{
           id_exists: "project id already exists.",
           missing_fields: "missing required fields.",
+          invalid_id: "project id can only contain alphanumeric characters, dashes and underscores.",
         }} />
       }
       searchParams={await props.searchParams}

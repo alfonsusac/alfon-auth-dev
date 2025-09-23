@@ -3,6 +3,9 @@ import { FormWithInput } from "./Form"
 import { FormButton } from "./FormButton"
 import { cn } from "lazy-cn"
 import { toNativeSearchParams } from "./searchParams"
+import { formActionHandler } from "./formHelper"
+import { Form } from "./basic-form/Form"
+import type { TypedForm } from "./basic-form/form.helper"
 
 export function InputGroup(props: ComponentProps<"div">) {
   return <div {...props} className={cn('input-group', props.className)} />
@@ -52,7 +55,7 @@ function InputFields<F extends FormFieldMap>(props: {
         return field.render(name)
 
       if (field.type === 'readonly')
-        return <input readOnly hidden value={field.value} key={name} />
+        return <input readOnly hidden value={field.value} key={name} name={name} />
 
       const id = props.name + '_' + name
 
@@ -98,9 +101,10 @@ function EditForm<F extends FormFieldMap>(props: ComponentProps<typeof InputFiel
   action: FormWithInput.ActionFunction<F>,
   fields: F
   errorCallout?: ReactNode
+  searchParams?: Awaited<PageProps<any>['params']>
 }) {
   return (
-    <FormWithInput
+    <Form
       className="flex flex-col gap-4"
       fields={props.fields}
       action={props.action}>
@@ -109,7 +113,7 @@ function EditForm<F extends FormFieldMap>(props: ComponentProps<typeof InputFiel
         fields={props.fields}
         name={props.name}
         classNames={{ inputBox: "small" }}
-      />
+        searchParams={toNativeSearchParams(props.searchParams)} />
 
       {props.errorCallout}
 
@@ -117,39 +121,88 @@ function EditForm<F extends FormFieldMap>(props: ComponentProps<typeof InputFiel
         className="button primary px-6 self-end small"
         loading="Saving...">Save</FormButton>
 
-    </FormWithInput>
+    </Form>
   )
 }
 
+
+// function CreateForm<F extends FormFieldMap>(props: {
+//   name: string
+//   action: (form: FormData) => Promise<void>,
+//   // action: FormWithInput.ActionFunction<F>,
+//   fields: F
+//   errorCallout: ReactNode
+//   searchParams?: Awaited<PageProps<any>['params']>
+// }) {
+//   return (
+//     <FormWithInput
+//       className="flex flex-col gap-6 max-w-80"
+//       fields={props.fields}
+//       // action={async (form) => {
+//       //   "use server"
+//       //   console.log("Action Prop Called")
+//       //   return await props.action(form)
+//       //   // return await formActionHandler(props.fields, props.action)(form)
+//       //   // try {
+//       //   //   return await formActionHandler(props.fields, props.action)(form)
+//       //   // } catch (error) {
+//       //   //   console.log("error", error)
+//       //   // }
+//       // }}
+//       action={props.action}
+//     // onSubmitAction={async () => {}}
+//     // onSubmitAction={props.action}
+//     >
+
+//       <InputFields
+//         fields={props.fields}
+//         name={props.name}
+//         searchParams={toNativeSearchParams(props.searchParams)}
+//       />
+
+//       {props.errorCallout}
+
+//       <FormButton
+//         className="button primary px-6 mt-4 w-30"
+//         loading="Creating...">Create</FormButton>
+
+//     </FormWithInput>
+//   )
+// }
 
 function CreateForm<F extends FormFieldMap>(props: {
   name: string
-  action: FormWithInput.ActionFunction<F>,
+  action: TypedForm.ActionFunction<F>,
   fields: F
   errorCallout: ReactNode
-  searchParams?: Awaited<PageProps<any>['searchParams']>
+  searchParams?: Awaited<PageProps<any>['params']>
 }) {
   return (
-    <FormWithInput
+    <Form
       className="flex flex-col gap-6 max-w-80"
       fields={props.fields}
       action={props.action}>
-
+      
       <InputFields
         fields={props.fields}
         name={props.name}
-        searchParams={toNativeSearchParams(props.searchParams ?? {})}
-      />
+        searchParams={toNativeSearchParams(props.searchParams)} />
 
       {props.errorCallout}
 
-      <FormButton className="button primary px-6 mt-4 w-30"
-        loading="Creating..."
-      >Create</FormButton>
-
-    </FormWithInput>
+      <FormButton
+        className="button primary px-6 mt-4 w-30"
+        loading="Creating...">Create</FormButton>
+      
+    </Form>
   )
 }
+
+
+
+
+
+
 
 export const form = {
   EditForm,

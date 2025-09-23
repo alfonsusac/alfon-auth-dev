@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { DangerSymbol } from "./DangerSymbol"
-import { Form } from "./Form"
+import { Form } from "./basic-form/Form"
 
 export function DeleteAlert(props: {
   title: ReactNode,

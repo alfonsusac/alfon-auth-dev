@@ -38,6 +38,7 @@ export type ProjectInput = { id?: string, name?: string }
 
 const validateProjectInput = validation(async (input: ProjectInput) => {
   if (!input.name || !input.id) return "missing_fields"
+  if (!/^[a-zA-Z0-9-_]+$/.test(input.id)) return "invalid_id"
   return input as Required<ProjectInput>
 })
 

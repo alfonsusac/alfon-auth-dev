@@ -10,6 +10,7 @@ export function FormButton(props: ComponentProps<"button"> & {
 
   return (
     <button {...props}
+      type="submit"
       children={pending ? props.loading : props.children}
       disabled={pending || props.disabled}
     />

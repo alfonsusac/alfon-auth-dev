@@ -1,30 +1,19 @@
 import { adminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"
-import { FormButton } from "@/lib/FormButton"
 import { createProjectKey, getProject } from "@/services/projects"
 import { ProjectNotFound } from "../../shared"
-import { ErrorCallout } from "@/lib/SearchParamsCallout"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
-import { getStringInputs } from "@/lib/formData"
-import { navigate } from "@/lib/resolveAction"
-import { Form } from "@/lib/Form"
-import { KeyNameInputField } from "../form"
+import { navigateWithSuccess } from "@/lib/resolveAction"
+import { form } from "@/lib/FormBasic"
+import { ErrorCallout } from "@/lib/SearchParamsCalloutClient"
 
-export default async function CreateProjectKeyPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ projectid: string }>,
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
-  const param = await params
+export default async function CreateProjectKeyPage(props: PageProps<'/[projectid]/key/create'>) {
+  const param = await props.params
   const project = await getProject(param.projectid)
   if (!project) return <ProjectNotFound id={param.projectid} />
   await adminOnly(`/${ param.projectid }`)
-
-  const sp = await searchParams
 
   return <>
     <BackButton href={`/${ project.id }`}>{project.name}</BackButton>
@@ -37,31 +26,34 @@ export default async function CreateProjectKeyPage({
       </p>
     </header>
 
-    <Form className="flex flex-col gap-6 max-w-80" action={async (form: FormData) => {
-      "use server"
-      await adminOnly(`/${ param.projectid }`)
-      const inputs = getStringInputs(form, ["name", "project_id"])
-      const res = await createProjectKey(inputs)
-      const key = resolveError(`/${ param.projectid }/key/create`, res, inputs)
-      revalidatePath(`/${ param.projectid }`, 'layout')
-      navigate(`./${ key.id }?info=new`)
-    }}>
-
-      <input readOnly hidden name="project_id" value={project.id} />
-
-      <KeyNameInputField
-        name="name"
-        defaultValue={sp['name']?.toString()} />
-
-      <ErrorCallout<typeof createProjectKey> sp={searchParams} messages={{
+    <form.CreateForm
+      name="Create Project Key"
+      fields={{
+        name: {
+          label: "Key Name",
+          placeholder: "My Secret Key",
+          type: "text",
+          required: true,
+        },
+        project_id: {
+          type: 'readonly',
+          value: project.id,
+        },
+      }}
+      action={async (inputs) => {
+        "use server"
+        await adminOnly(`/${ param.projectid }`)
+        const res = await createProjectKey(inputs)
+        const key = resolveError(`/${ param.projectid }/key/create`, res, inputs)
+        revalidatePath(`/${ param.projectid }`, 'layout')
+        navigateWithSuccess(`../${ key.id }`, 'created')
+      }}
+      searchParams={await props.searchParams}
+      errorCallout={<ErrorCallout<typeof createProjectKey> messages={{
         missing_fields: "missing required fields.",
         project_not_found: "project not found.",
-      }} />
-
-      <FormButton className="button primary px-6 mt-4 w-30"
-        loading="Creating..."
-      >Create</FormButton>
-    </Form>
+      }} />}
+    />
   </>
 
 }

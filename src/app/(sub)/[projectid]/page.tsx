@@ -13,7 +13,7 @@ import { AUTH } from "@/lib/auth_ui"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
-  const projectid = (await props.params).projectid
+  const projectid = decodeURIComponent((await props.params).projectid)
   const project = await getProject(projectid)
   if (!project) return <ProjectNotFound id={projectid} />
 
