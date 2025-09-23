@@ -10,6 +10,7 @@ export function Form<F extends TypedForm.FormFieldMap = {}>({ action, fields, ..
     {...props}
     action={async form => {
       "use server"
+      console.log("B")
       await TypedForm.toTypedAction(fields, action)(form)
     }}
   />

@@ -30,6 +30,7 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
       </CopyButton>
       <Form action={async () => {
         "use server"
+        console.log("A")
         await adminOnly(`/${ projectid }`)
         const res = await regenerateProjectKeySecret(key.id)
         resolveError(`/${ projectid }/key/${ key.id }`, res)
@@ -79,9 +80,5 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
     </section>
 
   </>
-
-
-
-
 }
 

@@ -1,8 +1,10 @@
-import { getCurrentUser, isAdmin, logout, signIn } from "@/lib/auth"
+import { getCurrentUser, logout, signIn } from "@/lib/auth"
+import { AUTH } from "@/lib/auth_ui"
 import { Form } from "@/lib/basic-form/Form"
 import { SPCallout } from "@/lib/SearchParamsCallout"
 import { meta } from "@/meta"
 import { getAllProjects } from "@/services/projects"
+import Link from "next/link"
 
 export default async function Home(props: PageProps<'/'>) {
 
@@ -29,9 +31,9 @@ export default async function Home(props: PageProps<'/'>) {
         {
           user ?
             <div className="flex gap-2">
-              <a className="button primary px-12!">
+              <Link href="#" className="button primary px-12!">
                 My Account
-              </a>
+              </Link>
               <Form action={async () => {
                 "use server"
                 await logout()
@@ -59,7 +61,7 @@ export default async function Home(props: PageProps<'/'>) {
           <ul className="list">
             {projects.map(project => {
               return <li key={project.id}>
-                <a 
+                <a
                   href={`/${ project.id }`}
                   className="list-row">
                   <div>
@@ -73,11 +75,12 @@ export default async function Home(props: PageProps<'/'>) {
             })}
           </ul>
         </div>
-        {isAdmin(user) &&
-          <a className="button primary small" href="/create-project">
+
+        <AUTH.AdminOnly>
+          <Link className="button primary small" href="/create-project">
             Create Project
-          </a>
-        }
+          </Link>
+        </AUTH.AdminOnly>
       </section>
 
     </main>

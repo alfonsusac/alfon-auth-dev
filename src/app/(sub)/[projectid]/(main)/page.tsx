@@ -1,15 +1,14 @@
 import { getCurrentUser, adminOnly, isAdmin } from "@/lib/auth"
-import BackButton from "@/lib/BackButton"
-import { ProjectNotFound } from "./shared"
-import { SuccessCallout } from "@/lib/SearchParamsCallout"
+import { ProjectNotFound } from "../shared"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { navigate } from "@/lib/resolveAction"
+import { navigateWithSuccess } from "@/lib/resolveAction"
 import { getAllProjectDomains, getAllProjectKeys, getProject, updateProject } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/FormBasic"
 import { AUTH } from "@/lib/auth_ui"
+import { SuccessCallout } from "@/lib/SearchParamsCalloutClient"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -18,20 +17,11 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
   if (!project) return <ProjectNotFound id={projectid} />
 
   return <>
-    <BackButton href="/">Home</BackButton>
-
-    <SuccessCallout sp={props.searchParams} messages={{
+    <SuccessCallout messages={{
       new: "project created successfully!",
       key_deleted: "key deleted successfully!",
       updated: "project updated!"
     }} />
-
-    <header>
-      <h1 className="page-h1">{project.name}</h1>
-      <code className="page-subtitle-code">
-        auth.alfon.dev/{projectid}
-      </code>
-    </header>
 
     <AUTH.AdminOnly>
       <section className="category">
@@ -61,7 +51,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             const res = await updateProject(inputs, project.id)
             resolveError(`/${ projectid }`, res)
             revalidatePath(`/${ projectid }`, 'layout')
-            navigate(`/${ inputs.id }?info=updated`)
+            navigateWithSuccess(``, `updated`)
           }}
         />
       </section>
