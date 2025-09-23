@@ -5,6 +5,7 @@ import BackButton from "@/lib/BackButton"
 import { SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { Breadcrumb } from "@/lib/Breadcrumb"
 import { formatDate } from "@/lib/date"
+import { DataGridDisplay } from "@/lib/DataGrid"
 
 export default async function ProjectKeyLayout(props: LayoutProps<'/[projectid]/key/[keyid]'>) {
   const params = await props.params
@@ -29,18 +30,11 @@ export default async function ProjectKeyLayout(props: LayoutProps<'/[projectid]/
       <Breadcrumb items={[project.name, "Key"]} />
       <h1 className="page-h1">{key.name}</h1>
 
-      <div className="grid grid-cols-[auto_1fr] page-subtitle mt-3 gap-1 gap-x-4">
-
-        <div className="opacity-50">key secret</div>
-        <div>{key.client_secret}</div>
-
-        <div className="opacity-50">created at</div>
-        <div>{formatDate(key.createdAt)}</div>
-
-        <div className="opacity-50">updated at</div>
-        <div>{formatDate(key.updatedAt)}</div>
-
-      </div>
+      <DataGridDisplay data={{
+        'key secret': key.client_secret,
+        'created at': key.createdAt,
+        'updated at': key.updatedAt
+      }} />
     </header>
 
     {props.children}
