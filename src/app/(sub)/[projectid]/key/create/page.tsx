@@ -5,7 +5,7 @@ import { createProjectKey, getProject } from "@/services/projects"
 import { ProjectNotFound } from "../../shared"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
-import { navigateWithSuccess } from "@/lib/resolveAction"
+import { navigate } from "@/lib/resolveAction"
 import { form } from "@/lib/AppForm"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 
@@ -46,7 +46,7 @@ export default async function CreateProjectKeyPage(props: PageProps<'/[projectid
         const res = await createProjectKey(inputs)
         const key = resolveError(`/${ param.projectid }/key/create`, res, inputs)
         revalidatePath(`/${ param.projectid }`, 'layout')
-        navigateWithSuccess(`../${ key.id }`, 'created')
+        navigate(`/${ param.projectid }/key/${ key.id }?success=created`)
       }}
       searchParams={await props.searchParams}
       errorCallout={<ErrorCallout<typeof createProjectKey> messages={{

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import { DangerSymbol } from "./DangerSymbol"
 import { Form } from "./basic-form/Form"
+import { Link } from "./Link"
 
 export function DeleteAlert(props: {
   title: ReactNode,
@@ -19,7 +20,7 @@ export function DeleteAlert(props: {
         {props.description}
       </p>
       <div className="flex gap-2 my-2">
-        <a href={props.backHref} className="button">Cancel</a>
+        <Link href={props.backHref} className="button">Cancel</Link>
         <Form action={props.action}>
           <button className="button destructive">{props.actionLabel}</button>
         </Form>

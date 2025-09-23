@@ -2,9 +2,10 @@ import { adminOnly, getCurrentUser, isAdmin } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { form } from "@/lib/AppForm"
 import { resolveError } from "@/lib/redirects"
-import { navigateWithSuccess } from "@/lib/resolveAction"
+import { navigate } from "@/lib/resolveAction"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { createProject } from "@/services/projects"
+import { Link } from "@/lib/Link"
 
 export default async function ProjectPage(props: PageProps<'/create-project'>) {
 
@@ -18,7 +19,7 @@ export default async function ProjectPage(props: PageProps<'/create-project'>) {
       </p>
     </section>
 
-    <a href="/" className="button primary">{'<-'} Back to Home</a>
+    <Link href="/" className="button primary">{'<-'} Back to Home</Link>
   </>
 
   return <>
@@ -52,7 +53,7 @@ export default async function ProjectPage(props: PageProps<'/create-project'>) {
         await adminOnly()
         const res = await createProject(inputs)
         resolveError(`/create-project`, res, inputs)
-        navigateWithSuccess(`/${ inputs.id }`, "created")
+        navigate(`/${ inputs.id }?success=created`)
       }}
       errorCallout={
         <ErrorCallout<typeof createProject> messages={{

@@ -1,8 +1,8 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { FormUtil } from "./form.helper"
 import { startTransition, type ComponentProps } from "react"
+import { resolveCustomRedirectError } from "../resolveAction"
 
 export function UnifiedFormWithClientRedirect(props: ComponentProps<"form"> & {
   clientAction?: (form: FormData) => Promise<void>
@@ -26,7 +26,7 @@ export function UnifiedFormWithClientRedirect(props: ComponentProps<"form"> & {
           const formData = new FormData(e.target as HTMLFormElement)
           await clientAction(formData)
         } catch (error) {
-          const redirection = FormUtil.resolveCustomRedirectError(error)
+          const redirection = resolveCustomRedirectError(error)
           if (redirection) {
             if (redirection.mode === "replace")
               return router.replace(redirection.path, { scroll: false })

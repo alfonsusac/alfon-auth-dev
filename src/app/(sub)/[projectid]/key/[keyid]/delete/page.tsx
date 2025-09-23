@@ -34,7 +34,7 @@ export default async function DeleteProjectKeyPage(props: {
           const res = await deleteProjectKey(keyid)
           resolveError(`/${ projectid }/key/${ keyid }`, res)
           revalidatePath(`/${ projectid }`)
-          navigate(`/${ projectid }?info=key_deleted`)
+          navigate(`/${ projectid }?success=key_deleted`)
         }}
       />
     </>

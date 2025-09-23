@@ -3,9 +3,9 @@ import BackButton from "@/lib/BackButton"
 import { DeleteAlert } from "@/lib/DeleteAlert"
 import { NotFoundLayout } from "@/lib/NotFound"
 import { resolveError } from "@/lib/redirects"
+import { navigate } from "@/lib/resolveAction"
 import { deleteProject, getProject } from "@/services/projects"
 import { revalidatePath } from "next/cache"
-import { redirect } from "next/navigation"
 
 export default async function DeleteProjectPage(props: {
   params: Promise<{ projectid: string }>,
@@ -40,7 +40,7 @@ export default async function DeleteProjectPage(props: {
         const res = await deleteProject(projectid)
         resolveError(`/${ projectid }/delete`, res)
         revalidatePath('/')
-        redirect(`/?info=deleted`)
+        navigate('/?success=deletedss')
       }}
     />
   </>

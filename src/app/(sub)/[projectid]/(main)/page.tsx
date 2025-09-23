@@ -3,13 +3,15 @@ import { ProjectNotFound } from "../shared"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { navigateWithSuccess, updateSuccess } from "@/lib/resolveAction"
 import { getAllProjectDomains, getAllProjectKeys, getProject, updateProject } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/AppForm"
 import { AUTH } from "@/lib/auth_ui"
-import { SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
+import { ErrorCallout, SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { Link } from "@/lib/Link"
+import { triggerSuccessBanner } from "@/lib/toast/trigger"
+import { navigate } from "@/lib/resolveAction"
+import { nanoid } from "nanoid"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -18,7 +20,12 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
   if (!project) return <ProjectNotFound id={projectid} />
 
   return <>
-
+    
+    <SuccessCallout messages={{
+      new: "project created successfully!",
+      key_deleted: "key deleted successfully!",
+      updated: "project updated!"
+    }} />
 
     <AUTH.AdminOnly>
       <section className="category">
@@ -48,15 +55,17 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             const res = await updateProject(inputs, project.id)
             resolveError(`/${ projectid }`, res)
             revalidatePath(`/${ projectid }`, 'layout')
-            updateSuccess()
+            navigate(`/${ inputs.id }?success=updated+${ nanoid(3)}`)
           }}
+          searchParams={await props.searchParams}
+          errorCallout={<ErrorCallout<typeof updateProject> messages={{
+            invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
+            missing_fields: "please fill out all required fields.",
+            not_found: "project not found.",
+          }} />}
         />
 
-        <SuccessCallout messages={{
-          new: "project created successfully!",
-          key_deleted: "key deleted successfully!",
-          updated: "project updated!"
-        }} />
+
       </section>
 
       <ProjectDomainsList projectid={projectid} />
@@ -65,9 +74,9 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
       <section className="category">
         <p className="category-title">danger zone ↓</p>
-        <a className="button destructive" href={`/${ projectid }/delete`}>
+        <Link className="button destructive" href={`/${ projectid }/delete`}>
           Delete Project
-        </a>
+        </Link>
       </section>
     </AUTH.AdminOnly>
 
@@ -94,7 +103,7 @@ async function ProjectDomainsList(props: { projectid: string }) {
         {domains.length === 0 && <div className="list-empty">Domains not yet set up.</div>}
         {domains.map(domain =>
           <li className="relative group" key={domain.id} >
-            <a className="button ghost flex flex-row py-3" href={`/${ projectid }/domain/${ domain.id }`}>
+            <Link className="button ghost flex flex-row py-3" href={`/${ projectid }/domain/${ domain.id }`}>
               <div className="text-foreground-body font-semibold leading-3 text-xs">
                 {domain.redirect_url}
               </div>
@@ -104,7 +113,7 @@ async function ProjectDomainsList(props: { projectid: string }) {
               <div className="text-foreground-body/75 leading-3 text-xs">
                 {formatDate(domain.createdAt)}
               </div>
-            </a>
+            </Link>
           </li>
         )}
       </ul>
@@ -135,7 +144,7 @@ async function ProjectKeysList(props: { projectid: string }) {
         {project_keys.length === 0 && <div className="list-empty">No API keys present</div>}
         {project_keys.map((key) =>
           <li className="relative group" key={key.id} >
-            <a className="list-row" href={`/${ projectid }/key/${ key.id }`} >
+            <Link className="list-row" href={`/${ projectid }/key/${ key.id }`} >
               <div className="flex flex-col gap-1 min-w-0">
                 <div className="text-foreground-body font-semibold leading-3 text-xs">
                   🔑 {key.name}
@@ -147,7 +156,7 @@ async function ProjectKeysList(props: { projectid: string }) {
                   {key.client_secret}
                 </div>
               </div>
-            </a>
+            </Link>
             <div className="absolute top-1 right-1">
               <CopyButton text={key.client_secret} className="button small floating opacity-0 group-hover:opacity-100">
                 copy
@@ -157,9 +166,9 @@ async function ProjectKeysList(props: { projectid: string }) {
         )}
       </ul>
 
-      <a className="button primary small -mt-1" href={`/${ projectid }/key/create`}>
+      <Link className="button primary small -mt-1" href={`/${ projectid }/key/create`}>
         Create API Key
-      </a>
+      </Link>
     </section>
   )
 }

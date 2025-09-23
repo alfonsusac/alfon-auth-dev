@@ -1,5 +1,4 @@
 import type { ComponentProps, ReactNode } from "react"
-import { FormWithInput } from "./Form"
 import { FormButton } from "./FormButton"
 import { cn } from "lazy-cn"
 import { toNativeSearchParams } from "./searchParams"
@@ -11,30 +10,7 @@ export function InputGroup(props: ComponentProps<"div">) {
   return <div {...props} className={cn('input-group', props.className)} />
 }
 
-export type FormFieldMap = Record<string, FormField>
-
-type FormField = {
-  render?: (name: string) => React.ReactNode
-} & (
-    | {
-      label: string
-      helper?: string
-      defaultValue?: string
-      required?: boolean
-      placeholder?: string
-    } & (
-      {
-        type: "text",
-        prefix?: string
-      }
-    )
-    | {
-      type: "readonly",
-      value: string
-    }
-  )
-
-function InputFields<F extends FormFieldMap>(props: {
+function InputFields<F extends TypedForm.FormFieldMap>(props: {
   name: string,
   fields: F,
   classNames?: {
@@ -96,12 +72,13 @@ function InputFields<F extends FormFieldMap>(props: {
 }
 
 
-function EditForm<F extends FormFieldMap>(props: ComponentProps<typeof InputFields> & {
+
+function EditForm<F extends TypedForm.FormFieldMap>(props: {
   name: string
-  action: FormWithInput.ActionFunction<F>,
+  action: TypedForm.ActionFunction<F>,
   fields: F
-  errorCallout?: ReactNode
-  searchParams?: Awaited<PageProps<any>['params']>
+  errorCallout: ReactNode
+  searchParams: Awaited<PageProps<any>['searchParams']>
 }) {
   return (
     <Form
@@ -170,19 +147,19 @@ function EditForm<F extends FormFieldMap>(props: ComponentProps<typeof InputFiel
 //   )
 // }
 
-function CreateForm<F extends FormFieldMap>(props: {
+function CreateForm<F extends TypedForm.FormFieldMap>(props: {
   name: string
   action: TypedForm.ActionFunction<F>,
   fields: F
   errorCallout: ReactNode
-  searchParams?: Awaited<PageProps<any>['params']>
+  searchParams: Awaited<PageProps<any>['params']>
 }) {
   return (
     <Form
       className="flex flex-col gap-6 max-w-80"
       fields={props.fields}
       action={props.action}>
-      
+
       <InputFields
         fields={props.fields}
         name={props.name}
@@ -193,7 +170,7 @@ function CreateForm<F extends FormFieldMap>(props: {
       <FormButton
         className="button primary px-6 mt-4 w-30"
         loading="Creating...">Create</FormButton>
-      
+
     </Form>
   )
 }

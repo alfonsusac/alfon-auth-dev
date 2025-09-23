@@ -1,3 +1,5 @@
+import { Link } from "./Link"
+
 export function NotFoundLayout(props: {
   title: string,
   info: string,
@@ -12,6 +14,6 @@ export function NotFoundLayout(props: {
       </p>
     </section>
 
-    <a href={props.backHref} className="button primary">{'<-'} {props.backLabel}</a>
+    <Link href={props.backHref} className="button primary">{'<-'} {props.backLabel}</Link>
   </>
 }

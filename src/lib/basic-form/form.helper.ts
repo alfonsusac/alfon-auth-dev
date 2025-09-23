@@ -49,36 +49,3 @@ export namespace TypedForm {
     }
   }
 }
-
-export namespace FormUtil {
-  // --- Error handling for redirection in both server and client components ---
-
-  export function resolveCustomRedirectError(
-    error: any
-  ) {
-    if (
-      error instanceof Error
-      && error.message === "NEXT_REDIRECT"
-    ) {
-      const digest = (error as any).digest as string
-      // NEXT_REDIRECT;replace;/project2/key/e9d859c8-3816-40d5-8729-421dd7d268fa?error=callbackURI_must_match_domain;307;
-      const [_, mode, path, __] = digest.split(";")
-      const actualPath = path.startsWith('/___resolve___') ? path.slice(14) : path
-      if (mode === "replace")
-        return { path: actualPath, mode: "replace" as const }
-      else
-        return { path: actualPath, mode: "push" as const }
-    } else {
-      return null
-    }
-  }
-  export function withCustomRedirect(
-
-  ) {
-
-  }
-}
-
-
-
-

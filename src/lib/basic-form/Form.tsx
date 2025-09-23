@@ -1,7 +1,8 @@
 import type { ComponentProps } from "react"
 import { UnifiedFormWithClientRedirect } from "./Form.client"
-import { FormUtil, TypedForm } from "./form.helper"
+import { TypedForm } from "./form.helper"
 import { redirect, RedirectType } from "next/navigation"
+import { resolveCustomRedirectError } from "../resolveAction"
 
 // The Form.
 
@@ -10,7 +11,6 @@ export function Form<F extends TypedForm.FormFieldMap = {}>({ action, fields, ..
     {...props}
     action={async form => {
       "use server"
-      console.log("B")
       await TypedForm.toTypedAction(fields, action)(form)
     }}
   />
@@ -28,7 +28,8 @@ function FormWithProgressiveCustomRedirectAndClientAction(props: Omit<ComponentP
       try {
         await props.action(form)
       } catch (error) {
-        const redirection = FormUtil.resolveCustomRedirectError(error)
+        const redirection = resolveCustomRedirectError(error)
+        console.log("Actual Path:", redirection?.path)
         if (redirection) {
           if (redirection.mode === "replace")
             redirect(redirection.path, RedirectType.push)

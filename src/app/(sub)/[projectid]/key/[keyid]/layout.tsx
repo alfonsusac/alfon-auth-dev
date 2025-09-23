@@ -21,8 +21,8 @@ export default async function ProjectKeyLayout(props: LayoutProps<'/[projectid]/
     <BackButton href={`/${ projectid }`}>Back to Project</BackButton>
 
     <SuccessCallout messages={{
-      "key_created": "key created successfully!",
-      "key_updated": "key updated!"
+      "created": "key created successfully!",
+      "updated": "key updated!"
     }} />
 
     <header>

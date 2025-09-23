@@ -4,10 +4,12 @@ import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { ProjectKeyNotFound, ProjectNotFound } from "../../shared"
 import { CopyButton } from "@/lib/CopyButton"
-import { navigateWithSuccess } from "@/lib/resolveAction"
 import { getProject, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
 import { form } from "@/lib/AppForm"
 import { Form } from "@/lib/basic-form/Form"
+import { triggerSuccessBanner } from "@/lib/toast/trigger"
+import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
+import { Link } from "@/lib/Link"
 
 export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/[keyid]">) {
   const params = await props.params
@@ -30,12 +32,11 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
       </CopyButton>
       <Form action={async () => {
         "use server"
-        console.log("A")
         await adminOnly(`/${ projectid }`)
         const res = await regenerateProjectKeySecret(key.id)
         resolveError(`/${ projectid }/key/${ key.id }`, res)
         revalidatePath(`/${ projectid }`, 'layout')
-        navigateWithSuccess(``, "key_updated")
+        triggerSuccessBanner("updated")
       }}>
         <FormButton className="button" loading="Regenerating...">
           Regenerate Secret <div className="icon-end">🔄</div>
@@ -53,7 +54,7 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
           const res = await updateProjectKey(inputs, key.id)
           resolveError(`/${ projectid }/key/${ key.id }`, res)
           revalidatePath(`/${ projectid }`, 'layout')
-          navigateWithSuccess(``, "key_updated")
+          triggerSuccessBanner("updated")
         }}
         fields={{
           name: {
@@ -68,15 +69,21 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
             value: project.id,
           }
         }}
+        searchParams={await props.searchParams}
+        errorCallout={<ErrorCallout<typeof updateProjectKey> messages={{
+          missing_fields: "please fill out all required fields.",
+          not_found: "project key not found.",
+          project_not_found: "project not found.",
+        }} />}
       />
     </section>
 
     <section className="category">
       <p className="category-title">danger zone ↓</p>
-      <a className="button destructive"
+      <Link className="button destructive"
         href={`/${ projectid }/key/${ key.id }/delete`}>
         Delete Project Key
-      </a>
+      </Link>
     </section>
 
   </>

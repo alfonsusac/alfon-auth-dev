@@ -1,8 +1,8 @@
 import { getCurrentUser, logout, signIn } from "@/lib/auth"
 import { AUTH } from "@/lib/auth_ui"
 import { Form } from "@/lib/basic-form/Form"
+import { navigate } from "@/lib/resolveAction"
 import { SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
-import { successCallout } from "@/lib/toast/trigger"
 import { meta } from "@/meta"
 import { getAllProjects } from "@/services/projects"
 import Link from "next/link"
@@ -42,17 +42,8 @@ export default async function Home() {
 
               <Form action={async () => {
                 "use server"
-                successCallout('logged_out')
-              }}>
-                <button className="button">
-                  Trigger Toast
-                </button>
-              </Form>
-
-              <Form action={async () => {
-                "use server"
                 await logout()
-                successCallout('logged_out')
+                navigate('/?success=logged_out')
               }}>
                 <button className="button">
                   Log Out
