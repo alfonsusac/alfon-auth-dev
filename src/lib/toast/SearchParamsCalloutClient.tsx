@@ -2,6 +2,19 @@
 
 import { useSearchParams } from "next/navigation"
 
+export function ToastBanner(props: {
+  messages: Record<string, string>
+}) {
+  const sp = useSearchParams()
+  const value = sp.get('success')
+  const [code, id] = value?.split(' ') ?? []
+  if (typeof value === 'string') {
+    const message = props.messages?.[code] ?? code
+    return <div key={id} className="callout success animate-[fade-in_1s_cubic-bezier(0,_0,_0.2,_1)]">{message}</div>
+  }
+  return <></>
+}
+
 export function SuccessCallout(props: {
   messages: Record<string, string>
 }) {
@@ -11,7 +24,13 @@ export function SuccessCallout(props: {
   const [code, id] = value?.split(' ') ?? []
   if (typeof value === 'string') {
     const message = props.messages?.[code] ?? code
-    return <div key={id} className="callout success animate-[fade-in_1s_cubic-bezier(0,_0,_0.2,_1)]">{message}</div>
+    return <div
+      key={id}
+      className="banner success animate-banner flex gap-2"
+    >
+      <div>✅</div>
+      <div>{message}</div>
+    </div>
   }
   return <></>
 }
@@ -25,7 +44,9 @@ export function ErrorCallout<T extends (...args: any) => any>(props: {
   const error = sp.get('error')
   if (typeof error === 'string') {
     const message = props.messages?.[error as Extract<Awaited<ReturnType<T>>, string>] ?? error
-    return <div className="callout error animate-fade-in">{message}</div>
+    return <div className="callout error animate-fade-in">
+      {message}
+    </div>
   }
   return <></>
 }

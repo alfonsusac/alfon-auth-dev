@@ -2,7 +2,7 @@ import { adminOnly } from "@/lib/auth"
 import { getProject } from "@/services/projects"
 import { ProjectKeyNotFound, ProjectNotFound } from "../../shared"
 import BackButton from "@/lib/BackButton"
-import { SuccessCallout } from "@/lib/SearchParamsCalloutClient"
+import { SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { Breadcrumb } from "@/lib/Breadcrumb"
 import { formatDate } from "@/lib/date"
 

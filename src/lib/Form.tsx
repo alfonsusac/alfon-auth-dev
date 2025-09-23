@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { resolveRedirectError } from "./resolveAction"
-import { type FormFieldMap } from "./FormBasic"
+import { type FormFieldMap } from "./AppForm"
 import { formActionHandler } from "./formHelper"
 import type { ComponentProps } from "react"
 

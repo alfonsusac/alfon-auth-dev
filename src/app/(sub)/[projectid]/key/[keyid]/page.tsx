@@ -6,7 +6,7 @@ import { ProjectKeyNotFound, ProjectNotFound } from "../../shared"
 import { CopyButton } from "@/lib/CopyButton"
 import { navigateWithSuccess } from "@/lib/resolveAction"
 import { getProject, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
-import { form } from "@/lib/FormBasic"
+import { form } from "@/lib/AppForm"
 import { Form } from "@/lib/basic-form/Form"
 
 export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/[keyid]">) {

@@ -126,7 +126,6 @@ export type User = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
 
 export async function logout() {
   await deleteCookie('auth_token')
-  return navigate('/')
 }
 
 // -----

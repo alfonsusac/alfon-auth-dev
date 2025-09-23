@@ -74,7 +74,7 @@ function InputFields<F extends FormFieldMap>(props: {
         ?
         <div className={cn("input small as-box", clsn.inputBox)}>
           <label htmlFor={id} className={cn("text-foreground-body/75", clsn.prefix)}>{field.prefix}</label>
-          <input {...inputProps} className={cn("grow", clsn.input)} />
+          <input {...inputProps} className={cn("grow basis-0 min-w-0", clsn.input)} />
         </div>
         :
         <input {...inputProps} className={cn("input", clsn.input, clsn.inputBox)} />

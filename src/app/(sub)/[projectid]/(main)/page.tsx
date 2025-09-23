@@ -3,12 +3,13 @@ import { ProjectNotFound } from "../shared"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { navigateWithSuccess } from "@/lib/resolveAction"
+import { navigateWithSuccess, updateSuccess } from "@/lib/resolveAction"
 import { getAllProjectDomains, getAllProjectKeys, getProject, updateProject } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
-import { form } from "@/lib/FormBasic"
+import { form } from "@/lib/AppForm"
 import { AUTH } from "@/lib/auth_ui"
-import { SuccessCallout } from "@/lib/SearchParamsCalloutClient"
+import { SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
+import { Link } from "@/lib/Link"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -17,11 +18,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
   if (!project) return <ProjectNotFound id={projectid} />
 
   return <>
-    <SuccessCallout messages={{
-      new: "project created successfully!",
-      key_deleted: "key deleted successfully!",
-      updated: "project updated!"
-    }} />
+
 
     <AUTH.AdminOnly>
       <section className="category">
@@ -51,9 +48,15 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             const res = await updateProject(inputs, project.id)
             resolveError(`/${ projectid }`, res)
             revalidatePath(`/${ projectid }`, 'layout')
-            navigateWithSuccess(``, `updated`)
+            updateSuccess()
           }}
         />
+
+        <SuccessCallout messages={{
+          new: "project created successfully!",
+          key_deleted: "key deleted successfully!",
+          updated: "project updated!"
+        }} />
       </section>
 
       <ProjectDomainsList projectid={projectid} />
@@ -95,7 +98,7 @@ async function ProjectDomainsList(props: { projectid: string }) {
               <div className="text-foreground-body font-semibold leading-3 text-xs">
                 {domain.redirect_url}
               </div>
-              <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0 w-full">
+              <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0">
                 {domain.redirect_url}
               </div>
               <div className="text-foreground-body/75 leading-3 text-xs">
@@ -105,9 +108,9 @@ async function ProjectDomainsList(props: { projectid: string }) {
           </li>
         )}
       </ul>
-      <a className="button primary small -mt-1" href={`/${ projectid }/domain/create`}>
+      <Link className="button primary small -mt-1" href={`/${ projectid }/domain/create`}>
         Add Domain
-      </a>
+      </Link>
     </section>
   )
 }
@@ -140,7 +143,7 @@ async function ProjectKeysList(props: { projectid: string }) {
                     {' - '}{formatDate(key.createdAt)}
                   </span>
                 </div>
-                <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0 w-full">
+                <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0">
                   {key.client_secret}
                 </div>
               </div>

@@ -30,3 +30,7 @@ export function resolveRedirectError(error: any) {
     return null
   }
 }
+
+export function updateSuccess() {
+  navigateWithSuccess(``, `updated`)
+}

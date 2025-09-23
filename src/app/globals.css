@@ -18,17 +18,25 @@
 
   --text-xxs: 0.625rem; /* 10px */
 
-  --animate-fade-in: fade-in 0.2s ease-in forwards;
+  --animate-fade-in: fadeIn 0.5s forwards; 
+
+  --animate-banner: bannerIn 0.25s forwards,
+                    bannerOut 0.25s 2.5s forwards;
+  
+  @keyframes bannerIn {
+    from { transform: translateY(-100%); }
+    to   { transform: translateY(0%); }
+  }
+
+  @keyframes bannerOut {
+    from { transform: translateY(0%); }
+    to   { transform: translateY(-100%);  }
+  }
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+
+
+
 
 body {
   @apply bg-foreground/2;
@@ -42,6 +50,16 @@ body {
 /* Putting it in layer components makes it possible */
 /* to override in classNames */
 @layer components {
+
+  .banner {
+    @apply fixed top-0 left-0 w-screen px-4 py-3 text-xs
+  }
+  .banner.error {
+    @apply bg-red-100 text-red-500
+  }
+  .banner.success {
+    @apply bg-emerald-400/10 text-emerald-700 font-normal backdrop-blur-xs
+  }
   
   .button {
     @apply block

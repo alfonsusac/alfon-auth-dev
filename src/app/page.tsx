@@ -1,12 +1,13 @@
 import { getCurrentUser, logout, signIn } from "@/lib/auth"
 import { AUTH } from "@/lib/auth_ui"
 import { Form } from "@/lib/basic-form/Form"
-import { SPCallout } from "@/lib/SearchParamsCallout"
+import { SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
+import { successCallout } from "@/lib/toast/trigger"
 import { meta } from "@/meta"
 import { getAllProjects } from "@/services/projects"
 import Link from "next/link"
 
-export default async function Home(props: PageProps<'/'>) {
+export default async function Home() {
 
   const user = await getCurrentUser()
   const projects = await getAllProjects()
@@ -15,7 +16,11 @@ export default async function Home(props: PageProps<'/'>) {
   return (
     <main className="font-sans flex flex-col gap-16">
 
-      <SPCallout sp={props.searchParams} match="info=deleted" className="success">project deleted successfully!</SPCallout>
+      <SuccessCallout messages={{
+        account_created: 'Account created successfully!',
+        logged_out: 'Logged out successfully!',
+        project_deleted: 'Project deleted successfully!',
+      }} />
 
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-semibold tracking-tight">
@@ -34,9 +39,20 @@ export default async function Home(props: PageProps<'/'>) {
               <Link href="#" className="button primary px-12!">
                 My Account
               </Link>
+
+              <Form action={async () => {
+                "use server"
+                successCallout('logged_out')
+              }}>
+                <button className="button">
+                  Trigger Toast
+                </button>
+              </Form>
+
               <Form action={async () => {
                 "use server"
                 await logout()
+                successCallout('logged_out')
               }}>
                 <button className="button">
                   Log Out
