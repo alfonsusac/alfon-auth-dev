@@ -1,31 +1,43 @@
-import { adminOnly } from "@/lib/auth"
+import { actionAdminOnly } from "@/lib/auth"
 import { FormButton } from "@/lib/FormButton"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
-import { ProjectKeyNotFound, ProjectNotFound } from "../../shared"
 import { CopyButton } from "@/lib/CopyButton"
 import { deleteProjectKey, getProject, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
 import { form } from "@/lib/AppForm"
 import { Form } from "@/lib/basic-form/Form"
 import { triggerSuccessBanner } from "@/lib/toast/trigger"
-import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
+import { ErrorCallout, SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { DeleteDialogButton } from "@/lib/DeleteDialog"
-import { navigate } from "@/lib/resolveAction"
+import { actionNavigate } from "@/lib/resolveAction"
+import BackButton from "@/lib/BackButton"
+import { Breadcrumb } from "@/lib/Breadcrumb"
+import { DataGridDisplay } from "@/lib/DataGrid"
+import { pageData } from "@/app/data"
 
 export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/[keyid]">) {
-  const params = await props.params
-  const projectid = params.projectid
-  await adminOnly(`/${ projectid }`)
 
-  const project = await getProject(projectid)
-  if (!project) return <ProjectNotFound id={projectid} />
-
-  const key = (await project.keys()).find(k => k.id === params.keyid)
-  if (!key) return <ProjectKeyNotFound key_id={params.keyid} project_id={projectid} />
-
+  const { project, key, error } = await pageData.projectKeyPage(props)
+  if (error) return error
 
   return <>
-    {/* Header in layout.tsx */}
+    <BackButton href={`/${ project.id }`}>Back to Project</BackButton>
+
+    <SuccessCallout messages={{
+      "created": "key created successfully!",
+      "updated": "key updated!"
+    }} />
+
+    <header>
+      <Breadcrumb items={[project.name, "Key"]} />
+      <h1 className="page-h1">{key.name}</h1>
+
+      <DataGridDisplay data={{
+        'key secret': key.client_secret,
+        'created at': key.createdAt,
+        'updated at': key.updatedAt
+      }} />
+    </header>
 
     <div className="flex gap-2">
       <CopyButton className="button primary small" text={key.client_secret}>
@@ -33,10 +45,10 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
       </CopyButton>
       <Form action={async () => {
         "use server"
-        await adminOnly(`/${ projectid }`)
+        await actionAdminOnly(`/${ project.id }`)
         const res = await regenerateProjectKeySecret(key.id)
-        resolveError(`/${ projectid }/key/${ key.id }`, res)
-        revalidatePath(`/${ projectid }`, 'layout')
+        resolveError(`/${ project.id }/key/${ key.id }`, res)
+        revalidatePath(`/${ project.id }`, 'layout')
         triggerSuccessBanner("updated")
       }}>
         <FormButton className="button small" loading="Regenerating...">
@@ -51,10 +63,10 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
         name={"edit_project_key"}
         action={async (inputs) => {
           "use server"
-          await adminOnly(`/${ projectid }`)
+          await actionAdminOnly(`/${ project.id }`)
           const res = await updateProjectKey(inputs, key.id)
-          resolveError(`/${ projectid }/key/${ key.id }`, res)
-          revalidatePath(`/${ projectid }`, 'layout')
+          resolveError(`/${ project.id }/key/${ key.id }`, res)
+          revalidatePath(`/${ project.id }`, 'layout')
           triggerSuccessBanner("updated")
         }}
         fields={{
@@ -89,11 +101,11 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
         alertDescription="This action cannot be undone. Any applications using this key will no longer be able to access the project."
         action={async () => {
           "use server"
-          await adminOnly()
+          await actionAdminOnly()
           const res = await deleteProjectKey(key.id)
-          resolveError(`/${ projectid }/key/${ key.id }`, res)
-          revalidatePath(`/${ projectid }`)
-          navigate(`/${ projectid }?success=key_deleted`)
+          resolveError(`/${ project.id }/key/${ key.id }`, res)
+          revalidatePath(`/${ project.id }`)
+          actionNavigate(`/${ project.id }?success=key_deleted`)
         }}
       />
     </section>

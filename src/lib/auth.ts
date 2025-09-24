@@ -3,7 +3,7 @@ import { redirect } from "next/navigation"
 import { deleteCookie, getSecureCookie, setSecureCookie } from "./cookie"
 import { decodeJwt, SignJWT } from "jose"
 import { cache } from "react"
-import { navigate } from "./resolveAction"
+import { actionNavigate } from "./resolveAction"
 
 const google = new arctic.Google(
   process.env.GOOGLE_CLIENT_ID!,
@@ -135,16 +135,16 @@ export function isAdmin(user: User | null): user is User {
   return user.id === process.env.ADMIN_USER_ID
 }
 
-export async function adminOnly(redirect_path_on_fail: string = '/unauthorized') {
+export async function actionAdminOnly(redirect_path_on_fail: string = '/unauthorized') {
   const user = await getCurrentUser()
   if (!isAdmin(user))
-    navigate(redirect_path_on_fail)
+    actionNavigate(redirect_path_on_fail)
   return user
 }
 
 export function requireAdmin<T>(value: T) {
   return async () => {
-    await adminOnly()
+    await actionAdminOnly()
     return value
   }
 }

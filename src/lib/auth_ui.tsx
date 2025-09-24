@@ -6,7 +6,7 @@ async function AdminOnly(props: {
 }) {
   const user = await getCurrentUser()
   if (!isAdmin(user)) {
-    return props.fallback ?? <p className="text-red-500">admin access required</p>
+    return props.fallback ?? null
   }
   return <>{props.children}</>
 }

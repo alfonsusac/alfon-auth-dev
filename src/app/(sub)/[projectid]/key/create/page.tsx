@@ -1,19 +1,20 @@
-import { adminOnly } from "@/lib/auth"
+import { actionAdminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"
 import { createProjectKey, getProject } from "@/services/projects"
-import { ProjectNotFound } from "../../shared"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
-import { navigate } from "@/lib/resolveAction"
+import { actionNavigate } from "@/lib/resolveAction"
 import { form } from "@/lib/AppForm"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
+import { pageData } from "@/app/data"
 
 export default async function CreateProjectKeyPage(props: PageProps<'/[projectid]/key/create'>) {
-  const param = await props.params
-  const project = await getProject(param.projectid)
-  if (!project) return <ProjectNotFound id={param.projectid} />
-  await adminOnly(`/${ param.projectid }`)
+
+  const { project, error } = await pageData.projectPage(props as any)
+  if (error) return error
+
+  await actionAdminOnly(`/${ project.id }`)
 
   return <>
     <BackButton href={`/${ project.id }`}>{project.name}</BackButton>
@@ -42,11 +43,11 @@ export default async function CreateProjectKeyPage(props: PageProps<'/[projectid
       }}
       action={async (inputs) => {
         "use server"
-        await adminOnly(`/${ param.projectid }`)
+        await actionAdminOnly(`/${ project.id }`)
         const res = await createProjectKey(inputs)
-        const key = resolveError(`/${ param.projectid }/key/create`, res, inputs)
-        revalidatePath(`/${ param.projectid }`, 'layout')
-        navigate(`/${ param.projectid }/key/${ key.id }?success=created`)
+        const key = resolveError(`/${ project.id }/key/create`, res, inputs)
+        revalidatePath(`/${ project.id }`, 'layout')
+        actionNavigate(`/${ project.id }/key/${ key.id }?success=created`)
       }}
       searchParams={await props.searchParams}
       errorCallout={<ErrorCallout<typeof createProjectKey> messages={{

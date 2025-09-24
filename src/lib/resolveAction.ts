@@ -1,6 +1,6 @@
 import { redirect, RedirectType } from "next/navigation"
 
-export function navigate(path: string, mode: "push" | "replace" = "push"): never {
+export function actionNavigate(path: string, mode: "push" | "replace" = "push"): never {
   console.log(path)
   if (mode === "push")
     redirect('/___resolve___?url=' + path, RedirectType.push)

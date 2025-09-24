@@ -1,8 +1,8 @@
-import { adminOnly, getCurrentUser, isAdmin } from "@/lib/auth"
+import { actionAdminOnly, getCurrentUser, isAdmin } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { form } from "@/lib/AppForm"
 import { resolveError } from "@/lib/redirects"
-import { navigate } from "@/lib/resolveAction"
+import { actionNavigate } from "@/lib/resolveAction"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { createProject } from "@/services/projects"
 import { Link } from "@/lib/Link"
@@ -50,10 +50,10 @@ export default async function ProjectPage(props: PageProps<'/create-project'>) {
       }}
       action={async (inputs) => {
         "use server"
-        await adminOnly()
+        await actionAdminOnly()
         const res = await createProject(inputs)
         resolveError(`/create-project`, res, inputs)
-        navigate(`/${ inputs.id }?success=created`)
+        actionNavigate(`/${ inputs.id }?success=created`)
       }}
       errorCallout={
         <ErrorCallout<typeof createProject> messages={{

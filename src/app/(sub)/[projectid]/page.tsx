@@ -1,26 +1,24 @@
-import { getCurrentUser, adminOnly, isAdmin } from "@/lib/auth"
-import { ProjectNotFound } from "../shared"
+import { getCurrentUser, actionAdminOnly, isAdmin } from "@/lib/auth"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { deleteProject, getAllProjectDomains, getAllProjectKeys, getProject, updateProject } from "@/services/projects"
+import { deleteProject, getAllProjectDomains, getAllProjectKeys, updateProject } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/AppForm"
 import { AUTH } from "@/lib/auth_ui"
 import { ErrorCallout, SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { Link } from "@/lib/Link"
-import { triggerSuccessBanner } from "@/lib/toast/trigger"
-import { navigate } from "@/lib/resolveAction"
+import { actionNavigate } from "@/lib/resolveAction"
 import { nanoid } from "nanoid"
 import { DeleteDialogButton } from "@/lib/DeleteDialog"
 import BackButton from "@/lib/BackButton"
 import { DataGridDisplay } from "@/lib/DataGrid"
+import { pageData } from "@/app/data"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
-
-  const projectid = decodeURIComponent((await props.params).projectid)
-  const project = await getProject(projectid)
-  if (!project) return <ProjectNotFound id={projectid} />
+  
+  const { project, error } = await pageData.projectPage(props)
+  if (error) return error
 
   return <>
     <BackButton href="/">Home</BackButton>
@@ -28,7 +26,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     <header>
       <h1 className="page-h1">{project.name}</h1>
       <code className="page-subtitle-code">
-        auth.alfon.dev/{projectid}
+        auth.alfon.dev/{project.id}
       </code>
       <DataGridDisplay data={{
         'created at': project.createdAt,
@@ -44,11 +42,8 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     }} />
 
     <AUTH.AdminOnly>
-
-      <ProjectDomainsList projectid={projectid} />
-
-      <ProjectKeysList projectid={projectid} />
-
+      <ProjectDomainsList projectid={project.id} />
+      <ProjectKeysList projectid={project.id} />
       <section className="category">
         <p className="category-title">edit details ↓</p>
         <form.EditForm
@@ -79,11 +74,11 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
           }}
           action={async (inputs) => {
             "use server"
-            await adminOnly(`/${ projectid }`)
+            await actionAdminOnly(`/${ project.id }`)
             const res = await updateProject(inputs, project.id)
-            resolveError(`/${ projectid }`, res)
-            revalidatePath(`/${ projectid }`, 'layout')
-            navigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
+            resolveError(`/${ project.id }`, res)
+            revalidatePath(`/${ project.id }`, 'layout')
+            actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
           }}
           searchParams={await props.searchParams}
           errorCallout={<ErrorCallout<typeof updateProject> messages={{
@@ -96,7 +91,6 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
       <section className="category">
         <p className="category-title">danger zone ↓</p>
-
         <DeleteDialogButton
           searchParams={await props.searchParams}
           label="Delete Project"
@@ -105,11 +99,11 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
           alertActionLabel="Delete Project"
           action={async () => {
             "use server"
-            await adminOnly()
-            const res = await deleteProject(projectid)
-            resolveError(`/${ projectid }/delete`, res)
+            await actionAdminOnly()
+            const res = await deleteProject(project.id)
+            resolveError(`/${ project.id }/delete`, res)
             revalidatePath('/')
-            navigate('/?success=deleted')
+            actionNavigate('/?success=deleted')
           }}
         />
       </section>
