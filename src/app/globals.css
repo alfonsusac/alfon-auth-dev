@@ -18,7 +18,8 @@
 
   --text-xxs: 0.625rem; /* 10px */
 
-  --animate-fade-in: fadeIn 0.5s forwards; 
+  --animate-fade-in: fadeIn 0.15s forwards; 
+  --animate-dialog-in: fadeIn 0.25s forwards; 
 
   --animate-banner: bannerIn 0.25s forwards,
                     bannerOut 0.25s 2.5s forwards;
@@ -31,6 +32,10 @@
   @keyframes bannerOut {
     from { transform: translateY(0%); }
     to   { transform: translateY(-100%);  }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
   }
 }
 
@@ -52,7 +57,7 @@ body {
 @layer components {
 
   .banner {
-    @apply fixed top-0 left-0 w-screen px-4 py-3 text-xs
+    @apply fixed top-0 left-0 w-screen px-4 py-3 text-xs rounded-b-xl shadow-xl
   }
   .banner.error {
     @apply bg-red-100 text-red-500
@@ -103,11 +108,15 @@ body {
     @apply border-none
   }
   .button.small {
-    @apply p-1 px-2.5 text-xs rounded-md
+    @apply p-1.5 px-3 text-xs rounded-md
   }
   .button.destructive {
     @apply border-red-300 text-red-600
     hover:bg-red-50 active:bg-red-100;
+  }
+  .button.destructive-primary {
+    @apply text-background bg-red-500/75 font-medium border-transparent
+    hover:bg-red-500/70 active:bg-red-500/75;
   }
 
   .button .icon-end {

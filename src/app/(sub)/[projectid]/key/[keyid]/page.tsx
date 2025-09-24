@@ -4,12 +4,14 @@ import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { ProjectKeyNotFound, ProjectNotFound } from "../../shared"
 import { CopyButton } from "@/lib/CopyButton"
-import { getProject, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
+import { deleteProjectKey, getProject, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
 import { form } from "@/lib/AppForm"
 import { Form } from "@/lib/basic-form/Form"
 import { triggerSuccessBanner } from "@/lib/toast/trigger"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { Link } from "@/lib/Link"
+import { DeleteDialogButton } from "@/lib/DeleteDialog"
+import { navigate } from "@/lib/resolveAction"
 
 export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/[keyid]">) {
   const params = await props.params
@@ -27,7 +29,7 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
     {/* Header in layout.tsx */}
 
     <div className="flex gap-2">
-      <CopyButton className="button primary" text={key.client_secret}>
+      <CopyButton className="button primary small" text={key.client_secret}>
         Copy Key
       </CopyButton>
       <Form action={async () => {
@@ -38,7 +40,7 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
         revalidatePath(`/${ projectid }`, 'layout')
         triggerSuccessBanner("updated")
       }}>
-        <FormButton className="button" loading="Regenerating...">
+        <FormButton className="button small" loading="Regenerating...">
           Regenerate Secret <div className="icon-end">🔄</div>
         </FormButton>
       </Form>
@@ -80,10 +82,21 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
 
     <section className="category">
       <p className="category-title">danger zone ↓</p>
-      <Link className="button destructive"
-        href={`/${ projectid }/key/${ key.id }/delete`}>
-        Delete Project Key
-      </Link>
+
+      <DeleteDialogButton
+        label="Delete Project Key"
+        searchParams={await props.searchParams}
+        alertTitle="Are you sure you want to permanently delete this project key?"
+        alertDescription="This action cannot be undone. Any applications using this key will no longer be able to access the project."
+        action={async () => {
+          "use server"
+          await adminOnly()
+          const res = await deleteProjectKey(key.id)
+          resolveError(`/${ projectid }/key/${ key.id }`, res)
+          revalidatePath(`/${ projectid }`)
+          navigate(`/${ projectid }?success=key_deleted`)
+        }}
+      />
     </section>
 
   </>

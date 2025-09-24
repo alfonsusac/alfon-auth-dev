@@ -130,7 +130,7 @@ export async function logout() {
 
 // -----
 
-export function isAdmin(user: User | null) {
+export function isAdmin(user: User | null): user is User {
   if (!user) return false
   return user.id === process.env.ADMIN_USER_ID
 }
@@ -139,7 +139,7 @@ export async function adminOnly(redirect_path_on_fail: string = '/unauthorized')
   const user = await getCurrentUser()
   if (!isAdmin(user))
     navigate(redirect_path_on_fail)
-  return user as User
+  return user
 }
 
 export function requireAdmin<T>(value: T) {

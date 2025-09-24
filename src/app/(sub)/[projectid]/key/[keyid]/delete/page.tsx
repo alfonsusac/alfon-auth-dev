@@ -24,7 +24,7 @@ export default async function DeleteProjectKeyPage(props: {
   return (
     <>
       <DeleteAlert
-        title={`Are you sure you want to permanently this API key?`}
+        title={`Are you sure you want to permanently delete this API key?`}
         description="This action cannot be undone. All existing integrations that uses this API key will stop working."
         backHref={`/${ projectid }/key/${ keyid }`}
         actionLabel="Delete Project Key"

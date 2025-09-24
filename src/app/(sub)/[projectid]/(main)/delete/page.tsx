@@ -40,7 +40,7 @@ export default async function DeleteProjectPage(props: {
         const res = await deleteProject(projectid)
         resolveError(`/${ projectid }/delete`, res)
         revalidatePath('/')
-        navigate('/?success=deletedss')
+        navigate('/?success=deleted')
       }}
     />
   </>

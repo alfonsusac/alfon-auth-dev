@@ -3,7 +3,7 @@ import { ProjectNotFound } from "../shared"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { getAllProjectDomains, getAllProjectKeys, getProject, updateProject } from "@/services/projects"
+import { deleteProject, getAllProjectDomains, getAllProjectKeys, getProject, updateProject } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/AppForm"
 import { AUTH } from "@/lib/auth_ui"
@@ -12,6 +12,7 @@ import { Link } from "@/lib/Link"
 import { triggerSuccessBanner } from "@/lib/toast/trigger"
 import { navigate } from "@/lib/resolveAction"
 import { nanoid } from "nanoid"
+import { DeleteDialogButton } from "@/lib/DeleteDialog"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -20,7 +21,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
   if (!project) return <ProjectNotFound id={projectid} />
 
   return <>
-    
+
     <SuccessCallout messages={{
       new: "project created successfully!",
       key_deleted: "key deleted successfully!",
@@ -55,7 +56,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             const res = await updateProject(inputs, project.id)
             resolveError(`/${ projectid }`, res)
             revalidatePath(`/${ projectid }`, 'layout')
-            navigate(`/${ inputs.id }?success=updated+${ nanoid(3)}`)
+            navigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`)
           }}
           searchParams={await props.searchParams}
           errorCallout={<ErrorCallout<typeof updateProject> messages={{
@@ -74,9 +75,22 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
       <section className="category">
         <p className="category-title">danger zone ↓</p>
-        <Link className="button destructive" href={`/${ projectid }/delete`}>
-          Delete Project
-        </Link>
+
+        <DeleteDialogButton
+          searchParams={await props.searchParams}
+          label="Delete Project"
+          alertTitle={`Are you sure you want to permanently delete "${ project.name }"?`}
+          alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
+          alertActionLabel="Delete Project"
+          action={async () => {
+            "use server"
+            await adminOnly()
+            const res = await deleteProject(projectid)
+            resolveError(`/${ projectid }/delete`, res)
+            revalidatePath('/')
+            navigate('/?success=deleted')
+          }}
+        />
       </section>
     </AUTH.AdminOnly>
 

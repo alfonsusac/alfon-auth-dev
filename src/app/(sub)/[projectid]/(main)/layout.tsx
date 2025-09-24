@@ -15,6 +15,7 @@ export default async function Project(props: LayoutProps<'/[projectid]'>) {
     <header>
       <h1 className="page-h1">{project.name}</h1>
       <code className="page-subtitle-code">
+        {/* auth.alfon.dev/{projectid} */}
         auth.alfon.dev/{projectid}
       </code>
       <DataGridDisplay data={{
