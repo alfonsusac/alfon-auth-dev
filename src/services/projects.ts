@@ -34,7 +34,7 @@ async function get_all_projects() {
 
 // Project Mutations
 
-export type ProjectInput = { id?: string, name?: string }
+export type ProjectInput = { id?: string, name?: string, description?: string }
 
 const validateProjectInput = validation(async (input: ProjectInput) => {
   if (!input.name || !input.id) return "missing_fields"

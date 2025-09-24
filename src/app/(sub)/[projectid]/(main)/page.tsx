@@ -13,6 +13,8 @@ import { triggerSuccessBanner } from "@/lib/toast/trigger"
 import { navigate } from "@/lib/resolveAction"
 import { nanoid } from "nanoid"
 import { DeleteDialogButton } from "@/lib/DeleteDialog"
+import BackButton from "@/lib/BackButton"
+import { DataGridDisplay } from "@/lib/DataGrid"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -21,6 +23,19 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
   if (!project) return <ProjectNotFound id={projectid} />
 
   return <>
+    <BackButton href="/">Home</BackButton>
+
+    <header>
+      <h1 className="page-h1">{project.name}</h1>
+      <code className="page-subtitle-code">
+        auth.alfon.dev/{projectid}
+      </code>
+      <DataGridDisplay data={{
+        'created at': project.createdAt,
+        'updated at': project.updatedAt,
+        'description': project.description,
+      }} />
+    </header>
 
     <SuccessCallout messages={{
       new: "project created successfully!",
@@ -29,6 +44,11 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     }} />
 
     <AUTH.AdminOnly>
+
+      <ProjectDomainsList projectid={projectid} />
+
+      <ProjectKeysList projectid={projectid} />
+
       <section className="category">
         <p className="category-title">edit details ↓</p>
         <form.EditForm
@@ -48,6 +68,13 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
               prefix: "https://auth.alfon.dev/",
               defaultValue: project.id ?? "",
               required: true
+            },
+            description: {
+              label: "description",
+              helper: "describe your project for future reference (optional)",
+              type: "text",
+              defaultValue: project.description ?? "",
+              required: false
             }
           }}
           action={async (inputs) => {
@@ -56,7 +83,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             const res = await updateProject(inputs, project.id)
             resolveError(`/${ projectid }`, res)
             revalidatePath(`/${ projectid }`, 'layout')
-            navigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`)
+            navigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
           }}
           searchParams={await props.searchParams}
           errorCallout={<ErrorCallout<typeof updateProject> messages={{
@@ -65,13 +92,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             not_found: "project not found.",
           }} />}
         />
-
-
       </section>
-
-      <ProjectDomainsList projectid={projectid} />
-
-      <ProjectKeysList projectid={projectid} />
 
       <section className="category">
         <p className="category-title">danger zone ↓</p>

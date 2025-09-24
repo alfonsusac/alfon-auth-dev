@@ -21,15 +21,15 @@ export function DataGridDisplay<
         if (typeof value === "string") {
           return (
             <Fragment key={key}>
-              <div className="opacity-50">{key}</div>
-              <div>{String(value)}</div>
+              <div className="opacity-50 whitespace-nowrap">{key}</div>
+              <div className="">{String(value)}</div>
             </Fragment>
           )
         }
         if (value instanceof Date) {
           return (
             <Fragment key={key}>
-              <div className="opacity-50">{key}</div>
+              <div className="opacity-50 whitespace-nowrap">{key}</div>
               <div>{formatDate(value)}</div>
             </Fragment>
           )

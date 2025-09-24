@@ -73,7 +73,7 @@ export default async function Home() {
                   className="list-row">
                   <div>
                     <p className="font-medium text-sm leading-tight tracking-tight">{project.name}</p>
-                    <p className="text-sm text-foreground-body min-h-lh leading-3">
+                    <p className="text-sm min-h-lh leading-3 line-clamp-1 text-foreground-body/75 text-xs">
                       {project.description ? project.description : <span className=" text-foreground-body/50 text-xs">No description</span>}
                     </p>
                   </div>
