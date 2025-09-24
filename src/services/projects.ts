@@ -1,7 +1,7 @@
 import { actionAdminOnly, requireAdmin } from "@/lib/auth"
 import prisma from "@/lib/db"
 import { generateSecret } from "@/lib/token"
-import { validateURL } from "@/lib/url"
+import { validateSecureURLwithLocalhost } from "@/lib/url"
 import { validation } from "@/lib/validation"
 import { cache } from "react"
 
@@ -175,19 +175,30 @@ async function get_all_project_domains(project_id: string) {
 
 type DomainInput = {
   project_id: string
-  callback_url: string
+  origin: string
   redirect_url: string
 }
 
 const validateProjectDomainInput = validation(async (input: DomainInput) => {
-  if (!input.project_id || !input.callback_url || !input.redirect_url) return "missing_fields"
+  if (!input.project_id || !input.origin || !input.redirect_url) return "missing_fields"
   if (!await getProject(input.project_id)) return "project_not_found"
-  const redirectURL = validateURL(input.redirect_url)
-  const callbackURL = validateURL(input.callback_url)
-  if (!redirectURL) return "invalid_callback_url"
-  if (!callbackURL) return "invalid_redirect_url"
-  if (redirectURL.host !== callbackURL.host) return "mismatched_domains"
-  return input as Required<DomainInput>
+
+  // console.log(input)
+
+  const origin = validateSecureURLwithLocalhost(input.origin)
+  const redirectURL = validateSecureURLwithLocalhost(input.redirect_url)
+  if (input.origin.startsWith('http://') && !input.origin.includes('localhost')) return "insecure_origin"
+  if (input.redirect_url.startsWith('http://') && !input.redirect_url.includes('localhost')) return "insecure_redirect_url"
+  if (!origin) return "invalid_redirect_url"
+  console.log(origin)
+  if (!redirectURL) return "invalid_origin"
+  if (redirectURL.host !== origin.host) return "mismatched_domains"
+
+  return {
+    project_id: input.project_id,
+    origin: origin.origin,
+    redirect_url: redirectURL.href,
+  } as Required<DomainInput>
 })
 
 export async function createDomain(input: DomainInput) {
