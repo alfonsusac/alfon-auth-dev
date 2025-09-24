@@ -1,16 +1,15 @@
-import { getCurrentUser, logout, signIn } from "@/lib/auth"
+import { logout, signIn } from "@/lib/auth"
 import { AUTH } from "@/lib/auth_ui"
 import { Form } from "@/lib/basic-form/Form"
 import { actionNavigate } from "@/lib/resolveAction"
 import { SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { meta } from "@/meta"
-import { getAllProjects } from "@/services/projects"
 import Link from "next/link"
+import { pageData } from "./data"
 
 export default async function Home() {
 
-  const user = await getCurrentUser()
-  const projects = await getAllProjects()
+  const { user, projects } = await pageData.homePage()
   const no_projects = projects.length === 0
 
   return (

@@ -1,7 +1,7 @@
 import { actionAdminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"
-import { createProjectKey, getProject } from "@/services/projects"
+import { createProjectKey } from "@/services/projects"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { actionNavigate } from "@/lib/resolveAction"
@@ -14,15 +14,13 @@ export default async function CreateProjectKeyPage(props: PageProps<'/[projectid
   const { project, error } = await pageData.projectPage(props as any)
   if (error) return error
 
-  await actionAdminOnly(`/${ project.id }`)
-
   return <>
     <BackButton href={`/${ project.id }`}>{project.name}</BackButton>
 
     <header className="page-header">
       <Breadcrumb items={[project.name, "Create Key"]} />
       <h1 className="page-h1">Create Secret Key</h1>
-      <p className="text-foreground-body">
+      <p className="text-foreground-body mt-2">
         Project keys are used to authorize your application to use the authentication services.
       </p>
     </header>

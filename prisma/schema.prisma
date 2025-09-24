@@ -39,8 +39,8 @@ model ProjectKey {
 
 model Domain {
   id           String   @id @default(uuid())
+  origin       String   @unique
   redirect_url String
-  callback_url String
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 

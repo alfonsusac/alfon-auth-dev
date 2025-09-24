@@ -183,17 +183,13 @@ const validateProjectDomainInput = validation(async (input: DomainInput) => {
   if (!input.project_id || !input.origin || !input.redirect_url) return "missing_fields"
   if (!await getProject(input.project_id)) return "project_not_found"
 
-  // console.log(input)
-
   const origin = validateSecureURLwithLocalhost(input.origin)
   const redirectURL = validateSecureURLwithLocalhost(input.redirect_url)
   if (input.origin.startsWith('http://') && !input.origin.includes('localhost')) return "insecure_origin"
   if (input.redirect_url.startsWith('http://') && !input.redirect_url.includes('localhost')) return "insecure_redirect_url"
   if (!origin) return "invalid_redirect_url"
-  console.log(origin)
   if (!redirectURL) return "invalid_origin"
   if (redirectURL.host !== origin.host) return "mismatched_domains"
-
   return {
     project_id: input.project_id,
     origin: origin.origin,

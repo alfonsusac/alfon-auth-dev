@@ -48,7 +48,7 @@ function InputFields<F extends TypedForm.FormFieldMap>(props: {
 
       const innerinputjsx = field.prefix
         ?
-        <div className={cn("input small as-box", clsn.inputBox)}>
+        <div className={cn("input as-box", clsn.inputBox)}>
           <label htmlFor={id} className={cn("text-foreground-body/75", clsn.prefix)}>{field.prefix}</label>
           <input {...inputProps} className={cn("grow basis-0 min-w-0", clsn.input)} />
         </div>
@@ -60,7 +60,7 @@ function InputFields<F extends TypedForm.FormFieldMap>(props: {
         : null
 
       return <InputGroup key={name} className={clsn.group}>
-        <label className={cn("label", clsn.label)} htmlFor={id}>
+        <label className={cn("label mb-1.5", clsn.label)} htmlFor={id}>
           {field.label}
           {field.helper && <p className={cn("label-helper", clsn.helper)}>{field.helper}</p>}
         </label>
@@ -102,51 +102,6 @@ function EditForm<F extends TypedForm.FormFieldMap>(props: {
   )
 }
 
-
-// function CreateForm<F extends FormFieldMap>(props: {
-//   name: string
-//   action: (form: FormData) => Promise<void>,
-//   // action: FormWithInput.ActionFunction<F>,
-//   fields: F
-//   errorCallout: ReactNode
-//   searchParams?: Awaited<PageProps<any>['params']>
-// }) {
-//   return (
-//     <FormWithInput
-//       className="flex flex-col gap-6 max-w-80"
-//       fields={props.fields}
-//       // action={async (form) => {
-//       //   "use server"
-//       //   console.log("Action Prop Called")
-//       //   return await props.action(form)
-//       //   // return await formActionHandler(props.fields, props.action)(form)
-//       //   // try {
-//       //   //   return await formActionHandler(props.fields, props.action)(form)
-//       //   // } catch (error) {
-//       //   //   console.log("error", error)
-//       //   // }
-//       // }}
-//       action={props.action}
-//     // onSubmitAction={async () => {}}
-//     // onSubmitAction={props.action}
-//     >
-
-//       <InputFields
-//         fields={props.fields}
-//         name={props.name}
-//         searchParams={toNativeSearchParams(props.searchParams)}
-//       />
-
-//       {props.errorCallout}
-
-//       <FormButton
-//         className="button primary px-6 mt-4 w-30"
-//         loading="Creating...">Create</FormButton>
-
-//     </FormWithInput>
-//   )
-// }
-
 function CreateForm<F extends TypedForm.FormFieldMap>(props: {
   name: string
   action: TypedForm.ActionFunction<F>,
@@ -156,7 +111,7 @@ function CreateForm<F extends TypedForm.FormFieldMap>(props: {
 }) {
   return (
     <Form
-      className="flex flex-col gap-6 max-w-80"
+      className="flex flex-col gap-6"
       fields={props.fields}
       action={props.action}>
 

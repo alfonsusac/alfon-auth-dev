@@ -1,26 +1,16 @@
-import { actionAdminOnly, getCurrentUser, isAdmin } from "@/lib/auth"
+import { actionAdminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { form } from "@/lib/AppForm"
 import { resolveError } from "@/lib/redirects"
 import { actionNavigate } from "@/lib/resolveAction"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { createProject } from "@/services/projects"
-import { Link } from "@/lib/Link"
+import { pageData } from "@/app/data"
 
-export default async function ProjectPage(props: PageProps<'/create-project'>) {
+export default async function CreateProjectPage(props: PageProps<'/create-project'>) {
 
-  const user = await getCurrentUser()
-
-  if (!user || !isAdmin(user)) return <>
-    <section>
-      <h1 className="page-h1">Unauthorised</h1>
-      <p className="text-pretty text-sm max-w-80 text-foreground-body">
-        Please log in in order to create a project.
-      </p>
-    </section>
-
-    <Link href="/" className="button primary">{'<-'} Back to Home</Link>
-  </>
+  const { error } = await pageData.createProjectPage()
+  if (error) return error
 
   return <>
     <BackButton href="/">Home</BackButton>

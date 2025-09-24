@@ -16,7 +16,7 @@ import { DataGridDisplay } from "@/lib/DataGrid"
 import { pageData } from "@/app/data"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
-  
+
   const { project, error } = await pageData.projectPage(props)
   if (error) return error
 
@@ -38,6 +38,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     <SuccessCallout messages={{
       new: "project created successfully!",
       key_deleted: "key deleted successfully!",
+      domain_deleted: "domain deleted successfully!",
       updated: "project updated!"
     }} />
 
@@ -119,6 +120,7 @@ async function ProjectDomainsList(props: { projectid: string }) {
   const user = await getCurrentUser()
   if (!isAdmin(user)) return null
   const domains = await getAllProjectDomains(projectid)
+
   return (
     <section className="category">
       <div className="category-title">
@@ -130,20 +132,24 @@ async function ProjectDomainsList(props: { projectid: string }) {
 
       <ul className="list">
         {domains.length === 0 && <div className="list-empty">Domains not yet set up.</div>}
-        {domains.map(domain =>
-          <li className="relative group" key={domain.id} >
-            <Link className="button ghost flex flex-row py-3" href={`/${ projectid }/domain/${ domain.id }`}>
-              <div className="text-foreground-body font-semibold leading-3 text-xs">
-                {domain.redirect_url}
-              </div>
-              <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0">
-                {domain.redirect_url}
-              </div>
-              <div className="text-foreground-body/75 leading-3 text-xs">
-                {formatDate(domain.createdAt)}
+        {domains.map(domain => {
+          const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
+          return <li className="relative group" key={domain.id} >
+            <Link className="button ghost flex flex-col py-3" href={`/${ projectid }/domain/${ domain.id }`}>
+              <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
+                <span>
+                  https://
+                </span>
+                <span className="font-medium text-foreground">
+                  {origin}
+                </span>
+                <span>
+                  {domain.redirect_url.replace(domain.origin, '')}
+                </span>
               </div>
             </Link>
           </li>
+        }
         )}
       </ul>
       <Link className="button primary small -mt-1" href={`/${ projectid }/domain/create`}>
@@ -194,7 +200,6 @@ async function ProjectKeysList(props: { projectid: string }) {
           </li>
         )}
       </ul>
-
       <Link className="button primary small -mt-1" href={`/${ projectid }/key/create`}>
         Create API Key
       </Link>

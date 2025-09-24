@@ -34,6 +34,14 @@ export function DataGridDisplay<
             </Fragment>
           )
         }
+        if (value === null) {
+          return (
+            <Fragment key={key}>
+              <div className="opacity-50 whitespace-nowrap">{key}</div>
+              <div className="opacity-50 italic">null</div>
+            </Fragment>
+          )
+        }
 
         return <></>
       })}

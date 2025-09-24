@@ -1,14 +1,31 @@
-import { actionAdminOnly, getCurrentUser, isAdmin } from "@/lib/auth"
+import { getCurrentUser, isAdmin } from "@/lib/auth"
 import { NotFoundLayout, UnauthorizedLayout } from "@/lib/NotFound"
-import { getProject, getProjectKey } from "@/services/projects"
-import { redirect } from "next/navigation"
-
-function unauthorized(redirect_to: string) {
-  return redirect(redirect_to)
-}
-
+import { getAllProjects, getProject, getProjectDomain, getProjectKey } from "@/services/projects"
 
 export const pageData = {
+
+  homePage:
+    async () => {
+      const user = await getCurrentUser()
+      const projects = await getAllProjects()
+
+      return { user, projects }
+    },
+
+
+  createProjectPage:
+    async () => {
+      const user = await getCurrentUser()
+      if (!user || !isAdmin(user)) return {
+        error:
+          <UnauthorizedLayout
+            backLabel={`Back to Home`}
+            backHref={`/`}
+          />
+      }
+      return { user }
+    },
+
 
   projectPage:
     async (props: PageProps<'/[projectid]'>) => {
@@ -27,6 +44,7 @@ export const pageData = {
       }
       return { params, project }
     },
+
 
   projectKeyPage:
     async (props: PageProps<'/[projectid]/key/[keyid]'>) => {
@@ -55,6 +73,36 @@ export const pageData = {
         />
       }
       return { project, key }
+
+    },
+  
+  projectDomainPage:
+    async (props: PageProps<'/[projectid]/domain/[domainid]'>) => {
+      
+      const { project, error } = await pageData.projectPage(props as any)
+      if (error) return { error }
+
+      const params = await props.params
+      const domainid = decodeURIComponent(params.domainid)
+
+      const user = await getCurrentUser()
+      if (!user || !isAdmin(user)) return {
+        error: <UnauthorizedLayout
+          backLabel={`Back to ${ project.name }`}
+          backHref={`/${ project.id }`}
+        />
+      }
+
+      const domain = await getProjectDomain(domainid)
+      if (!domain || domain.project_id !== project.id) return {
+        error: <NotFoundLayout
+          thingName="Project Domain"
+          info={`The project domain with ID "${ params.domainid }" does not exist in project "${ params.projectid }".`}
+          backLabel={`Back to ${ project.name }`}
+          backHref={`/${ project.id }`}
+        />
+      }
+      return { project, domain }
 
     }
 

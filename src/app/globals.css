@@ -145,7 +145,7 @@ body {
   }
 
   .label-helper {
-    @apply text-[0.65rem] text-foreground-body mb-1.5
+    @apply text-[0.65rem] text-foreground-body 
   }
   .input.small {
     @apply py-1 text-sm
