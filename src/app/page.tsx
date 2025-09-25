@@ -1,4 +1,4 @@
-import { logout, signIn } from "@/lib/auth"
+import { logout, signIn, signInAdminLocalhost } from "@/lib/auth"
 import { AUTH } from "@/lib/auth_ui"
 import { Form } from "@/lib/basic-form/Form"
 import { actionNavigate } from "@/lib/resolveAction"
@@ -50,12 +50,20 @@ export default async function Home() {
               </Form>
             </div>
             :
-            <Form action={async () => {
-              "use server"
-              await signIn()
-            }}>
-              <button className="button primary">Login via Google</button>
-            </Form>
+            <div className="flex gap-2">
+              <Form action={async () => {
+                "use server"
+                await signIn()
+              }}>
+                <button className="button primary">Login via Google</button>
+              </Form>
+              {process.env.NODE_ENV === 'development' && <Form action={async () => {
+                "use server"
+                await signInAdminLocalhost()
+              }}>
+                <button className="button">Login as Admin Localhost</button>
+              </Form>}
+            </div>
         }
       </div>
 
