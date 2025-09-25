@@ -52,7 +52,7 @@ export default async function Home() {
               </Form>
             </div>
             :
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               <Form action={async () => {
                 "use server"
                 await signIn()
