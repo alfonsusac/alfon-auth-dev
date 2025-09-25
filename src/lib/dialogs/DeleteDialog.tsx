@@ -12,7 +12,7 @@ export function DeleteDialogButton(props: {
     name="delete"
     label={props.label}
   >
-    <DialogPaper className="absolute top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 p-6 bg-background rounded-xl shadow-2xl w-full max-w-80">
+    <DialogPaper>
       <DeleteAlert2
         title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
         description={props.alertDescription || "This action cannot be undone."}
