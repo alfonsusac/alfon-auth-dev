@@ -47,7 +47,7 @@ export function DialogBase(props: {
       show ? "opacity-100" : "opacity-0 pointer-events-none duration-100",
       "fixed top-0 left-0 w-screen h-screen z-(--z-dialog)"
     )}>
-      <DialogBackdropLink />
+      <DialogBackdropLink show={show} />
       {props.children}
     </div>
   </>
