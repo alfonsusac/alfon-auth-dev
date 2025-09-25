@@ -96,7 +96,6 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
 
       <DeleteDialogButton
         label="Delete Project Key"
-        searchParams={await props.searchParams}
         alertTitle="Are you sure you want to permanently delete this project key?"
         alertDescription="This action cannot be undone. Any applications using this key will no longer be able to access the project."
         action={async () => {

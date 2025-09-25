@@ -99,7 +99,6 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       <section className="category">
         <p className="category-title">danger zone ↓</p>
         <DeleteDialogButton
-          searchParams={await props.searchParams}
           label="Delete Project"
           alertTitle={`Are you sure you want to permanently delete "${ project.name }"?`}
           alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."

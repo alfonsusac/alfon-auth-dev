@@ -92,7 +92,6 @@ export default async function ProjectDomainPage(props: PageProps<'/[projectid]/d
       <p className="category-title">danger zone ↓</p>
 
       <DeleteDialogButton
-        searchParams={await props.searchParams}
         label="Delete Project Domain"
         alertTitle="Are you sure you want to permanently delete this domain?"
         alertDescription="This action cannot be undone. Any applications using this domain will no longer be able to access the project."
