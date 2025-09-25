@@ -24,9 +24,10 @@ export function DialogBackdropLink(props: {
   />
 }
 
-export function DialogBase(props: {
+export function DialogButtonBase(props: {
   name: string,
   label: React.ReactNode,
+  className?: string,
   children?: React.ReactNode,
 }) {
   const sp = useSearchParams()
@@ -34,7 +35,7 @@ export function DialogBase(props: {
 
   return <>
     <Link
-      className="button destructive small"
+      className={cn("button small", props.className)}
       href={`?${ props.name }=show`}
       scroll={false}
       client

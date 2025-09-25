@@ -68,6 +68,7 @@ export async function updateProject(input: ProjectInput, id: string) {
   const { error, data } = await validateProjectInput(input)
   if (error) return error
   if (!await getProject(id)) return "not_found"
+  if (id !== input.id && await getProject(data.id)) return "id_exists"
   await prisma.project.update({ where: { id }, data })
 }
 

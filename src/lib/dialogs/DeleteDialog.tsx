@@ -11,6 +11,7 @@ export function DeleteDialogButton(props: {
   return <DialogButton
     name="delete"
     label={props.label}
+    className="button destructive small"
   >
     <DialogPaper>
       <DeleteAlert2

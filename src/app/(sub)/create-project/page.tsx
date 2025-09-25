@@ -6,6 +6,7 @@ import { actionNavigate } from "@/lib/resolveAction"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { createProject } from "@/services/projects"
 import { pageData } from "@/app/data"
+import { revalidatePath } from "next/cache"
 
 export default async function CreateProjectPage(props: PageProps<'/create-project'>) {
 
@@ -43,6 +44,7 @@ export default async function CreateProjectPage(props: PageProps<'/create-projec
         await actionAdminOnly()
         const res = await createProject(inputs)
         resolveError(`/create-project`, res, inputs)
+        revalidatePath('/', "layout")
         actionNavigate(`/${ inputs.id }?success=created`)
       }}
       errorCallout={
