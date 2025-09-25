@@ -6,6 +6,7 @@ import { SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { meta } from "@/meta"
 import Link from "next/link"
 import { pageData } from "./data"
+import { ScreenSize } from "./page.client"
 
 export default async function Home() {
 
@@ -14,6 +15,7 @@ export default async function Home() {
 
   return (
     <main className="font-sans flex flex-col gap-16">
+      <ScreenSize />
 
       <SuccessCallout messages={{
         account_created: 'Account created successfully!',

@@ -1,41 +1,11 @@
 
 import { type ComponentProps, type ReactNode } from "react"
 import { cn } from "lazy-cn"
-import { DialogBackdropLink, DialogButtonBase } from "./Dialog.client"
-import { Link } from "../link/Link"
+import { DialogButtonBase } from "./Dialog.client"
 
 export function DialogButton(props: ComponentProps<typeof DialogButtonBase>) {
   return <DialogButtonBase {...props} />
 }
-
-// export function DialogButton(props: {
-//   name: string,
-//   label: React.ReactNode,
-//   children?: React.ReactNode,
-//   searchParams: Awaited<PageProps<any>['searchParams']>,
-// }) {
-//   const sp = props.searchParams
-
-//   const show = sp[props.name] === 'show'
-
-//   return <>
-//     <Link
-//       className="button destructive small"
-//       href={`?${ props.name }=show`}
-//       scroll={false}
-//     >
-//       {props.label}
-//     </Link>
-
-//     <div className={cn(
-//       show ? "opacity-100" : "opacity-0 pointer-events-none",
-//       "fixed top-0 left-0 w-screen h-screen z-(--z-dialog)"
-//     )}>
-//       <DialogBackdropLink />
-//       {props.children}
-//     </div>
-//   </>
-// }
 
 export function DialogPaper(props: ComponentProps<"div"> & {
   title?: ReactNode
