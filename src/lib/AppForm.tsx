@@ -42,6 +42,7 @@ function InputFields<F extends TypedForm.FormFieldMap>(props: {
         required: field.required,
         placeholder: field.placeholder,
         type: field.type,
+        autoFocus: field.autoFocus
       }
 
       const clsn = props.classNames ?? {}

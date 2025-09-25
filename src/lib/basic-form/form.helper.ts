@@ -7,19 +7,22 @@ export namespace TypedForm {
   export type FormField = {
     render?: (name: string) => React.ReactNode
   } & (
-      | {
+      | { // Inputtables
         label: string
-        helper?: string
+        helper?: string,
         defaultValue?: string
         required?: boolean
         placeholder?: string
+        autoFocus?: boolean
       } & (
-        {
+        { // TextInput
           type: "text",
-          prefix?: string
+          prefix?: string,
+
+
         }
       )
-      | {
+      | { // Non-Inputtables
         type: "readonly",
         value: string
       }

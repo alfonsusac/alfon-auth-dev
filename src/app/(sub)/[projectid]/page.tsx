@@ -63,7 +63,8 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
                 helper: "give your project a name for identification",
                 type: "text",
                 defaultValue: project.name,
-                required: true
+                required: true,
+                autoFocus: true,
               },
               id: {
                 label: "project id",
@@ -113,7 +114,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
               helper: "give your project a name for identification",
               type: "text",
               defaultValue: project.name,
-              required: true
+              required: true,
             },
             id: {
               label: "project id",
