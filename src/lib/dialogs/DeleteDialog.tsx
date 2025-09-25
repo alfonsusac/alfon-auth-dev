@@ -1,7 +1,5 @@
-import { DeleteAlert, DeleteAlert2 } from "../DeleteAlert"
-import { Link } from "../link/Link"
+import { DeleteAlert2 } from "../DeleteAlert"
 import { DialogButton, DialogPaper } from "./Dialog"
-import { DialogBackdropLink } from "./Dialog.client"
 
 export function DeleteDialogButton(props: {
   label: string,
@@ -28,6 +26,8 @@ export function DeleteDialogButton(props: {
   </DialogButton>
 }
 
+
+// Server Component version (with Link)
 
 // export function DeleteDialogButton(props: {
 //   label: string,
