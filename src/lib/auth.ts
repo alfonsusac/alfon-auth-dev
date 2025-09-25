@@ -20,7 +20,25 @@ export async function signIn(redirectTo?: string) {
 
   const scopes: string[] = ['openid', 'email']
   const url = google.createAuthorizationURL(state + ' | ' + (redirectTo ?? ''), codeVerifier, scopes)
-  redirect(url.toString())
+  redirect(url.toString()) 
+}
+
+export async function signInAdminLocalhost() {
+  const now = Math.floor(Date.now() / 1000)
+  const iat = now
+  const exp = now + 60 * 60 // 1 hour
+
+  const new_jwt = await new SignJWT({
+    sub: process.env.ADMIN_USER_ID!,
+  })
+    .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+    .setIssuedAt(iat)
+    .setExpirationTime(exp!)
+    .setIssuer('https://auth.alfon.dev') // your app's issuer
+    .setAudience(process.env.ADMIN_USER_ID!)
+    .sign(new Uint8Array(Buffer.from(process.env.JWT_SECRET!)))
+
+  await setSecureCookie('auth_token', new_jwt, 60 * 60 * 24 * 1) // 1 days
 }
 
 
@@ -69,7 +87,19 @@ export async function signInHandleCallback(code?: string, received_state?: strin
     await deleteCookie('oauth_code_verifier')
 
     const jwt = await issueAuthorizationJWT(userId, email, picture)
-    await setSecureCookie('auth_token', jwt, 60 * 60 * 24 * 1) // 1 days
+    const decodedAuthToken = decodeJwt(jwt)
+
+    const new_jwt = await new SignJWT({
+      sub: decodedAuthToken.sub,
+    })
+      .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
+      .setIssuedAt(decodedAuthToken.iat)
+      .setExpirationTime(decodedAuthToken.exp!)
+      .setIssuer('https://auth.alfon.dev') // your app's issuer
+      .setAudience(decodedAuthToken.sub!)
+      .sign(new Uint8Array(Buffer.from(process.env.JWT_SECRET!)))
+
+    await setSecureCookie('auth_token', new_jwt, 60 * 60 * 24 * 1) // 1 days
 
     return redirectTo || '/'
 
