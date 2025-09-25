@@ -47,5 +47,5 @@ model Domain {
   Project    Project @relation(fields: [project_id], references: [id])
   project_id String
 
-  @@unique([project_id, redirect_url])
+  @@unique([project_id, origin])
 }

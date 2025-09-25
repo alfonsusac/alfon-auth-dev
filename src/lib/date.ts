@@ -1,6 +1,8 @@
-export async function formatDate(date: Date, preset: "medium" = "medium") {
-  
-  
+export async function formatDate(date: Date | string, preset: "medium" = "medium") {
+
+  // console.log(date, typeof date)
+  if (typeof date === 'string') date = new Date(date)
+
   return `${ Intl.DateTimeFormat('en-GB', {
     day: '2-digit',
     month: '2-digit',

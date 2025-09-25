@@ -7,13 +7,13 @@ import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/AppForm"
 import { AUTH } from "@/lib/auth_ui"
 import { ErrorCallout, SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
-import { Link } from "@/lib/Link"
+import { Link } from "@/lib/link/Link"
 import { actionNavigate } from "@/lib/resolveAction"
 import { nanoid } from "nanoid"
-import { DeleteDialogButton } from "@/lib/DeleteDialog"
-import BackButton from "@/lib/BackButton"
+import { DeleteDialogButton } from "@/lib/dialogs/DeleteDialog"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { pageData } from "@/app/data"
+import { NavigationBar } from "@/lib/NavigationBar"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -21,7 +21,13 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
   if (error) return error
 
   return <>
-    <BackButton href="/">Home</BackButton>
+    <NavigationBar
+      back={{
+        href: "/",
+        label: "Home"
+      }}
+      title={project.name}
+    />
 
     <header>
       <h1 className="page-h1">{project.name}</h1>
@@ -124,21 +130,22 @@ async function ProjectDomainsList(props: { projectid: string }) {
   return (
     <section className="category">
       <div className="category-title">
-        authorized domains ↓
+        redirect urls ↓
       </div>
       <p className="category-title text-xxs">
-        these domains are authorized to redirect to after authentication.
+        these urls are authorized to redirect to after authentication and also used to validate incoming requests.
       </p>
 
       <ul className="list">
         {domains.length === 0 && <div className="list-empty">Domains not yet set up.</div>}
         {domains.map(domain => {
+          const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
           const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
           return <li className="relative group" key={domain.id} >
             <Link className="button ghost flex flex-col py-3" href={`/${ projectid }/domain/${ domain.id }`}>
               <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
-                <span>
-                  https://
+                <span className="text-foreground-body/50">
+                  {protocol}
                 </span>
                 <span className="font-medium text-foreground">
                   {origin}
@@ -153,7 +160,7 @@ async function ProjectDomainsList(props: { projectid: string }) {
         )}
       </ul>
       <Link className="button primary small -mt-1" href={`/${ projectid }/domain/create`}>
-        Add Domain
+        Add URL
       </Link>
     </section>
   )

@@ -69,6 +69,7 @@ export default async function CreateProjectDomainPage(props: PageProps<'/[projec
         mismatched_domains: "redirect url must be on the same domain as callback url.",
         insecure_origin: "origin must use https unless using localhost.",
         insecure_redirect_url: "redirect url must use https unless using localhost.",
+        domain_exists: "domain already exists for this project.",
       }} />}
     />
 

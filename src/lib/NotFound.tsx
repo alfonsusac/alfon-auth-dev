@@ -1,4 +1,4 @@
-import { Link } from "./Link"
+import { Link } from "./link/Link"
 
 export function NotFoundLayout(props: {
   thingName: string,

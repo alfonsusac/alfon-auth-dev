@@ -1,6 +1,6 @@
 import { cn } from "lazy-cn"
 import type { ComponentProps } from "react"
-import { Link } from "./Link"
+import { Link } from "./link/Link"
 
 export function List(props: ComponentProps<"ul">) {
   return (

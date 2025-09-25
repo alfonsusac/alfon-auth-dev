@@ -3,14 +3,15 @@ import prisma from "@/lib/db"
 import { generateSecret } from "@/lib/token"
 import { validateSecureURLwithLocalhost } from "@/lib/url"
 import { validation } from "@/lib/validation"
+import { unstable_cache } from "next/cache"
 import { cache } from "react"
 
 
 
 // Project
 
-export const getProject = cache(get_project)
-export const getAllProjects = cache(get_all_projects)
+export const getProject = cache(unstable_cache(get_project))
+export const getAllProjects = cache(unstable_cache(get_all_projects))
 
 async function get_project(id: string) {
   const res = await prisma.project.findFirst({
@@ -19,6 +20,7 @@ async function get_project(id: string) {
   })
   if (!res) return null
   const { keys, domains, ...project } = res
+  console.log("Fetching Project...")
   return {
     ...project,
     keys: requireAdmin(keys),
@@ -81,8 +83,8 @@ export async function deleteProject(id: string) {
 
 // Project Keys
 
-export const getProjectKey = cache(get_project_key)
-export const getAllProjectKeys = cache(get_all_project_keys)
+export const getProjectKey = cache(unstable_cache(get_project_key))
+export const getAllProjectKeys = cache(unstable_cache(get_all_project_keys))
 
 
 async function get_project_key(id: string) {
@@ -150,8 +152,9 @@ export async function deleteProjectKey(id: string) {
 
 // Project Domains
 
-export const getProjectDomain = cache(get_project_domain)
-export const getAllProjectDomains = cache(get_all_project_domains)
+export const getProjectDomain = cache(unstable_cache(get_project_domain))
+export const getAllProjectDomains = cache(unstable_cache(get_all_project_domains))
+export const getProjectDomainByOrigin = cache(unstable_cache(get_project_domain_by_origin))
 
 
 async function get_project_domain(id: string) {
@@ -166,6 +169,12 @@ async function get_all_project_domains(project_id: string) {
   return prisma.domain.findMany({
     where: { project_id },
     orderBy: { createdAt: 'desc' },
+  })
+}
+
+async function get_project_domain_by_origin(project_id: string, origin: string) {
+  return prisma.domain.findFirst({
+    where: { project_id, origin },
   })
 }
 
@@ -201,6 +210,7 @@ export async function createDomain(input: DomainInput) {
   await actionAdminOnly()
   const { error, data } = await validateProjectDomainInput(input)
   if (error) return error
+  if (await getProjectDomainByOrigin(data.project_id, data.origin)) return "domain_exists"
   return prisma.domain.create({ data })
 }
 

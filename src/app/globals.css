@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
+  --background: color-mix(in oklab, var(--foreground) 2%, #ffffff);
   --foreground: #171717;
+
+  --z-toast: 200;
+  --z-dialog: 100;
+  --z-navbar-sticky: 55;
+  --z-navbar-fixed: 50;
+
+  --header-h: 3.5rem;
 }
 
 @theme inline {
@@ -23,7 +30,7 @@
 
   --animate-banner: bannerIn 0.25s forwards,
                     bannerOut 0.25s 2.5s forwards;
-  
+
   @keyframes bannerIn {
     from { transform: translateY(-100%); }
     to   { transform: translateY(0%); }
@@ -44,8 +51,8 @@
 
 
 body {
-  @apply bg-foreground/2;
-  /* background: var(--background); */
+  /* @apply bg-foreground/2; */
+  background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
@@ -57,8 +64,8 @@ body {
 @layer components {
 
   .banner {
-    @apply fixed top-0 left-0 w-screen px-4 py-3 text-xs rounded-b-xl shadow-xl
-  }
+    @apply fixed top-0 left-0 w-screen px-4 py-3 text-xs rounded-b-xl shadow-xl z-(--z-toast)
+  } 
   .banner.error {
     @apply bg-red-100 text-red-500
   }
