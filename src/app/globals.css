@@ -102,16 +102,11 @@ body {
     @apply bg-red-100 text-red-500
   }
 
-  .toast{
-    /* @apply  */
-  }
-
   .toast-container{
     @apply bg-transparent
     z-(--z-toast) fixed top-0 left-0
     flex flex-col gap-2 items-center
     w-screen
-    /* max-w-screen  */
     p-4 pt-16
   }
 
