@@ -49,7 +49,9 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
     <AUTH.AdminOnly>
 
-      <DialogButton name="edit" label="Edit Project Details" className=" -mt-8">
+      <DialogButton name="edit" button={
+        <button className="button small -mt-8">Edit Project Details</button>
+      }>
         <DialogPaper title="Edit Project" wide>
           <form.EditForm
             name="edit_project"
@@ -163,7 +165,9 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
         )}
       </ul>
 
-      <DialogButton name="add_url" label="Add URL" className="-mt-1">
+      <DialogButton name="add_url" button={
+        <button className="button small -mt-1">Add URL</button>
+      }>
         <DialogPaper title="Add Project URL" wide>
           <form.CreateForm
             name="Add Project Domain"
