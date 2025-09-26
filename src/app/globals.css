@@ -92,6 +92,10 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+body:has(.modal-opened) {
+  overflow: hidden;
+}
+
 
 /* - Tailwind Tips - */
 /* Putting it in layer components makes it possible */

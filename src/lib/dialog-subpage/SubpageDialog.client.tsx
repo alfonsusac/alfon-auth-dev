@@ -62,6 +62,7 @@ export function SuppageClient(props: {
           }} />
           <div className="shrink basis-0 grow min-h-0 overflow-y-auto p-8 pt-14 xs:p-12 xs:pt-18 sm:p-20 flex flex-col items-center">
             <div className="w-full">
+              {(opened || show) && <div className="modal-opened" />}
               {props.children}
             </div>
           </div>
