@@ -18,13 +18,16 @@ export function DialogPaper(props: ComponentProps<"div"> & {
   return <>
     <DialogBackdropLink className={cn(
       "opacity-0",
-      "in-[[data-show]]:opacity-100",
-      "transition-opacity duration-150 ease-linear",
+      "in-[[data-show]]:opacity-150",
+      "transition-opacity duration-80 ease-linear",
     )} />
     <div className={cn(
-      "opacity-0",
-      "in-[[data-show]]:opacity-100",
-      "transition-opacity duration-150 ease-linear",
+      "opacity-0 scale-90",
+      "in-[[data-show]]:opacity-150",
+      "in-[[data-show]]:scale-100",
+      "transition duration-80 ease-linear",
+
+      "[pointer-events:none]",
 
       "max-h-screen max-w-screen",
       "flex flex-col",
@@ -33,6 +36,7 @@ export function DialogPaper(props: ComponentProps<"div"> & {
       <div
         {...rest}
         className={cn(
+          "in-[[data-show]]:[pointer-events:auto]",
           "relative p-6 bg-background rounded-xl shadow-2xl ",
           "w-full max-w-(--dialog-w)",
           wide && "p-8 max-w-(--dialog-wide-w)",

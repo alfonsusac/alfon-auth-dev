@@ -1,5 +1,5 @@
 import { pageData } from "@/app/data"
-import { form } from "@/lib/AppForm"
+import { form } from "@/lib/basic-form/AppForm"
 import { actionAdminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"

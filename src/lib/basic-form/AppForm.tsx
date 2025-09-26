@@ -1,10 +1,9 @@
 import type { ComponentProps, ReactNode } from "react"
-import { FormButton } from "./FormButton"
+import { FormButton } from "../FormButton"
 import { cn } from "lazy-cn"
-import { toNativeSearchParams } from "./searchParams"
-import { formActionHandler } from "./formHelper"
-import { Form } from "./basic-form/Form"
-import type { TypedForm } from "./basic-form/form.helper"
+import { toNativeSearchParams } from "../searchParams"
+import { Form } from "./Form"
+import type { TypedForm } from "./form.helper"
 
 export function InputGroup(props: ComponentProps<"div">) {
   return <div {...props} className={cn('input-group', props.className)} />

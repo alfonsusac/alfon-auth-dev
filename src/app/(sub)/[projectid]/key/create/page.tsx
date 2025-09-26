@@ -5,7 +5,7 @@ import { createProjectKey } from "@/services/projects"
 import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { actionNavigate } from "@/lib/resolveAction"
-import { form } from "@/lib/AppForm"
+import { form } from "@/lib/basic-form/AppForm"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { pageData } from "@/app/data"
 

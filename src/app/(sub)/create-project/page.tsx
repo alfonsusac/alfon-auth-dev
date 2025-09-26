@@ -1,6 +1,6 @@
 import { actionAdminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
-import { form } from "@/lib/AppForm"
+import { form } from "@/lib/basic-form/AppForm"
 import { resolveError } from "@/lib/redirects"
 import { actionNavigate } from "@/lib/resolveAction"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
