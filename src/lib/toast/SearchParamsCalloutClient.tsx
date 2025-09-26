@@ -30,11 +30,13 @@ export function SuccessCallout(props: {
       key={id}
       className={cn(
         "toast-container",
+        "pointer-events-none",
       )}
     >
       <div className={cn(
         "toast-item",
-        "animate-toast"
+        "animate-toast",
+        "pointer-events-auto"
       )}>
         <MaterialSymbolsCheck className="animate-toast-check h-[1lh] w-[1.5ch] shrink-0" />
         <div>{message}</div>
