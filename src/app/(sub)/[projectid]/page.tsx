@@ -173,19 +173,6 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
                 }}
               />
             </SuppageClient>
-            {/* <Link className="button ghost flex flex-col py-3" href={`/${ project.id }/domain/${ domain.id }`}>
-              <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
-                <span className="text-foreground-body/50">
-                  {protocol}
-                </span>
-                <span className="font-medium text-foreground">
-                  {origin}
-                </span>
-                <span>
-                  {domain.redirect_url.replace(domain.origin, '')}
-                </span>
-              </div>
-            </Link> */}
           </li>
         }
         )}
@@ -267,8 +254,8 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
 
       <DataGridDisplay data={{
         'redirect url': domain.redirect_url,
-        'created at': domain.createdAt,
-        'updated at': domain.updatedAt
+        'created at': new Date(domain.createdAt),
+        'updated at': new Date(domain.updatedAt)
       }} />
     </header>
 
