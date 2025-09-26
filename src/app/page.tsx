@@ -81,9 +81,11 @@ export default async function Home() {
                   href={`/${ project.id }`}
                   className="list-row">
                   <div>
-                    <p className="font-medium text-sm leading-tight tracking-tight">{project.name}</p>
+                    <p className="font-medium text-sm leading-tight tracking-tight">
+                      {project.name}
+                    </p>
                     <p className="text-sm min-h-lh leading-3 line-clamp-1 text-foreground-body/75 text-xs">
-                      {project.description ? project.description : <span className=" text-foreground-body/50 text-xs">No description</span>}
+                      <span className="text-foreground-body/50 font-normal text-xs">/{project.id}</span> - {project.description ? project.description : <span className=" text-foreground-body/50 text-xs">No description</span>}
                     </p>
                   </div>
                 </a>
