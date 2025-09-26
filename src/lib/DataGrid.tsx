@@ -22,7 +22,7 @@ export function DataGridDisplay<
           return (
             <Fragment key={key}>
               <div className="opacity-50 whitespace-nowrap">{key}</div>
-              <div className="">{String(value)}</div>
+              <div className="break-words min-w-0">{String(value)}</div>
             </Fragment>
           )
         }
@@ -30,7 +30,7 @@ export function DataGridDisplay<
           return (
             <Fragment key={key}>
               <div className="opacity-50 whitespace-nowrap">{key}</div>
-              <div>{formatDate(value)}</div>
+              <div className="break-words min-w-0">{formatDate(value)}</div>
             </Fragment>
           )
         }

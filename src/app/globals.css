@@ -281,7 +281,7 @@ body {
     @apply max-w-120
   }
   .page-h1 {
-    @apply text-2xl font-semibold tracking-tight;
+    @apply text-2xl font-semibold tracking-tight break-words;
   }
   .page-subtitle {
     @apply text-xs text-foreground-body leading-normal
