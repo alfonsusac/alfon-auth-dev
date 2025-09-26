@@ -15,7 +15,6 @@ export default async function Home() {
 
   return (
     <main className="font-sans flex flex-col gap-16">
-      <ScreenSize />
 
       <SuccessCallout messages={{
         account_created: 'Account created successfully!',

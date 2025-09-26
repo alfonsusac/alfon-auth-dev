@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Geist, Geist_Mono } from "next/font/google"
 import "./globals.css"
+import { ScreenSize } from "./page.client"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body
         className={`${ geistSans.variable } ${ geistMono.variable } antialiased flex flex-col gap-16 min-h-screen p-8 pt-10 pb-20 sm:p-20 sm:pt-16 ${ geistSans.className }`}
       >
+        <ScreenSize />
         {children}
       </body>
     </html>
