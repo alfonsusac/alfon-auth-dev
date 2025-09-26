@@ -24,7 +24,7 @@
   --color-border: color-mix(in oklab, var(--color-foreground) 5%, var(--color-background));
 
   --breakpoint-dialog: 20rem;
-  /* --breakpoint-dialog: var(--dialog-w); */
+  /* --breakpoint-dialog: var(--dialog-w); *  /
   --breakpoint-dialogwide: 24rem;
   /* --breakpoint-dialogwide: var(--dialog-wide-w); */
 
@@ -99,8 +99,11 @@ body {
   
     self-start
   
+    font-medium
     text-foreground-body
-    hover:bg-foreground/3 active:bg-foreground/5
+    hover:bg-foreground/3 
+    /* hover:text-foreground-body */
+    active:bg-foreground/5
   
     cursor-pointer
     
@@ -128,6 +131,12 @@ body {
     bg-foreground text-background 
     hover:bg-foreground/90 active:bg-foreground/80;
   }
+  /* .button.secondary { 
+    @apply font-medium
+    border-transparent
+    bg-foreground/5
+    hover:bg-foreground/8 active:bg-foreground/10;
+  } */
   .button.ghost {
     @apply border-none
   }

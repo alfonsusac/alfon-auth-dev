@@ -50,12 +50,13 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     </header>
 
     <AUTH.AdminOnly>
-      
+
       <DialogButton
         name="edit"
-        label={"Edit Project Details"}
+        label="Edit Project Details"
+        className="secondary"
       >
-        <DialogPaper title="Edit Project">
+        <DialogPaper title="Edit Project" wide>
           <form.EditForm
             name="edit_project"
             fields={{
@@ -88,7 +89,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
               await actionAdminOnly(`/${ project.id }`)
               const res = await updateProject(inputs, project.id)
               actionResolveError(res, { ...inputs, edit: 'show' })
-              revalidatePath(`/${ project.id }`, 'layout')
+              revalidatePath(`/`, 'layout')
               actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
             }}
             searchParams={await props.searchParams}
@@ -104,7 +105,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
       <ProjectDomainsList projectid={project.id} />
       <ProjectKeysList projectid={project.id} />
-      <section className="category">
+      {/* <section className="category">
         <p className="category-title">edit details ↓</p>
 
         <form.EditForm
@@ -149,7 +150,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             id_exists: "project id already exists.",
           }} />}
         />
-      </section>
+      </section> */}
 
       <section className="category">
         <p className="category-title">danger zone ↓</p>

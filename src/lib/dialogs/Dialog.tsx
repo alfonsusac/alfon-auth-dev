@@ -8,38 +8,12 @@ export function DialogButton(props: ComponentProps<typeof DialogButtonBase>) {
   return <DialogButtonBase {...props} />
 }
 
-// export function DialogPaper(props: ComponentProps<"div"> & {
-//   hideCloseButton?: boolean,
-// }) {
-//   const { hideCloseButton, ...rest } = props
-//   return <>
-//     <DialogBackdropLink className={cn(
-//       "opacity-0",
-//       "in-[[data-show]]:opacity-100",
-//       "transition-opacity duration-150 ease-linear",
-//     )} />
-//     <div
-//       {...rest}
-//       className={cn(
-//         "relative p-6 bg-background rounded-xl shadow-2xl ",
-//         "w-full max-w-[20rem] max-[20rem]:rounded-none",
-//         "opacity-0",
-//         "in-[[data-show]]:opacity-100",
-//         "transition-opacity duration-150 ease-linear",
-//         props.className,
-//       )}
-//     >
-//       {!hideCloseButton && <DialogCloseButton />}
-//       {props.children}
-//     </div>
-//   </>
-// }
-
 export function DialogPaper(props: ComponentProps<"div"> & {
   title?: ReactNode,
   hideCloseButton?: boolean,
+  wide?: boolean,
 }) {
-  const { title, hideCloseButton, ...rest } = props
+  const { title, hideCloseButton, wide, ...rest } = props
 
   return <>
     <DialogBackdropLink className={cn(
@@ -60,7 +34,8 @@ export function DialogPaper(props: ComponentProps<"div"> & {
         {...rest}
         className={cn(
           "relative p-6 bg-background rounded-xl shadow-2xl ",
-          "w-full max-w-[20rem]",
+          "w-full max-w-(--dialog-w)",
+          wide && "p-8 max-w-(--dialog-wide-w)",
           "overflow-y-auto",
           props.className,
         )}
@@ -75,45 +50,45 @@ export function DialogPaper(props: ComponentProps<"div"> & {
 
 }
 
-export function DialogPaper2(props: ComponentProps<"div"> & {
-  title?: ReactNode
-  wide?: boolean
-}) {
-  const { title, wide, ...rest } = props
-  return <div
-    {...rest}
-    className={cn(
-      "relative p-6 bg-background rounded-xl shadow-2xl w-full max-w-[20rem] max-[20rem]:rounded-none max",
-      // wide && "p-8 max-w-96",
-      wide && [
-        "p-8 max-w-(--dialog-wide-w) max-dialogwide:rounded-none",
-        // Mobile
-        "max-dialogwide:h-full",
-        "max-dialogwide:max-h-screen",
-        // Mobile animation
-        "transition-all duration-150 ease-linear", // animation out / all
-        "max-dialogwide:in-[[data-show]]:duration-300", // animation in
-        "max-dialogwide:in-[[data-show]]:ease-out",
-        "max-dialogwide:translate-x-20",
-        "max-dialogwide:in-[[data-show]]:translate-x-0",
+// export function DialogPaper2(props: ComponentProps<"div"> & {
+//   title?: ReactNode
+//   wide?: boolean
+// }) {
+//   const { title, wide, ...rest } = props
+//   return <div
+//     {...rest}
+//     className={cn(
+//       "relative p-6 bg-background rounded-xl shadow-2xl w-full max-w-[20rem] max-[20rem]:rounded-none max",
+//       // wide && "p-8 max-w-96",
+//       wide && [
+//         "p-8 max-w-(--dialog-wide-w) max-dialogwide:rounded-none",
+//         // Mobile
+//         "max-dialogwide:h-full",
+//         "max-dialogwide:max-h-screen",
+//         // Mobile animation
+//         "transition-all duration-150 ease-linear", // animation out / all
+//         "max-dialogwide:in-[[data-show]]:duration-300", // animation in
+//         "max-dialogwide:in-[[data-show]]:ease-out",
+//         "max-dialogwide:translate-x-20",
+//         "max-dialogwide:in-[[data-show]]:translate-x-0",
 
-        // "scale-200 origin-center",
-        // "in-[[data-show]]:scale-100",
-      ],
+//         // "scale-200 origin-center",
+//         // "in-[[data-show]]:scale-100",
+//       ],
 
-      "opacity-0",
-      "in-[[data-show]]:opacity-100",
+//       "opacity-0",
+//       "in-[[data-show]]:opacity-100",
 
-      props.className
-    )}
-  >
-    <DialogCloseButton />
+//       props.className
+//     )}
+//   >
+//     <DialogCloseButton />
 
-    {props.title && <h2 className="text-lg font-semibold mb-4">{props.title}</h2>}
-    {props.children}
+//     {props.title && <h2 className="text-lg font-semibold mb-4">{props.title}</h2>}
+//     {props.children}
 
-  </div>
-}
+//   </div>
+// }
 
 
 
