@@ -101,8 +101,8 @@ body {
   
     font-medium
     text-foreground-body
+    bg-background
     hover:bg-foreground/3 
-    /* hover:text-foreground-body */
     active:bg-foreground/5
   
     cursor-pointer
@@ -114,6 +114,10 @@ body {
     focus-visible:outline-foreground/10
     focus-visible:ring-offset-0
     focus-visible:outline-offset-0
+
+    shadow-xs
+    active:shadow-none
+    active:translate-y-px
   }
   .button.floating {
     @apply shadow-md bg-background z-10
@@ -131,14 +135,18 @@ body {
     bg-foreground text-background 
     hover:bg-foreground/90 active:bg-foreground/80;
   }
-  /* .button.secondary { 
+  .button.secondary { 
     @apply font-medium
     border-transparent
-    bg-foreground/5
-    hover:bg-foreground/8 active:bg-foreground/10;
-  } */
+  
+    bg-foreground/2 text-foreground-body/75
+    hover:bg-foreground/4 active:bg-foreground/6;
+  }
   .button.ghost {
-    @apply border-none
+    @apply border-none shadow-none
+    bg-background
+    hover:bg-foreground/3 
+    active:bg-foreground/5
   }
   .button.small {
     @apply p-1.5 px-3 text-xs rounded-md
