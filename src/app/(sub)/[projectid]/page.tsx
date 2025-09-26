@@ -287,10 +287,7 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
           actionResolveError(res, { ...inputs, [`domain_${ domain.id }`]: 'show' })
           console.log("project id ", project.id)
           revalidatePath(`/${ project.id }`)
-          // revalidatePath(`/`, 'layout')
-          // revalidateTag('domains')
           actionNavigate(`/${ project.id }?success=updated+${ nanoid(3) }`, "replace")
-          // triggerSuccessBanner("updated")
         }}
         fields={{
           project_id: {
