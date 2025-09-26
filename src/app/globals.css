@@ -23,11 +23,6 @@
   --color-foreground-body: color-mix(in oklab, var(--color-foreground) 75%, var(--color-background));
   --color-border: color-mix(in oklab, var(--color-foreground) 5%, var(--color-background));
 
-  --breakpoint-dialog: 20rem;
-  /* --breakpoint-dialog: var(--dialog-w); *  /
-  --breakpoint-dialogwide: 24rem;
-  /* --breakpoint-dialogwide: var(--dialog-wide-w); */
-
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
