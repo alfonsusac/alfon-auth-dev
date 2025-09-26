@@ -16,7 +16,6 @@ export function DialogJustPaper(props: ComponentProps<"div">) {
         "in-[[data-show]]:[pointer-events:auto]",
         "relative p-6 bg-background rounded-xl shadow-2xl ",
         "w-full max-w-(--dialog-w)",
-        // wide && "p-8 max-w-(--dialog-wide-w)",
         "overflow-y-auto",
         props.className,
       )}
