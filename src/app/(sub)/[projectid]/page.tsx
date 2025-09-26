@@ -50,11 +50,12 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     </header>
 
     <AUTH.AdminOnly>
+      
       <DialogButton
         name="edit"
         label={"Edit Project Details"}
       >
-        <DialogPaper title="Edit Project" wide>
+        <DialogPaper title="Edit Project">
           <form.EditForm
             name="edit_project"
             fields={{

@@ -5,24 +5,6 @@ import { Link } from "../link/Link"
 import { useSearchParams } from "next/navigation"
 import { cn } from "lazy-cn"
 
-export function DialogBackdropLink(props: {
-  show?: boolean
-}) {
-  useEffect(() => {
-    if (!props.show) return
-    document.body.style.overflow = 'hidden'
-    return () => {
-      document.body.style.overflow = 'auto'
-    }
-  }, [props.show])
-
-  return <Link
-    className="absolute top-0 left-0 w-full h-full bg-foreground/25 animate-dialog-in"
-    href={"?"}
-    scroll={false}
-    client
-  />
-}
 
 export function DialogButtonBase(props: {
   name: string,
@@ -32,6 +14,14 @@ export function DialogButtonBase(props: {
 }) {
   const sp = useSearchParams()
   const show = sp.get(props.name) === 'show'
+
+  useEffect(() => {
+    if (!show) return
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = 'auto'
+    }
+  }, [show])
 
   return <>
     <Link
@@ -44,11 +34,14 @@ export function DialogButtonBase(props: {
     </Link>
 
     <div className={cn(
-      "transition-opacity duration-50",
-      show ? "opacity-100" : "opacity-0 pointer-events-none duration-100",
-      "fixed top-0 left-0 w-screen h-screen z-(--z-dialog)"
-    )}>
-      <DialogBackdropLink show={show} />
+      // "transition-opacity duration-50",
+      // show ? "opacity-100" : "opacity-0 pointer-events-none duration-150",
+      show ? "" : "pointer-events-none",
+      "fixed top-0 left-0 w-screen h-screen z-(--z-dialog)",
+      "flex items-center justify-center",
+    )}
+      data-show={show ? "" : undefined}
+    >
       {props.children}
     </div>
   </>

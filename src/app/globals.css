@@ -11,6 +11,8 @@
 
   --header-h: 3.5rem;
 
+  --dialog-w: 20rem;
+  --dialog-wide-w: 24rem;
   
 }
 
@@ -21,6 +23,10 @@
   --color-foreground-body: color-mix(in oklab, var(--color-foreground) 75%, var(--color-background));
   --color-border: color-mix(in oklab, var(--color-foreground) 5%, var(--color-background));
 
+  --breakpoint-dialog: 20rem;
+  /* --breakpoint-dialog: var(--dialog-w); */
+  --breakpoint-dialogwide: 24rem;
+  /* --breakpoint-dialogwide: var(--dialog-wide-w); */
 
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
@@ -45,6 +51,15 @@
   @keyframes fadeIn {
     from { opacity: 0; }
     to   { opacity: 1; }
+  }
+
+  @keyframes dialogIn {
+    from { opacity: 0; transform: translateY(10%); }
+    to   { opacity: 1; transform: translateY(0%); }
+  }
+  @keyframes dialogOut {
+    from { opacity: 1; transform: translateY(0%); }
+    to   { opacity: 0; transform: translateY(10%); }
   }
 }
 
