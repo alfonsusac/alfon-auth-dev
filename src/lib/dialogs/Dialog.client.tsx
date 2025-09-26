@@ -27,6 +27,7 @@ export function DialogButtonBase(props: {
       href={`?${ props.name }=show`}
       scroll={false}
       client
+      className="w-fit"
     >
       {props.button}
     </Link>
