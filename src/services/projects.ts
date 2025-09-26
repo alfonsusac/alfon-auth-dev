@@ -21,16 +21,14 @@ async function get_project(id: string) {
   if (!res) return null
   const { keys, domains, ...project } = res
   console.log("Fetching Project...")
-  return {
-    ...project,
-    keys: requireAdmin(keys),
-    domains: requireAdmin(domains),
-  }
+  return project
 }
 
 async function get_all_projects() {
   return prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
 }
+
+export type Project = NonNullable<Awaited<ReturnType<typeof get_project>>>
 
 
 
@@ -173,9 +171,9 @@ async function get_all_project_domains(project_id: string) {
   })
 }
 
-async function get_project_domain_by_origin(project_id: string, origin: string) {
+async function get_project_domain_by_origin(origin: string) {
   return prisma.domain.findFirst({
-    where: { project_id, origin },
+    where: { origin },
   })
 }
 
@@ -211,7 +209,13 @@ export async function createDomain(input: DomainInput) {
   await actionAdminOnly()
   const { error, data } = await validateProjectDomainInput(input)
   if (error) return error
-  if (await getProjectDomainByOrigin(data.project_id, data.origin)) return "domain_exists"
+
+  const existing = await getProjectDomainByOrigin(data.origin)
+
+  if (existing && existing.project_id !== data.project_id) return `domain_in_use=${ existing.project_id }` as const
+  if (existing && existing.project_id === data.project_id) return "domain_exists"
+  
+  if (!await getProject(data.project_id)) return "project_not_found"
   return prisma.domain.create({ data })
 }
 

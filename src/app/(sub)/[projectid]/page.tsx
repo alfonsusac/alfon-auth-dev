@@ -2,9 +2,9 @@ import { getCurrentUser, actionAdminOnly, isAdmin } from "@/lib/auth"
 import { actionResolveError, resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { deleteProject, getAllProjectDomains, getAllProjectKeys, updateProject } from "@/services/projects"
+import { createDomain, deleteProject, getAllProjectDomains, getAllProjectKeys, updateProject, type Project } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
-import { form } from "@/lib/AppForm"
+import { form } from "@/lib/basic-form/AppForm"
 import { AUTH } from "@/lib/auth_ui"
 import { ErrorCallout, SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { Link } from "@/lib/link/Link"
@@ -30,7 +30,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     }} />
 
     <NavigationBar
-      back={{ href: "/", label: "Home"}}
+      back={{ href: "/", label: "Home" }}
       title={project.name}
     />
 
@@ -48,11 +48,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
     <AUTH.AdminOnly>
 
-      <DialogButton
-        name="edit"
-        label="Edit Project Details"
-        className="secondary"
-      >
+      <DialogButton name="edit" label="Edit Project Details" className=" -mt-8">
         <DialogPaper title="Edit Project" wide>
           <form.EditForm
             name="edit_project"
@@ -78,7 +74,6 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
                 helper: "describe your project for future reference (optional)",
                 type: "text",
                 defaultValue: project.description ?? "",
-                required: false
               }
             }}
             action={async (inputs) => {
@@ -100,7 +95,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
         </DialogPaper>
       </DialogButton>
 
-      <ProjectDomainsList projectid={project.id} />
+      <ProjectDomainsList props={props} />
       <ProjectKeysList projectid={project.id} />
 
       <section className="category">
@@ -127,11 +122,12 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 }
 
 
-async function ProjectDomainsList(props: { projectid: string }) {
-  const { projectid } = props
+async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
+  const { project, error } = await pageData.projectPage(props.props)
+  if (error) return error
   const user = await getCurrentUser()
   if (!isAdmin(user)) return null
-  const domains = await getAllProjectDomains(projectid)
+  const domains = await getAllProjectDomains(project.id)
 
   return (
     <section className="category">
@@ -148,7 +144,7 @@ async function ProjectDomainsList(props: { projectid: string }) {
           const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
           const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
           return <li className="relative group" key={domain.id} >
-            <Link className="button ghost flex flex-col py-3" href={`/${ projectid }/domain/${ domain.id }`}>
+            <Link className="button ghost flex flex-col py-3" href={`/${ project.id }/domain/${ domain.id }`}>
               <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
                 <span className="text-foreground-body/50">
                   {protocol}
@@ -165,9 +161,65 @@ async function ProjectDomainsList(props: { projectid: string }) {
         }
         )}
       </ul>
-      <Link className="button primary small -mt-1" href={`/${ projectid }/domain/create`}>
+
+      <DialogButton name="add_url" label="Add URL" className="-mt-1">
+        <DialogPaper title="Add Project URL" wide>
+          <form.CreateForm
+            name="Add Project Domain"
+            action={async inputs => {
+              "use server"
+              await actionAdminOnly(`/${ project.id }`)
+              const res = await createDomain({
+                project_id: inputs.project_id,
+                origin: inputs.origin,
+                redirect_url: inputs.origin + inputs.redirect_url,
+              })
+              // const key = resolveError(`/${ project.id }/domain/create`, res, inputs)
+              const key = actionResolveError(res, { ...inputs, add_url: 'show' })
+              revalidatePath(`/${ project.id }`, 'layout')
+              actionNavigate(`/${ project.id }/domain/${ key.id }?success=domain_added`)
+            }}
+            fields={{
+              project_id: {
+                type: 'readonly',
+                value: project.id
+              },
+              origin: {
+                label: "domain",
+                helper: "the domain where your application is hosted. (no trailing slash)",
+                placeholder: "https://example.com",
+                type: "text",
+                required: true
+              },
+              redirect_url: {
+                label: "redirect path",
+                prefix: 'https://your.domain.com',
+                placeholder: "/api/auth/callback",
+                type: "text",
+                required: true,
+                helper: "must be on the same domain as callback url"
+              }
+            }}
+            searchParams={await props.props.searchParams}
+            errorCallout={<ErrorCallout<typeof createDomain> messages={{
+              project_not_found: "project not found.",
+              missing_fields: "missing required fields.",
+              invalid_origin: "invalid callback url format.",
+              invalid_redirect_url: "invalid redirect url format.",
+              mismatched_domains: "redirect url must be on the same domain as callback url.",
+              insecure_origin: "origin must use https unless using localhost.",
+              insecure_redirect_url: "redirect url must use https unless using localhost.",
+              domain_exists: "domain already exists for this project.",
+              domain_in_use: `domain is already in use by another project: $1`,
+            }} test={'' as any} />}
+          />
+        </DialogPaper>
+      </DialogButton>
+
+
+      {/* <Link className="button  small -mt-1" href={`/${ projectid }/domain/create`}>
         Add URL
-      </Link>
+      </Link> */}
     </section>
   )
 }
@@ -213,7 +265,7 @@ async function ProjectKeysList(props: { projectid: string }) {
           </li>
         )}
       </ul>
-      <Link className="button primary small -mt-1" href={`/${ projectid }/key/create`}>
+      <Link className="button  small -mt-1" href={`/${ projectid }/key/create`}>
         Create API Key
       </Link>
     </section>
