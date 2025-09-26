@@ -15,6 +15,7 @@ import { DataGridDisplay } from "@/lib/DataGrid"
 import { pageData } from "@/app/data"
 import { NavigationBar } from "@/lib/NavigationBar"
 import { DialogButton, DialogPaper } from "@/lib/dialogs/Dialog"
+import { redirect } from "next/navigation"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -176,7 +177,8 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
               })
               actionResolveError(res, { ...inputs, add_url: 'show' })
               revalidatePath(`/${ project.id }`, 'layout')
-              actionNavigate(`/${ project.id }?success=domain_added`)
+              redirect(`/${ project.id }?success=domain_added`)
+              // actionNavigate(`/${ project.id }?success=domain_added`)
             }}
             fields={{
               project_id: {
