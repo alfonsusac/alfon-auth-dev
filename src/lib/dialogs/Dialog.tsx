@@ -8,6 +8,25 @@ export function DialogButton(props: ComponentProps<typeof DialogButtonBase>) {
   return <DialogButtonBase {...props} />
 }
 
+export function DialogJustPaper(props: ComponentProps<"div">) {
+  return (
+    <div
+      {...props}
+      className={cn(
+        "in-[[data-show]]:[pointer-events:auto]",
+        "relative p-6 bg-background rounded-xl shadow-2xl ",
+        "w-full max-w-(--dialog-w)",
+        // wide && "p-8 max-w-(--dialog-wide-w)",
+        "overflow-y-auto",
+        props.className,
+      )}
+    >
+      {props.children}
+    </div>
+  )
+}
+
+
 export function DialogPaper(props: ComponentProps<"div"> & {
   title?: ReactNode,
   hideCloseButton?: boolean,
