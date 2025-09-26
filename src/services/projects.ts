@@ -46,7 +46,7 @@ export async function createProject(input: ProjectInput) {
   const user = await actionAdminOnly()
   const { error, data } = await validateProjectInput(input)
   if (error) return error
-  if (await getProject(data.id)) return "id_exists"
+  if (await get_project(data.id)) return "id_exists"
   await prisma.project.create({
     data: {
       ...data,
@@ -65,14 +65,14 @@ export async function updateProject(input: ProjectInput, id: string) {
   await actionAdminOnly()
   const { error, data } = await validateProjectInput(input)
   if (error) return error
-  if (!await getProject(id)) return "not_found"
-  if (id !== input.id && await getProject(data.id)) return "id_exists"
+  if (!await get_project(id)) return "not_found"
+  if (id !== input.id && await get_project(data.id)) return "id_exists"
   await prisma.project.update({ where: { id }, data })
 }
 
 export async function deleteProject(id: string) {
   await actionAdminOnly()
-  if (!await getProject(id)) return "not_found"
+  if (!await get_project(id)) return "not_found"
   await prisma.project.delete({ where: { id } })
 }
 
@@ -87,16 +87,12 @@ export const getAllProjectKeys = cache(unstable_cache(get_all_project_keys))
 
 
 async function get_project_key(id: string) {
-  // await actionAdminOnly()
-
   return prisma.projectKey.findFirst({
     where: { id },
   })
 }
 
 async function get_all_project_keys(project_id: string) {
-  // await actionAdminOnly()
-
   return prisma.projectKey.findMany({
     where: { project_id },
     orderBy: { createdAt: 'desc' },
@@ -114,7 +110,7 @@ export type ProjectKeyInput = {
 
 const validateProjectKeyInput = validation(async (input: ProjectKeyInput) => {
   if (!input.name || !input.project_id) return "missing_fields"
-  if (!await getProject(input.project_id)) return "project_not_found"
+  if (!await get_project(input.project_id)) return "project_not_found"
   return input as Required<ProjectKeyInput>
 })
 
@@ -129,19 +125,19 @@ export async function updateProjectKey(input: ProjectKeyInput, id: string) {
   await actionAdminOnly()
   const { error, data } = await validateProjectKeyInput(input)
   if (error) return error
-  if (!await getProjectKey(id)) return "not_found"
+  if (!await get_project_key(id)) return "not_found"
   await prisma.projectKey.update({ where: { id }, data })
 }
 
 export async function regenerateProjectKeySecret(id: string) {
   await actionAdminOnly()
-  if (!await getProjectKey(id)) return "not_found"
+  if (!await get_project_key(id)) return "not_found"
   await prisma.projectKey.update({ where: { id }, data: { client_secret: generateSecret() } })
 }
 
 export async function deleteProjectKey(id: string) {
   await actionAdminOnly()
-  if (!await getProjectKey(id)) return "not_found"
+  if (!await get_project_key(id)) return "not_found"
   await prisma.projectKey.delete({ where: { id } })
 }
 
@@ -189,7 +185,7 @@ type DomainInput = {
 
 const validateProjectDomainInput = validation(async (input: DomainInput) => {
   if (!input.project_id || !input.origin || !input.redirect_url) return "missing_fields"
-  if (!await getProject(input.project_id)) return "project_not_found"
+  if (!await get_project(input.project_id)) return "project_not_found"
 
   const origin = validateSecureURLwithLocalhost(input.origin)
   const redirectURL = validateSecureURLwithLocalhost(input.redirect_url)
@@ -210,11 +206,11 @@ export async function createDomain(input: DomainInput) {
   const { error, data } = await validateProjectDomainInput(input)
   if (error) return error
 
-  const existing = await getProjectDomainByOrigin(data.origin)
+  const existing = await get_project_domain_by_origin(data.origin)
 
   if (existing && existing.project_id !== data.project_id) return `domain_in_use=${ existing.project_id }` as const
   if (existing && existing.project_id === data.project_id) return "domain_exists"
-  
+
   if (!await getProject(data.project_id)) return "project_not_found"
   return prisma.domain.create({ data })
 }
@@ -228,6 +224,6 @@ export async function updateDomain(input: DomainInput, id: string) {
 
 export async function deleteDomain(id: string) {
   await actionAdminOnly()
-  if (!await getProjectDomain(id)) return "not_found"
+  if (!await get_project_domain(id)) return "not_found"
   await prisma.domain.delete({ where: { id } })
 }

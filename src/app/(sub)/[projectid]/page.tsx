@@ -174,10 +174,9 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
                 origin: inputs.origin,
                 redirect_url: inputs.origin + inputs.redirect_url,
               })
-              // const key = resolveError(`/${ project.id }/domain/create`, res, inputs)
-              const key = actionResolveError(res, { ...inputs, add_url: 'show' })
+              actionResolveError(res, { ...inputs, add_url: 'show' })
               revalidatePath(`/${ project.id }`, 'layout')
-              actionNavigate(`/${ project.id }/domain/${ key.id }?success=domain_added`)
+              actionNavigate(`/${ project.id }?success=domain_added`)
             }}
             fields={{
               project_id: {
@@ -215,11 +214,6 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
           />
         </DialogPaper>
       </DialogButton>
-
-
-      {/* <Link className="button  small -mt-1" href={`/${ projectid }/domain/create`}>
-        Add URL
-      </Link> */}
     </section>
   )
 }
