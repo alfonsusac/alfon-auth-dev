@@ -1,4 +1,4 @@
-import { actionAdminOnly, requireAdmin } from "@/lib/auth"
+import { actionAdminOnly } from "@/lib/auth"
 import prisma from "@/lib/db"
 import { generateSecret } from "@/lib/token"
 import { validateSecureURLwithLocalhost } from "@/lib/url"
@@ -20,7 +20,6 @@ async function get_project(id: string) {
   })
   if (!res) return null
   const { keys, domains, ...project } = res
-  console.log("Fetching Project...")
   return project
 }
 
