@@ -34,7 +34,7 @@
   --animate-toast: bannerIn 0.25s forwards,
                    bannerOut 0.25s 2.5s forwards;
 
-  --animate-toast-check: popIn 0.3s forwards;
+  --animate-toast-check: popIn 0.4s cubic-bezier(.64,2.18,.62,1) forwards;
 
   @keyframes bannerIn {
     from { 
@@ -59,7 +59,6 @@
   }
   @keyframes popIn {
     from { transform: scale(0); }
-    80% { transform: scale(1.1); }
     to   { transform: scale(1); }
   }
   
@@ -114,7 +113,7 @@ body {
     @apply p-2 px-4 flex gap-3 items-start
     bg-foreground text-background
     shadow-xl rounded-xl 
-    animate-toast
+    
   }
   
 

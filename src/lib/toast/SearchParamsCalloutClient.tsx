@@ -34,15 +34,15 @@ export function SuccessCallout(props: {
     >
       <div className={cn(
         "toast-item",
+        "animate-toast"
       )}>
-        <LineMdCircleFilledToConfirmCircleFilledTransition className="animate-toast-check h-[1lh] w-[1.5ch] shrink-0" />
+        <MaterialSymbolsCheck className="animate-toast-check h-[1lh] w-[1.5ch] shrink-0" />
         <div>{message}</div>
       </div>
     </div>
   }
   return <></>
 }
-
 
 export function MaterialSymbolsCheck(props: SVGProps<SVGSVGElement>) {
   return (
