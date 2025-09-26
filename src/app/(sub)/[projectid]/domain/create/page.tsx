@@ -3,11 +3,11 @@ import { form } from "@/lib/basic-form/AppForm"
 import { actionAdminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"
-import { resolveError } from "@/lib/redirects"
 import { actionNavigate } from "@/lib/resolveAction"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { createDomain } from "@/services/projects"
 import { revalidatePath } from "next/cache"
+import { actionResolveError } from "@/lib/redirects"
 
 export default async function CreateProjectDomainPage(props: PageProps<'/[projectid]/domain/create'>) {
 
@@ -35,7 +35,7 @@ export default async function CreateProjectDomainPage(props: PageProps<'/[projec
           origin: inputs.origin,
           redirect_url: inputs.origin + inputs.redirect_url,
         })
-        const key = resolveError(`/${ project.id }/domain/create`, res, inputs)
+        const key = actionResolveError(res, inputs)
         revalidatePath(`/${ project.id }`, 'layout')
         actionNavigate(`/${ project.id }/domain/${ key.id }?success=domain_added`)
       }}

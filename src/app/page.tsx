@@ -77,7 +77,7 @@ export default async function Home() {
           <ul className="list">
             {projects.map(project => {
               return <li key={project.id}>
-                <a
+                <Link
                   href={`/${ project.id }`}
                   className="list-row">
                   <div>
@@ -88,7 +88,7 @@ export default async function Home() {
                       <span className="text-foreground-body/50 font-normal text-xs">/{project.id}</span> - {project.description ? project.description : <span className=" text-foreground-body/50 text-xs">No description</span>}
                     </p>
                   </div>
-                </a>
+                </Link>
               </li>
             })}
           </ul>

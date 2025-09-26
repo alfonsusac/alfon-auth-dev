@@ -1,5 +1,5 @@
 import { getCurrentUser, actionAdminOnly, isAdmin } from "@/lib/auth"
-import { actionResolveError, resolveError } from "@/lib/redirects"
+import { actionResolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
 import { createDomain, deleteProject, getAllProjectDomains, getAllProjectKeys, updateProject, type Project } from "@/services/projects"
@@ -109,7 +109,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             "use server"
             await actionAdminOnly()
             const res = await deleteProject(project.id)
-            resolveError(`/${ project.id }/delete`, res)
+            actionResolveError(res, { delete: 'show' })
             revalidatePath('/')
             actionNavigate('/?success=deleted')
           }}

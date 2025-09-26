@@ -2,12 +2,12 @@ import { actionAdminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"
 import { createProjectKey } from "@/services/projects"
-import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { actionNavigate } from "@/lib/resolveAction"
 import { form } from "@/lib/basic-form/AppForm"
 import { ErrorCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { pageData } from "@/app/data"
+import { actionResolveError } from "@/lib/redirects"
 
 export default async function CreateProjectKeyPage(props: PageProps<'/[projectid]/key/create'>) {
 
@@ -43,7 +43,7 @@ export default async function CreateProjectKeyPage(props: PageProps<'/[projectid
         "use server"
         await actionAdminOnly(`/${ project.id }`)
         const res = await createProjectKey(inputs)
-        const key = resolveError(`/${ project.id }/key/create`, res, inputs)
+        const key = actionResolveError(res, inputs)
         revalidatePath(`/${ project.id }`, 'layout')
         actionNavigate(`/${ project.id }/key/${ key.id }?success=created`)
       }}

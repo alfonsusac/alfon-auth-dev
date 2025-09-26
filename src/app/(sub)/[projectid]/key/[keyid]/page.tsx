@@ -1,6 +1,5 @@
 import { actionAdminOnly } from "@/lib/auth"
 import { FormButton } from "@/lib/FormButton"
-import { resolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { CopyButton } from "@/lib/CopyButton"
 import { deleteProjectKey, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
@@ -14,6 +13,7 @@ import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { pageData } from "@/app/data"
+import { actionResolveError } from "@/lib/redirects"
 
 export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/[keyid]">) {
 
@@ -47,9 +47,9 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
         "use server"
         await actionAdminOnly(`/${ project.id }`)
         const res = await regenerateProjectKeySecret(key.id)
-        resolveError(`/${ project.id }/key/${ key.id }`, res)
+        actionResolveError(res)
         revalidatePath(`/${ project.id }`, 'layout')
-        triggerSuccessBanner("updated")
+        actionNavigate(`/${ project.id }?success=updated`)
       }}>
         <FormButton className="button small" loading="Regenerating...">
           Regenerate Secret <div className="icon-end">🔄</div>
@@ -65,9 +65,9 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
           "use server"
           await actionAdminOnly(`/${ project.id }`)
           const res = await updateProjectKey(inputs, key.id)
-          resolveError(`/${ project.id }/key/${ key.id }`, res)
+          actionResolveError(res)
           revalidatePath(`/${ project.id }`, 'layout')
-          triggerSuccessBanner("updated")
+          actionNavigate(`/${ project.id }?success=updated`)
         }}
         fields={{
           name: {
@@ -102,7 +102,7 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
           "use server"
           await actionAdminOnly()
           const res = await deleteProjectKey(key.id)
-          resolveError(`/${ project.id }/key/${ key.id }`, res)
+          actionResolveError(res)
           revalidatePath(`/${ project.id }`)
           actionNavigate(`/${ project.id }?success=key_deleted`)
         }}

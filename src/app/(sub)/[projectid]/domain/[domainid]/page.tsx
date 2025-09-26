@@ -5,12 +5,12 @@ import BackButton from "@/lib/BackButton"
 import { Breadcrumb } from "@/lib/Breadcrumb"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { DeleteDialogButton } from "@/lib/dialogs/DeleteDialog"
-import { resolveError } from "@/lib/redirects"
 import { actionNavigate } from "@/lib/resolveAction"
 import { ErrorCallout, SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
 import { triggerSuccessBanner } from "@/lib/toast/trigger"
 import { deleteDomain, updateDomain } from "@/services/projects"
 import { revalidatePath } from "next/cache"
+import { actionResolveError } from "@/lib/redirects"
 
 export default async function ProjectDomainPage(props: PageProps<'/[projectid]/domain/[domainid]'>) {
 
@@ -48,7 +48,7 @@ export default async function ProjectDomainPage(props: PageProps<'/[projectid]/d
             origin: inputs.origin,
             redirect_url: inputs.origin + inputs.redirect_url,
           }, domain.id)
-          resolveError(`/${ project.id }/key/${ domain.id }`, res)
+          actionResolveError(res, inputs)
           revalidatePath(`/${ project.id }`, 'layout')
           triggerSuccessBanner("updated")
         }}
@@ -99,7 +99,7 @@ export default async function ProjectDomainPage(props: PageProps<'/[projectid]/d
           "use server"
           await actionAdminOnly()
           const res = await deleteDomain(domain.id)
-          resolveError(`/${ project.id }/key/${ domain.id }`, res)
+          actionResolveError(res, { delete: 'show' })
           revalidatePath(`/${ project.id }`)
           actionNavigate(`/${ project.id }?success=domain_deleted`)
         }}
