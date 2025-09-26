@@ -35,17 +35,32 @@ export function SuccessCallout(props: {
   return <></>
 }
 
+type ExtractErrorFromRes<T extends (...args: any) => any> = Extract<Awaited<ReturnType<T>>, string>
+type ExtractErrorKeysFromRes<T extends string> = T extends `${ infer V }=${ string }` ? V : T
+type GetErrorValueFromErrorRes<T extends string> = T extends `${ string }=${ string }` ? `${ string }$1${ string }` : string
+
 export function ErrorCallout<T extends (...args: any) => any>(props: {
+  test?: T extends (...args: any) => (infer U | Promise<infer U>)
+  ? U extends string ? U extends `${ infer V }=${ string }` ? `${ V }=` : U : never : never
   messages: {
-    [K in Extract<Awaited<ReturnType<T>>, string>]: string
+    [K in ExtractErrorFromRes<T> as ExtractErrorKeysFromRes<K>]: GetErrorValueFromErrorRes<K>
   }
 }) {
   const sp = useSearchParams()
   const error = sp.get('error')
   if (typeof error === 'string') {
-    const message = props.messages?.[error as Extract<Awaited<ReturnType<T>>, string>] ?? error
+    const messageOrMessageFn = props.messages?.[error.split('=')[0] as ExtractErrorKeysFromRes<ExtractErrorFromRes<T>>] ?? error
+
+    if (error.includes('=')) {
+      const [, msg] = error.split('=')
+      const message = messageOrMessageFn.replace('$1', msg)
+      return <div className="callout error animate-fade-in">
+        {message}
+      </div>
+    }
+
     return <div className="callout error animate-fade-in">
-      {message}
+      {messageOrMessageFn}
     </div>
   }
   return <></>
