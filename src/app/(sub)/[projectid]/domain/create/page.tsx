@@ -70,6 +70,7 @@ export default async function CreateProjectDomainPage(props: PageProps<'/[projec
         insecure_origin: "origin must use https unless using localhost.",
         insecure_redirect_url: "redirect url must use https unless using localhost.",
         domain_exists: "domain already exists for this project.",
+        domain_in_use: "domain is already in use by another project: $1",
       }} />}
     />
 
