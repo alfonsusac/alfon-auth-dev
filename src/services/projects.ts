@@ -208,8 +208,8 @@ export async function createDomain(input: DomainInput) {
 
   const existing = await get_project_domain_by_origin(data.origin)
 
-  if (existing && existing.project_id !== data.project_id) return `domain_in_use=${ existing.project_id }` as const
-  if (existing && existing.project_id === data.project_id) return "domain_exists"
+  if (existing && existing.project_id !== data.project_id && !data.origin.includes('localhost')) return `domain_in_use=${ existing.project_id }` as const
+  if (existing && existing.project_id === data.project_id && !data.origin.includes('localhost')) return "domain_exists"
 
   if (!await getProject(data.project_id)) return "project_not_found"
   return prisma.domain.create({ data })
