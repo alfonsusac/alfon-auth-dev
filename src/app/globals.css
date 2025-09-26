@@ -26,6 +26,10 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
+  
+  --breakpoint-xs: 480px;
+  --breakpoint-xxs: 320px;
+
   --text-xxs: 0.625rem; /* 10px */
 
   --animate-fade-in: fadeIn 0.15s forwards; 

@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation"
 import { Link } from "../link/Link"
 import { cn } from "lazy-cn"
 import { DialogCloseButton, DialogJustPaper } from "../dialogs/Dialog"
-import { Suspense, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 export function SuppageClient(props: {
   name: string,
@@ -49,7 +49,7 @@ export function SuppageClient(props: {
 
       <div className={cn(
         "pointer-events-none absolute top-0 left-0 w-screen h-screen",
-        "flex items-center justify-center p-20"
+        "flex items-center justify-center p-4 xs:p-12 sm:p-20"
       )}>
         <DialogJustPaper className={cn(
           (opened || show) ? "opacity-100 pointer-events-auto" : "pointer-events-none opacity-0",
@@ -60,15 +60,9 @@ export function SuppageClient(props: {
           <DialogCloseButton className="absolute" onClick={() => {
             setOpened(false)
           }} />
-          <div className="shrink basis-0 grow min-h-0 overflow-y-auto p-10 py-20 flex flex-col items-center">
-            <div className="w-full max-w-lg">
+          <div className="shrink basis-0 grow min-h-0 overflow-y-auto p-8 pt-14 xs:p-12 xs:pt-18 sm:p-20 flex flex-col items-center">
+            <div className="w-full">
               {props.children}
-              {/* {(show || opened) && props.children} */}
-              {/* {(show || opened) &&
-                <Suspense fallback={"loading."}>
-                  {props.children}
-                </Suspense>
-              } */}
             </div>
           </div>
         </DialogJustPaper>
