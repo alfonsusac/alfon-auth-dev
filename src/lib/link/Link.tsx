@@ -9,20 +9,21 @@ export function Link(props: ComponentProps<typeof LinkClient> & {
   let newhref
   if (props.context) {
     if (props.href?.includes('#')) {
-      let [nofragmenthref, fragment] = props.href.split('#', 2)
-      if (nofragmenthref.includes('?')) {
-        newhref = nofragmenthref + '&' + new URLSearchParams(props.context).toString() + '#' + fragment
-      } else {
-        newhref = nofragmenthref + '?' + new URLSearchParams(props.context).toString() + '#' + fragment
-      }
+      const [nofragmenthref, fragment] = props.href.split('#', 2)
+      newhref = resolveFragmentlessHrefWithMergedSearchParams(nofragmenthref, props.context) + '#' + fragment
     }
-    if (props.href?.includes('?')) {
-      newhref = props.href + '&' + new URLSearchParams(props.context).toString()
-    } else {
-      newhref = props.href + '?' + new URLSearchParams(props.context).toString()
-    }
-  } else {
-    newhref = props.href
-  }
+    else newhref = resolveFragmentlessHrefWithMergedSearchParams(props.href, props.context)
+  } else newhref = props.href
+
   return <LinkClient {...props} href={newhref} data-url={JSON.stringify(props.context)} />
+}
+
+
+
+function resolveFragmentlessHrefWithMergedSearchParams(nofragmenthref: string | undefined, context: { [key: string]: string }) {
+  if (nofragmenthref?.includes('?')) {
+    const [path, sp] = nofragmenthref.split('?', 2)
+    return path + '?' + new URLSearchParams(context).toString() + '&' + sp
+  }
+  return nofragmenthref + '?' + new URLSearchParams(context).toString()
 }
