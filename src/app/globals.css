@@ -191,7 +191,7 @@ body:has(.modal-opened) {
     @apply p-1.5 px-3 text-xs rounded-md
   }
   .button.destructive {
-    @apply border-red-300 text-red-600
+    @apply border-red-200 text-red-600
     hover:bg-red-50 active:bg-red-100;
   }
   .button.destructive-primary {
