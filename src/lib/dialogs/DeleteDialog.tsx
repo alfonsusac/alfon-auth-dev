@@ -26,6 +26,7 @@ export function DeleteDialogButton(props: {
         backHref={'?'}
         actionLabel="Delete"
         action={props.action}
+        context={props.context2}
       />
     </DialogPaper>
   </DialogButton>

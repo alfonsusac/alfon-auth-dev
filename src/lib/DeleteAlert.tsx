@@ -36,6 +36,7 @@ export function DeleteAlert2(props: {
   actionLabel: ReactNode,
   action: () => Promise<void>,
   backHref: string,
+  context?: { [key: string]: string }
 }) {
   return (
     <section className="flex flex-col gap-6 items-center">
@@ -56,7 +57,7 @@ export function DeleteAlert2(props: {
             loading="Deleting..."
             className="button destructive-primary small self-stretch w-full">{props.actionLabel}</FormButton>
         </Form>
-        <Link href={props.backHref} replace scroll={false} className="button ghost small self-stretch w-full" autoFocus>Cancel</Link>
+        <Link href={props.backHref} replace scroll={false} className="button ghost small self-stretch w-full" autoFocus context={props.context} client>Cancel</Link>
       </div>
     </section>
   )
