@@ -41,8 +41,8 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
         auth.alfon.dev/{project.id}
       </code>
       <DataGridDisplay data={{
-        'created at': project.createdAt,
-        'updated at': project.updatedAt,
+        'created at': new Date(project.createdAt),
+        'updated at': new Date(project.updatedAt),
         'description': project.description,
       }} />
     </header>
