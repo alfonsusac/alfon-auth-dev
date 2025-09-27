@@ -30,10 +30,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       updated: "project updated!"
     }} />
 
-    <NavigationBar
-      back={{ href: "/", label: "Home" }}
-      title={project.name}
-    />
+    <NavigationBar back={['Home', '/']} />
 
     <header>
       <h1 className="page-h1">{project.name}</h1>
