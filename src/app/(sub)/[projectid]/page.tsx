@@ -240,7 +240,6 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
   const { project, domain, error } = await pageData.projectDomainPage(props.props)
   if (error) return error
   const context = { [`domain_${ domain.id }`]: 'show' }
-  console.log(context)
 
   return <div className="flex flex-col gap-12">
     <SuccessCallout messages={{
