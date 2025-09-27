@@ -95,6 +95,7 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
       <p className="category-title">danger zone ↓</p>
 
       <DeleteDialogButton
+        name="project_key"
         label="Delete Project Key"
         alertTitle="Are you sure you want to permanently delete this project key?"
         alertDescription="This action cannot be undone. Any applications using this key will no longer be able to access the project."
