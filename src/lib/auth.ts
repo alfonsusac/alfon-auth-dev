@@ -4,11 +4,12 @@ import { deleteCookie, getSecureCookie, setSecureCookie } from "./cookie"
 import { decodeJwt, SignJWT } from "jose"
 import { cache } from "react"
 import { actionNavigate } from "./resolveAction"
+import { envvars } from "./env"
 
 const google = new arctic.Google(
-  process.env.GOOGLE_CLIENT_ID!,
-  process.env.GOOGLE_CLIENT_SECRET!,
-  `${ process.env.BASE_URL }/auth/google/callback`
+  envvars('GOOGLE_CLIENT_ID'),
+  envvars('GOOGLE_CLIENT_SECRET'),
+  `${ envvars('BASE_URL') }/auth/google/callback`
 )
 
 export async function signIn(redirectTo?: string) {
@@ -20,7 +21,7 @@ export async function signIn(redirectTo?: string) {
 
   const scopes: string[] = ['openid', 'email']
   const url = google.createAuthorizationURL(state + ' | ' + (redirectTo ?? ''), codeVerifier, scopes)
-  redirect(url.toString()) 
+  redirect(url.toString())
 }
 
 export async function signInAdminLocalhost() {
@@ -29,14 +30,14 @@ export async function signInAdminLocalhost() {
   const exp = now + 60 * 60 // 1 hour
 
   const new_jwt = await new SignJWT({
-    sub: process.env.ADMIN_USER_ID!,
+    sub: envvars('ADMIN_USER_ID'),
   })
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setIssuedAt(iat)
     .setExpirationTime(exp!)
     .setIssuer('https://auth.alfon.dev') // your app's issuer
-    .setAudience(process.env.ADMIN_USER_ID!)
-    .sign(new Uint8Array(Buffer.from(process.env.JWT_SECRET!)))
+    .setAudience(envvars('ADMIN_USER_ID'))
+    .sign(new Uint8Array(Buffer.from(envvars('JWT_SECRET'))))
 
   await setSecureCookie('auth_token', new_jwt, 60 * 60 * 24 * 1) // 1 days
 }
@@ -97,7 +98,7 @@ export async function signInHandleCallback(code?: string, received_state?: strin
       .setExpirationTime(decodedAuthToken.exp!)
       .setIssuer('https://auth.alfon.dev') // your app's issuer
       .setAudience(decodedAuthToken.sub!)
-      .sign(new Uint8Array(Buffer.from(process.env.JWT_SECRET!)))
+      .sign(new Uint8Array(Buffer.from(envvars('JWT_SECRET'))))
 
     await setSecureCookie('auth_token', new_jwt, 60 * 60 * 24 * 1) // 1 days
 
@@ -130,7 +131,7 @@ export async function issueAuthorizationJWT(id: string, email: string, pfp: stri
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setIssuedAt()
     .setExpirationTime('24h')
-    .sign(Buffer.from(process.env.JWT_SECRET!, 'utf-8'))
+    .sign(Buffer.from(envvars('JWT_SECRET'), 'utf-8'))
   return jwt
 }
 
@@ -162,7 +163,7 @@ export async function logout() {
 
 export function isAdmin(user: User | null): user is User {
   if (!user) return false
-  return user.id === process.env.ADMIN_USER_ID
+  return user.id === envvars('ADMIN_USER_ID')
 }
 
 export async function actionAdminOnly(redirect_path_on_fail: string = '/unauthorized') {

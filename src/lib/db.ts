@@ -4,6 +4,7 @@ import { PrismaNeon } from '@prisma/adapter-neon'
 import { neonConfig } from '@neondatabase/serverless'
 import ws from 'ws'
 import { PrismaClient } from '@/generated/prisma'
+import { envvars } from './env'
 
 neonConfig.webSocketConstructor = ws
 
@@ -18,7 +19,7 @@ neonConfig.poolQueryViaFetch = true
 let prisma: PrismaClient;
 
 
-const connectionString = `${ process.env.DATABASE_URL }`
+const connectionString = `${ envvars('DATABASE_URL') }`
 const adapter = new PrismaNeon({ connectionString })
 prisma = (global as any).prisma || new PrismaClient({ adapter }) 
 if (process.env.NODE_ENV === 'development') (global as any).prisma = prisma
