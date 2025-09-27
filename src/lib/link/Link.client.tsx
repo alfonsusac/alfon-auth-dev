@@ -29,11 +29,12 @@ export function LinkClient({
       if (props.onClick) props.onClick(e)
       if (e.defaultPrevented) return
       if (client) {
+        // alert("Client-side navigation. URL: " + props.href)
         e.preventDefault()
         const href = props.href?.toString() ?? "#"
         if (replace)
           window.history.pushState({}, "", href)
-        else 
+        else
           window.history.replaceState({}, "", href)
       }
     }}

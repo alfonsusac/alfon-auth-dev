@@ -2,21 +2,24 @@ import { DeleteAlert2 } from "../DeleteAlert"
 import { DialogButton, DialogPaper } from "./Dialog"
 
 export function DeleteDialogButton(props: {
+  name: string,
   label: string,
   alertTitle?: string,
   alertDescription?: string,
   alertActionLabel?: string,
   action: () => Promise<void>,
+  context2?: { [key: string]: string }
 }) {
   return <DialogButton
-    name="delete"
+    context={props.context2}
+    name={"delete"+props.name}
     button={
       <button className="button destructive small">
         {props.label}
       </button>
     }
   >
-    <DialogPaper>
+    <DialogPaper context={props.context2}>
       <DeleteAlert2
         title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
         description={props.alertDescription || "This action cannot be undone."}

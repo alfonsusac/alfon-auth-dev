@@ -10,6 +10,7 @@ export function DialogButtonBase(props: {
   name: string,
   button: React.ReactNode,
   children?: React.ReactNode,
+  context?: { [key: string]: string }
 }) {
   const sp = useSearchParams()
   const show = sp.get(props.name) === 'show'
@@ -20,6 +21,7 @@ export function DialogButtonBase(props: {
       scroll={false}
       client
       className="w-fit"
+      context={props.context}
     >
       {props.button}
     </Link>

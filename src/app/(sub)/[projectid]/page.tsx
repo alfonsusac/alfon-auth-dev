@@ -1,6 +1,6 @@
 import { getCurrentUser, actionAdminOnly, isAdmin } from "@/lib/auth"
 import { actionResolveError } from "@/lib/redirects"
-import { revalidatePath, revalidateTag } from "next/cache"
+import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
 import { createDomain, deleteDomain, deleteProject, getAllProjectDomains, getAllProjectKeys, updateDomain, updateProject, type Project } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
@@ -104,6 +104,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       <section className="category">
         <p className="category-title">danger zone ↓</p>
         <DeleteDialogButton
+          name={`project-${ project.id }`}
           label="Delete Project"
           alertTitle={`Are you sure you want to permanently delete "${ project.name }"?`}
           alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
@@ -238,10 +239,10 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
 
 async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/domain/[domainid]"> }) {
 
-
-
   const { project, domain, error } = await pageData.projectDomainPage(props.props)
   if (error) return error
+  const context = { [`domain_${ domain.id }`]: 'show' }
+  console.log(context)
 
   return <div className="flex flex-col gap-12">
     <SuccessCallout messages={{
@@ -272,7 +273,6 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
             redirect_url: inputs.origin + inputs.redirect_url,
           }, domain.id)
           actionResolveError(res, { ...inputs, [`domain_${ domain.id }`]: 'show' })
-          console.log("project id ", project.id)
           revalidatePath(`/${ project.id }`)
           actionNavigate(`/${ project.id }?success=updated+${ nanoid(3) }`, "replace")
         }}
@@ -316,6 +316,8 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
       <p className="category-title">danger zone ↓</p>
 
       <DeleteDialogButton
+        name={`domain-${ domain.id }`}
+        context2={context}
         label="Delete Project Domain"
         alertTitle="Are you sure you want to permanently delete this domain?"
         alertDescription="This action cannot be undone. Any applications using this domain will no longer be able to access the project."

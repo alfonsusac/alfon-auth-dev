@@ -30,15 +30,20 @@ export function DialogPaper(props: ComponentProps<"div"> & {
   title?: ReactNode,
   hideCloseButton?: boolean,
   wide?: boolean,
+  context?: { [key: string]: string }
 }) {
   const { title, hideCloseButton, wide, ...rest } = props
 
   return <>
-    <DialogBackdropLink className={cn(
-      "opacity-0",
-      "in-[[data-show]]:opacity-150",
-      "transition-opacity duration-80 ease-linear",
-    )} />
+    <DialogBackdropLink
+      context={props.context}
+      className={cn(
+        "opacity-0",
+        "in-[[data-show]]:opacity-150",
+        "transition-opacity duration-80 ease-linear",
+        JSON.stringify(props.context)
+      )}
+    />
     <div className={cn(
       "opacity-0 scale-90",
       "in-[[data-show]]:opacity-150",
@@ -117,10 +122,14 @@ export function DialogPaper(props: ComponentProps<"div"> & {
 
 export function DialogBackdropLink(props: {
   className?: string
+  context?: { [key: string]: string }
 }) {
   return <Link
+    context={props.context}
     className={cn(
       "absolute top-0 left-0 w-full h-full bg-foreground/25",
+      // "ASDF",
+      JSON.stringify(props.context),
       props.className,
     )}
     href={"?"}
