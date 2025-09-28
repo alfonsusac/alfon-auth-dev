@@ -1,35 +1,60 @@
 import { DeleteAlert2 } from "../DeleteAlert"
-import { DialogButton, DialogPaper } from "./Dialog"
+import { Dialog, DialogPaper } from "./Dialog"
 
-export function DeleteDialogButton(props: {
-  name: string,
-  label: string,
-  alertTitle?: string,
-  alertDescription?: string,
-  alertActionLabel?: string,
-  action: () => Promise<void>,
-  context2?: { [key: string]: string }
-}) {
-  return <DialogButton
-    context={props.context2}
-    name={"delete"+props.name}
-    button={
-      <button className="button destructive small">
+export function DeleteDialogButton(
+  props: {
+    name: string,
+    label: string,
+    alertTitle?: string,
+    alertDescription?: string,
+    alertActionLabel?: string,
+    action: () => Promise<void>,
+    context2?: { [key: string]: string }
+  }
+) {
+  // const [DeleteDialog, DeleteButton] = createDialog(`delete_${ props.name }`, props.context2)
+
+  return <Dialog name={`delete_${ props.name }`} context={props.context2}>
+    {(Button, Dialog) => <>
+      <Button className="button destructive small">
         {props.label}
-      </button>
-    }
-  >
-    <DialogPaper context={props.context2}>
-      <DeleteAlert2
-        title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
-        description={props.alertDescription || "This action cannot be undone."}
-        backHref={'?'}
-        actionLabel="Delete"
-        action={props.action}
-        context={props.context2}
-      />
-    </DialogPaper>
-  </DialogButton>
+      </Button>
+      <Dialog>
+        <DialogPaper context={props.context2}>
+          <DeleteAlert2
+            title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
+            description={props.alertDescription || "This action cannot be undone."}
+            backHref={'?'}
+            actionLabel="Delete"
+            action={props.action}
+          />
+        </DialogPaper>
+      </Dialog>
+    </>}
+  </Dialog>
+
+
+
+  // return <DialogButton
+  //   context={props.context2}
+  //   name={"delete" + props.name}
+  //   button={
+  //     <button className="button destructive small">
+  //       {props.label}
+  //     </button>
+  //   }
+  // >
+  //   <DialogPaper context={props.context2}>
+  //     <DeleteAlert2
+  //       title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
+  //       description={props.alertDescription || "This action cannot be undone."}
+  //       backHref={'?'}
+  //       actionLabel="Delete"
+  //       action={props.action}
+  //       context={props.context2}
+  //     />
+  //   </DialogPaper>
+  // </DialogButton>
 }
 
 

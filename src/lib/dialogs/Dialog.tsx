@@ -1,8 +1,63 @@
 
 import { type ComponentProps, type ReactNode, type SVGProps } from "react"
 import { cn } from "lazy-cn"
-import { DialogButtonBase } from "./Dialog.client"
+import { DialogButtonBase, DialogJustButtonBase, SearchParamDialog } from "./Dialog.client"
 import { Link } from "../link/Link"
+import { SearchParamModal } from "../sp-modal/SearchParamModal.client"
+
+// export function createDialog(name: string, context?: PageContext) {
+//   // TODO - u can pass children from props instead of return components
+
+//   const Dialog =
+//     (props: { children?: ReactNode }) =>
+//       <SearchParamDialog name={name}>
+//         {props.children}
+//       </SearchParamDialog>
+
+//   const Button =
+//     (props: Omit<ComponentProps<typeof DialogJustButtonBase>, 'href' | 'context'>) =>
+//       <DialogJustButtonBase {...props}
+//         href={`?${ name }`}
+//         context={context}
+//       />
+
+
+//   // TODO? Custom Close Button that resets specific search params
+
+//   return [Dialog, Button] as const
+// }
+
+
+export function Dialog(props: {
+  name: string,
+  context?: PageContext,
+  children?: (
+    Button: (props: Omit<ComponentProps<typeof DialogJustButtonBase>, 'href' | 'context'>) => ReactNode,
+    Content: (props: { children?: ReactNode }) => ReactNode
+  ) => ReactNode
+}) {
+  const { name, context } = props
+
+  //   // TODO - u can pass children from props instead of return components
+  //   // TODO? Custom Close Button that resets specific search params
+
+
+  return <>
+    {props.children?.(
+      (props) =>
+        <DialogJustButtonBase {...props}
+          href={`?${ name }`}
+          context={context}
+        />,
+
+      (props) =>
+        <SearchParamModal name={name}>
+          {props.children}
+        </SearchParamModal>
+    )}
+  </>
+}
+
 
 export function DialogButton(props: ComponentProps<typeof DialogButtonBase>) {
   return <DialogButtonBase {...props} />
@@ -13,7 +68,6 @@ export function DialogJustPaper(props: ComponentProps<"div">) {
     <div
       {...props}
       className={cn(
-        "in-[[data-show]]:[pointer-events:auto]",
         "relative p-6 bg-background rounded-xl shadow-2xl ",
         "w-full max-w-(--dialog-w)",
         "overflow-y-auto",
@@ -41,7 +95,6 @@ export function DialogPaper(props: ComponentProps<"div"> & {
         "opacity-0",
         "in-[[data-show]]:opacity-150",
         "transition-opacity duration-80 ease-linear",
-        JSON.stringify(props.context)
       )}
     />
     <div className={cn(
@@ -50,16 +103,13 @@ export function DialogPaper(props: ComponentProps<"div"> & {
       "in-[[data-show]]:scale-100",
       "transition duration-80 ease-linear",
 
-      "[pointer-events:none]",
-
       "max-h-screen max-w-screen",
       "flex flex-col",
       "p-4",
     )}>
       <div
-        {...rest}
+        // {...rest}
         className={cn(
-          "in-[[data-show]]:[pointer-events:auto]",
           "relative p-6 bg-background rounded-xl shadow-2xl ",
           "w-full max-w-(--dialog-w)",
           wide && "p-8 max-w-(--dialog-wide-w)",
@@ -128,8 +178,6 @@ export function DialogBackdropLink(props: {
     context={props.context}
     className={cn(
       "absolute top-0 left-0 w-full h-full bg-foreground/25",
-      // "ASDF",
-      JSON.stringify(props.context),
       props.className,
     )}
     href={"?"}
