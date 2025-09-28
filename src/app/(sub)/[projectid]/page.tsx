@@ -10,7 +10,7 @@ import { ErrorCallout, SuccessCallout } from "@/lib/toast/SearchParamsCalloutCli
 import { Link } from "@/lib/link/Link"
 import { actionNavigate } from "@/lib/resolveAction"
 import { nanoid } from "nanoid"
-import { DeleteDialogButton } from "@/lib/dialogs/DeleteDialog"
+import { DeleteDialogButton } from "@/lib/dialogs/dialog-delete"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { pageData } from "@/app/data"
 import { NavigationBar } from "@/lib/NavigationBar"
