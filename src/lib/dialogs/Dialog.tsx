@@ -1,7 +1,7 @@
 
 import { type ComponentProps, type ReactNode } from "react"
 import { cn } from "lazy-cn"
-import { DialogButtonBase, DialogJustButtonBase } from "./Dialog.client"
+import { DialogButtonBase, DialogJustButtonBase } from "./dialog.client"
 import { Link } from "../link/Link"
 import { SearchParamModal } from "../sp-modal/SearchParamModal.client"
 import { IconClose } from "../icons"
