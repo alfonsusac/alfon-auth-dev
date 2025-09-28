@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, type ComponentProps } from "react"
-import { Link } from "../link/Link"
+import { Link } from "../link/link"
 import { useSearchParams } from "next/navigation"
 import { cn } from "lazy-cn"
 

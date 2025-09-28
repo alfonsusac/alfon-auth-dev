@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react"
 import { DialogJustButtonBase } from "./dialog.client"
 import { DialogBackdropLink, DialogCloseButton, DialogJustPaper } from "./dialog"
-import { SearchParamModal } from "../sp-modal/SearchParamModal.client"
+import { SearchParamModal } from "../sp-modal/search-param-modal.client"
 import { cn } from "lazy-cn"
 
 export function SubPage(props: {

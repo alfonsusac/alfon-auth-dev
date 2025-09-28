@@ -7,7 +7,6 @@ import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/basic-form/AppForm"
 import { AUTH } from "@/lib/auth_ui"
 import { ErrorCallout, SuccessCallout } from "@/lib/toast/SearchParamsCalloutClient"
-import { Link } from "@/lib/link/Link"
 import { actionNavigate } from "@/lib/resolveAction"
 import { nanoid } from "nanoid"
 import { DeleteDialogButton } from "@/lib/dialogs/dialog-delete"
@@ -16,6 +15,7 @@ import { pageData } from "@/app/data"
 import { NavigationBar } from "@/lib/NavigationBar"
 import { Dialog, DialogTitle } from "@/lib/dialogs/dialog"
 import { SubPage } from "@/lib/dialogs/dialog-subpage"
+import { Link } from "@/lib/link/link"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
