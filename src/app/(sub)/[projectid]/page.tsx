@@ -29,9 +29,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       domain_deleted: "domain deleted successfully!",
       updated: "project updated!"
     }} />
-
     <NavigationBar back={['Home', '/']} />
-
     <header>
       <h1 className="page-h1">{project.name}</h1>
       <code className="page-subtitle-code">
@@ -43,7 +41,6 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
         'description': project.description,
       }} />
     </header>
-
     <AUTH.AdminOnly>
       <Dialog name={`edit_project_${ project.id }`}>
         {async (EditButton, EditDialog) => <>
@@ -154,15 +151,9 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
               {(Button, SubPage) => <>
                 <Button className="button ghost flex flex-col py-3 w-full items-start">
                   <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
-                    <span className="text-foreground-body/50">
-                      {protocol}
-                    </span>
-                    <span className="font-medium text-foreground">
-                      {origin}
-                    </span>
-                    <span>
-                      {domain.redirect_url.replace(domain.origin, '')}
-                    </span>
+                    <span className="text-foreground-body/50">{protocol}</span>
+                    <span className="font-medium text-foreground">{origin}</span>
+                    <span>{domain.redirect_url.replace(domain.origin, '')}</span>
                   </div>
                 </Button>
 
@@ -236,59 +227,6 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
           </Dialog>
         </>}
       </Dialog>
-
-      {/* <DialogButton name="add_url" button={<button className="button small -mt-1">Add URL</button>}>
-        <DialogPaper title="Add Project URL" wide>
-          <form.CreateForm
-            name="Add Project Domain"
-            action={async inputs => {
-              "use server"
-              await actionAdminOnly(`/${ project.id }`)
-              const res = await createDomain({
-                project_id: inputs.project_id,
-                origin: inputs.origin,
-                redirect_url: inputs.origin + inputs.redirect_url,
-              })
-              actionResolveError(res, { ...inputs, add_url: 'show' })
-              revalidatePath(`/${ project.id }`)
-              actionNavigate(`/${ project.id }?success=domain_added`)
-            }}
-            fields={{
-              project_id: {
-                type: 'readonly',
-                value: project.id
-              },
-              origin: {
-                label: "domain",
-                helper: "the domain where your application is hosted. (no trailing slash)",
-                placeholder: "https://example.com",
-                type: "text",
-                required: true
-              },
-              redirect_url: {
-                label: "redirect path",
-                prefix: 'https://your.domain.com',
-                placeholder: "/api/auth/callback",
-                type: "text",
-                required: true,
-                helper: "must be on the same domain as callback url"
-              }
-            }}
-            searchParams={await props.props.searchParams}
-            errorCallout={<ErrorCallout<typeof createDomain> messages={{
-              project_not_found: "project not found.",
-              missing_fields: "missing required fields.",
-              invalid_origin: "invalid callback url format.",
-              invalid_redirect_url: "invalid redirect url format.",
-              mismatched_domains: "redirect url must be on the same domain as callback url.",
-              insecure_origin: "origin must use https unless using localhost.",
-              insecure_redirect_url: "redirect url must use https unless using localhost.",
-              domain_exists: "domain already exists for this project.",
-              domain_in_use: `domain is already in use by another project: $1`,
-            }} />}
-          />
-        </DialogPaper>
-      </DialogButton> */}
     </section>
   )
 }
@@ -299,8 +237,6 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
   if (error) return error
   const context = { [`domain_${ domain.id }`]: '' }
 
-  // const [DomainEditDialog, DomainEditButton] = createDialog(`edit_domain_${ domain.id }`, context)
-
   return <div className="flex flex-col gap-12">
     <SuccessCallout messages={{
       "created": "key created successfully!",
@@ -309,7 +245,6 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
 
     <header>
       <h1 className="page-h1">{domain.origin}</h1>
-
       <DataGridDisplay data={{
         'redirect url': domain.redirect_url,
         'created at': new Date(domain.createdAt),
@@ -318,7 +253,6 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
     </header>
 
     <section className="category">
-
       <Dialog name={`edit_domain_${ domain.id }`} context={context}>
         {async (EditButton, EditDialog) => <>
           <EditButton className="button small -mt-8">
@@ -379,12 +313,10 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
           </EditDialog>
         </>}
       </Dialog>
-
     </section>
 
     <section className="category">
       <p className="category-title">danger zone ↓</p>
-
       <DeleteDialogButton
         name={`domain-${ domain.id }`}
         context2={context}
