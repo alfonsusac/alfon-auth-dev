@@ -5,57 +5,76 @@ import { DialogButtonBase, DialogJustButtonBase, SearchParamDialog } from "./Dia
 import { Link } from "../link/Link"
 import { SearchParamModal } from "../sp-modal/SearchParamModal.client"
 
-// export function createDialog(name: string, context?: PageContext) {
-//   // TODO - u can pass children from props instead of return components
-
-//   const Dialog =
-//     (props: { children?: ReactNode }) =>
-//       <SearchParamDialog name={name}>
-//         {props.children}
-//       </SearchParamDialog>
-
-//   const Button =
-//     (props: Omit<ComponentProps<typeof DialogJustButtonBase>, 'href' | 'context'>) =>
-//       <DialogJustButtonBase {...props}
-//         href={`?${ name }`}
-//         context={context}
-//       />
-
-
-//   // TODO? Custom Close Button that resets specific search params
-
-//   return [Dialog, Button] as const
-// }
-
 
 export function Dialog(props: {
   name: string,
   context?: PageContext,
   children?: (
     Button: (props: Omit<ComponentProps<typeof DialogJustButtonBase>, 'href' | 'context'>) => ReactNode,
-    Content: (props: { children?: ReactNode }) => ReactNode
+    Content: (props: {
+      children?: ReactNode,
+      hideCloseButton?: boolean,
+      wide?: boolean,
+      className?: string
+    }) => ReactNode
   ) => ReactNode
 }) {
-  const { name, context } = props
+  const { name, context, children } = props
 
   //   // TODO - u can pass children from props instead of return components
   //   // TODO? Custom Close Button that resets specific search params
 
-
   return <>
-    {props.children?.(
-      (props) =>
+    {children?.(
+      props =>
         <DialogJustButtonBase {...props}
           href={`?${ name }`}
           context={context}
         />,
 
-      (props) =>
+      props =>
         <SearchParamModal name={name}>
-          {props.children}
+          <DialogBackdropLink context={context} />
+
+          {/* Actual Paper */}
+          <DialogJustPaper className={cn(
+            props.wide && "p-8 max-w-(--dialog-wide-w)",
+          )}>
+            {!props.hideCloseButton && <DialogCloseButton />}
+            {props.children}
+          </DialogJustPaper>
+
         </SearchParamModal>
     )}
   </>
+}
+
+export function DialogJustPaper(props: ComponentProps<"div">) {
+  return <div {...props}
+    className={cn(
+      "relative p-6 bg-background rounded-xl shadow-2xl ",
+      "w-full max-w-(--dialog-w)",
+      "overflow-y-auto",
+      props.className,
+    )}
+  />
+
+}
+
+export function DialogBoundingBox(props: ComponentProps<"div">) {
+  return <div {...props} className={cn(
+    "max-h-screen max-w-screen",
+    "flex flex-col",
+    "p-4",
+    props.className,
+  )} />
+}
+
+
+// -- Primitives --------
+
+export function DialogTitle(props: ComponentProps<"h2">) {
+  return <h2 {...props} className={cn("text-lg font-semibold mb-4", props.className)} />
 }
 
 
@@ -63,112 +82,54 @@ export function DialogButton(props: ComponentProps<typeof DialogButtonBase>) {
   return <DialogButtonBase {...props} />
 }
 
-export function DialogJustPaper(props: ComponentProps<"div">) {
-  return (
-    <div
-      {...props}
-      className={cn(
-        "relative p-6 bg-background rounded-xl shadow-2xl ",
-        "w-full max-w-(--dialog-w)",
-        "overflow-y-auto",
-        props.className,
-      )}
-    >
-      {props.children}
-    </div>
-  )
-}
 
 
-export function DialogPaper(props: ComponentProps<"div"> & {
-  title?: ReactNode,
-  hideCloseButton?: boolean,
-  wide?: boolean,
-  context?: { [key: string]: string }
-}) {
-  const { title, hideCloseButton, wide, ...rest } = props
-
-  return <>
-    <DialogBackdropLink
-      context={props.context}
-      className={cn(
-        "opacity-0",
-        "in-[[data-show]]:opacity-150",
-        "transition-opacity duration-80 ease-linear",
-      )}
-    />
-    <div className={cn(
-      "opacity-0 scale-90",
-      "in-[[data-show]]:opacity-150",
-      "in-[[data-show]]:scale-100",
-      "transition duration-80 ease-linear",
-
-      "max-h-screen max-w-screen",
-      "flex flex-col",
-      "p-4",
-    )}>
-      <div
-        // {...rest}
-        className={cn(
-          "relative p-6 bg-background rounded-xl shadow-2xl ",
-          "w-full max-w-(--dialog-w)",
-          wide && "p-8 max-w-(--dialog-wide-w)",
-          "overflow-y-auto",
-          props.className,
-        )}
-      >
-
-        {!hideCloseButton && <DialogCloseButton />}
-        {title && <h2 className="text-lg font-semibold mb-4">{title}</h2>}
-        {props.children}
-      </div>
-    </div>
-  </>
-
-}
 
 // export function DialogPaper2(props: ComponentProps<"div"> & {
-//   title?: ReactNode
-//   wide?: boolean
+//   title?: ReactNode,
+//   hideCloseButton?: boolean,
+//   wide?: boolean,
+//   context?: { [key: string]: string }
 // }) {
-//   const { title, wide, ...rest } = props
-//   return <div
-//     {...rest}
-//     className={cn(
-//       "relative p-6 bg-background rounded-xl shadow-2xl w-full max-w-[20rem] max-[20rem]:rounded-none max",
-//       // wide && "p-8 max-w-96",
-//       wide && [
-//         "p-8 max-w-(--dialog-wide-w) max-dialogwide:rounded-none",
-//         // Mobile
-//         "max-dialogwide:h-full",
-//         "max-dialogwide:max-h-screen",
-//         // Mobile animation
-//         "transition-all duration-150 ease-linear", // animation out / all
-//         "max-dialogwide:in-[[data-show]]:duration-300", // animation in
-//         "max-dialogwide:in-[[data-show]]:ease-out",
-//         "max-dialogwide:translate-x-20",
-//         "max-dialogwide:in-[[data-show]]:translate-x-0",
+//   const { title, hideCloseButton, wide, ...rest } = props
 
-//         // "scale-200 origin-center",
-//         // "in-[[data-show]]:scale-100",
-//       ],
+//   return <>
+//     <DialogBackdropLink
+//       context={props.context}
+//       className={cn(
+//         "opacity-0",
+//         "in-[[data-show]]:opacity-150",
+//         "transition-opacity duration-80 ease-linear",
+//       )}
+//     />
+//     <div className={cn(
+//       "opacity-0 scale-90",
+//       "in-[[data-show]]:opacity-150",
+//       "in-[[data-show]]:scale-100",
+//       "transition duration-80 ease-linear",
 
-//       "opacity-0",
-//       "in-[[data-show]]:opacity-100",
+//       "max-h-screen max-w-screen",
+//       "flex flex-col",
+//       "p-4",
+//     )}>
+//       <div
+//         className={cn(
+//           "relative p-6 bg-background rounded-xl shadow-2xl ",
+//           "w-full max-w-(--dialog-w)",
+//           wide && "p-8 max-w-(--dialog-wide-w)",
+//           "overflow-y-auto",
+//           props.className,
+//         )}
+//       >
 
-//       props.className
-//     )}
-//   >
-//     <DialogCloseButton />
+//         {!hideCloseButton && <DialogCloseButton />}
+//         {title && <h2 className="text-lg font-semibold mb-4">{title}</h2>}
+//         {props.children}
+//       </div>
+//     </div>
+//   </>
 
-//     {props.title && <h2 className="text-lg font-semibold mb-4">{props.title}</h2>}
-//     {props.children}
-
-//   </div>
 // }
-
-
-
 
 export function DialogBackdropLink(props: {
   className?: string

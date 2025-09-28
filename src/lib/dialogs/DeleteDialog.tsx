@@ -1,5 +1,5 @@
 import { DeleteAlert2 } from "../DeleteAlert"
-import { Dialog, DialogPaper } from "./Dialog"
+import { Dialog } from "./Dialog"
 
 export function DeleteDialogButton(
   props: {
@@ -20,15 +20,13 @@ export function DeleteDialogButton(
         {props.label}
       </Button>
       <Dialog>
-        <DialogPaper context={props.context2}>
-          <DeleteAlert2
-            title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
-            description={props.alertDescription || "This action cannot be undone."}
-            backHref={'?'}
-            actionLabel="Delete"
-            action={props.action}
-          />
-        </DialogPaper>
+        <DeleteAlert2
+          title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
+          description={props.alertDescription || "This action cannot be undone."}
+          backHref={'?'}
+          actionLabel="Delete"
+          action={props.action}
+        />
       </Dialog>
     </>}
   </Dialog>

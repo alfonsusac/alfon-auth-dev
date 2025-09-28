@@ -7,11 +7,12 @@ import type { ComponentProps } from "react"
 export function SearchParamModal(props: {
   name: string,
   children?: React.ReactNode,
+  className?: string
 }) {
   const sp = useSearchParams()
   const show = sp.get(props.name) === ''
 
-  return <ModalShell show={show}>
+  return <ModalShell show={show} className={props.className}>
     {props.children}
   </ModalShell>
 }
@@ -25,7 +26,7 @@ function ModalShell({ show, ...props }: ComponentProps<"div"> & {
     {...props}
     data-show={show ? "" : undefined}
     className={cn(
-      show ? "modal-opened" : "pointer-events-none opacity-0",
+      show ? "modal-opened pointer-events-auto" : "pointer-events-none opacity-0",
       "fixed top-0 left-0 w-screen h-screen z-(--z-dialog)",
       "flex items-center justify-center",
       props.className,

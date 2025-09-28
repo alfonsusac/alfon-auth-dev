@@ -81,14 +81,6 @@ export function DialogButtonBase(props: {
     <DialogRoot show={show}>
       {props.children}
     </DialogRoot>
-{/* 
-    <div className={cn(
-      show ? "modal-opened" : "pointer-events-none opacity-0",
-      "fixed top-0 left-0 w-screen h-screen z-(--z-dialog)",
-      "flex items-center justify-center",
-    )}>
-      {props.children}
-    </div> */}
   </>
 }
 
