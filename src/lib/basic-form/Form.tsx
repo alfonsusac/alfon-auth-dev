@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react"
-import { UnifiedFormWithClientRedirect } from "./Form.client"
+import { UnifiedFormWithClientRedirect } from "./form.client"
 import { TypedForm } from "./form.helper"
 import { redirect, RedirectType } from "next/navigation"
 import { resolveCustomRedirectError } from "../resolveAction"

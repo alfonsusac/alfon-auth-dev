@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react"
 import { FormButton } from "../FormButton"
 import { cn } from "lazy-cn"
 import { toNativeSearchParams } from "../searchParams"
-import { Form } from "./Form"
+import { Form } from "./form"
 import type { TypedForm } from "./form.helper"
 
 export function InputGroup(props: ComponentProps<"div">) {
