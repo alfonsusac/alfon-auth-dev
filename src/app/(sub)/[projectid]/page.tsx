@@ -14,8 +14,8 @@ import { DeleteDialogButton } from "@/lib/dialogs/dialog-delete"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { pageData } from "@/app/data"
 import { NavigationBar } from "@/lib/NavigationBar"
-import { Dialog, DialogTitle } from "@/lib/dialogs/Dialog"
-import { SubPage } from "@/lib/dialogs/SubpageDialog"
+import { Dialog, DialogTitle } from "@/lib/dialogs/dialog"
+import { SubPage } from "@/lib/dialogs/dialog-subpage"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 

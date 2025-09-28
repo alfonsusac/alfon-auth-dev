@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react"
 import { DialogJustButtonBase } from "./dialog.client"
-import { DialogBackdropLink, DialogCloseButton, DialogJustPaper } from "./Dialog"
+import { DialogBackdropLink, DialogCloseButton, DialogJustPaper } from "./dialog"
 import { SearchParamModal } from "../sp-modal/SearchParamModal.client"
 import { cn } from "lazy-cn"
 

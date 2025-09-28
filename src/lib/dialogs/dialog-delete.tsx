@@ -1,5 +1,5 @@
 import { DeleteAlert2 } from "../DeleteAlert"
-import { Dialog } from "./Dialog"
+import { Dialog } from "./dialog"
 
 export function DeleteDialogButton(
   props: {
