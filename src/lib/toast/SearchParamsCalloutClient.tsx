@@ -2,7 +2,7 @@
 
 import { cn } from "lazy-cn"
 import { useSearchParams } from "next/navigation"
-import type { SVGProps } from "react"
+import { IconCheckFilled } from "../icons"
 
 export function ToastBanner(props: {
   messages: Record<string, string>
@@ -38,28 +38,12 @@ export function SuccessCallout(props: {
         "animate-toast",
         "pointer-events-auto"
       )}>
-        <MaterialSymbolsCheck className="animate-toast-check h-[1lh] w-[1.5ch] shrink-0" />
+        <IconCheckFilled className="animate-toast-check h-[1lh] w-[1.5ch] shrink-0" />
         <div>{message}</div>
       </div>
     </div>
   }
   return <></>
-}
-
-export function MaterialSymbolsCheck(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}>{/* Icon from Material Symbols by Google - https://github.com/google/material-design-icons/blob/master/LICENSE */}<path fill="currentColor" d="m9.55 18l-5.7-5.7l1.425-1.425L9.55 15.15l9.175-9.175L20.15 7.4z" /></svg>
-  )
-}
-export function LineMdConfirm(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}>{/* Icon from Material Line Icons by Vjacheslav Trushkin - https://github.com/cyberalien/line-md/blob/master/license.txt */}<path fill="none" stroke="currentColor" strokeDasharray="24" strokeDashoffset="24" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 11l6 6l10 -10"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.4s" values="24;0" /></path></svg>
-  )
-}
-export function LineMdCircleFilledToConfirmCircleFilledTransition(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}>{/* Icon from Material Line Icons by Vjacheslav Trushkin - https://github.com/cyberalien/line-md/blob/master/license.txt */}<mask id="SVGhM8NHeAh"><g fill="none" stroke="#fff" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"><path fill="#fff" d="M3 12c0 -4.97 4.03 -9 9 -9c4.97 0 9 4.03 9 9c0 4.97 -4.03 9 -9 9c-4.97 0 -9 -4.03 -9 -9Z" /><path stroke="#000" strokeDasharray="14" strokeDashoffset="14" d="M8 12l3 3l5 -5"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.2s" values="14;0" /></path></g></mask><rect width="24" height="24" fill="currentColor" mask="url(#SVGhM8NHeAh)" /></svg>
-  )
 }
 
 
