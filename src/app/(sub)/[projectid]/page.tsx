@@ -2,7 +2,7 @@ import { getCurrentUser, actionAdminOnly, isAdmin } from "@/lib/auth"
 import { actionResolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { createDomain, deleteProject, getAllProjectDomains, getAllProjectKeys, updateProject } from "@/services/projects"
+import { createDomain, deleteDomain, deleteProject, getAllProjectDomains, getAllProjectKeys, updateDomain, updateProject } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/basic-form/app-form"
 import { AUTH } from "@/lib/auth_ui"
@@ -16,7 +16,6 @@ import { NavigationBar } from "@/lib/NavigationBar"
 import { Dialog, DialogTitle } from "@/lib/dialogs/dialog"
 import { SubPage } from "@/lib/dialogs/dialog-subpage"
 import { Link } from "@/lib/link/link"
-import { ProjectDomainItemSubpage } from "./subpage-domain"
 import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
@@ -223,6 +222,108 @@ async function ProjectDomainsList(props: { projectid: string, searchParams: Page
       </>} />
     </section>
   )
+}
+
+export async function ProjectDomainItemSubpage(props: {
+  projectid: string,
+  domainid: string,
+  context?: PageContext,
+  searchParams: PageSearchParams
+}) {
+
+  const { projectid, domainid, context } = props
+  const { domain, project, error } = await pageData.projectDomainPage2(projectid, domainid)
+  if (error) return error
+
+  return <div className="flex flex-col gap-12">
+    <SuccessCallout messages={{
+      "created": "key created successfully!",
+      "updated": "key updated!"
+    }} />
+
+    <header>
+      <h1 className="page-h1">{domain.origin}</h1>
+      <DataGridDisplay data={{
+        'redirect url': domain.redirect_url,
+        'created at': new Date(domain.createdAt),
+        'updated at': new Date(domain.updatedAt)
+      }} />
+    </header>
+
+    <section className="category">
+      <EditFormDialog
+        id={domain.id}
+        name="Domain"
+        context={context}
+        action={async (inputs, dialogContext) => {
+          "use server"
+          await actionAdminOnly(`/${ project.id }`)
+          const res = await updateDomain({
+            project_id: inputs.project_id,
+            origin: inputs.origin,
+            redirect_url: inputs.origin + inputs.redirect_url,
+          }, domain.id)
+          actionResolveError(res, { ...inputs, ...dialogContext })
+          revalidatePath(`/${ project.id }`)
+          actionNavigate(`/${ project.id }?success=updated+${ nanoid(3) }`, "replace", context)
+        }}
+        fields={{
+          project_id: {
+            type: 'readonly',
+            value: project.id,
+          },
+          origin: {
+            label: "allowed incoming domain",
+            helper: "the domain where your application is hosted. (no trailing slash)",
+            placeholder: "https://example.com",
+            type: "text",
+            required: true,
+            defaultValue: domain.origin
+          },
+          redirect_url: {
+            label: "redirect path",
+            prefix: 'https://your.domain.com',
+            placeholder: "/api/auth/callback",
+            type: "text",
+            required: true,
+            helper: "must be on the same domain as callback url",
+            defaultValue: domain.redirect_url.replace(domain.origin, '')
+          }
+        }}
+        searchParams={props.searchParams}
+        errorCallout={<ErrorCallout<typeof updateDomain> messages={{
+          missing_fields: "please fill out all required fields.",
+          project_not_found: "project not found.",
+          invalid_origin: "invalid origin.",
+          invalid_redirect_url: "invalid redirect url.",
+          mismatched_domains: "callback and redirect urls must share the same domain.",
+          insecure_origin: "origin must use https unless using localhost.",
+          insecure_redirect_url: "redirect url must use https unless using localhost.",
+          domain_exists: "domain already exists for this project.",
+          domain_in_use: `domain is already in use by another project: $1`,
+        }} />}
+      />
+    </section>
+
+    <section className="category">
+      <p className="category-title">danger zone ↓</p>
+      <DeleteDialogButton
+        name={`domain-${ domain.id }`}
+        context2={context}
+        label="Delete Project Domain"
+        alertTitle="Are you sure you want to permanently delete this domain?"
+        alertDescription="This action cannot be undone. Any applications using this domain will no longer be able to access the project."
+        action={async () => {
+          "use server"
+          await actionAdminOnly()
+          const res = await deleteDomain(domain.id)
+          actionResolveError(res, { delete: 'show' })
+          revalidatePath(`/${ project.id }`)
+          actionNavigate(`/${ project.id }?success=domain_deleted`)
+        }}
+      />
+    </section>
+  </div>
 }
 
 
