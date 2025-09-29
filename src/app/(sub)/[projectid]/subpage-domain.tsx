@@ -1,46 +1,44 @@
 import { pageData } from "@/app/data"
-import { form } from "@/lib/basic-form/app-form"
 import { actionAdminOnly } from "@/lib/auth"
-import BackButton from "@/lib/BackButton"
-import { Breadcrumb } from "@/lib/Breadcrumb"
+import { form } from "@/lib/basic-form/app-form"
+import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 import { DataGridDisplay } from "@/lib/DataGrid"
+import { Dialog, DialogTitle } from "@/lib/dialogs/dialog"
 import { DeleteDialogButton } from "@/lib/dialogs/dialog-delete"
-import { actionNavigate } from "@/lib/resolveAction"
-import { ErrorCallout, SuccessCallout } from "@/lib/toast/search-param-toast.client"
-import { triggerSuccessBanner } from "@/lib/toast/trigger"
-import { deleteDomain, updateDomain } from "@/services/projects"
-import { revalidatePath } from "next/cache"
 import { actionResolveError } from "@/lib/redirects"
+import { actionNavigate } from "@/lib/resolveAction"
+import { SuccessCallout, ErrorCallout } from "@/lib/toast/search-param-toast.client"
+import { updateDomain, deleteDomain } from "@/services/projects"
+import { nanoid } from "nanoid"
+import { revalidatePath } from "next/cache"
 
-export default async function ProjectDomainPage(props: PageProps<'/[projectid]/domain/[domainid]'>) {
+export async function ProjectDomainItemSubpage(props: { projectid: string, domainid: string, context?: PageContext, searchParams: PageSearchParams }) {
 
-  const { project, domain, error } = await pageData.projectDomainPage(props)
+  const { projectid, domainid, context } = props
+  const { domain, project, error } = await pageData.projectDomainPage2(projectid, domainid)
   if (error) return error
 
-  return <>
-    <BackButton href={`/${ project.id }`}>Back to Project</BackButton>
-
+  return <div className="flex flex-col gap-12">
     <SuccessCallout messages={{
       "created": "key created successfully!",
       "updated": "key updated!"
     }} />
 
     <header>
-      <Breadcrumb items={[project.name, "Key"]} />
       <h1 className="page-h1">{domain.origin}</h1>
-
       <DataGridDisplay data={{
         'redirect url': domain.redirect_url,
-        'created at': domain.createdAt,
-        'updated at': domain.updatedAt
+        'created at': new Date(domain.createdAt),
+        'updated at': new Date(domain.updatedAt)
       }} />
     </header>
 
     <section className="category">
-      <p className="category-title">edit details ↓</p>
-      <form.EditForm
-        name={"edit_project_key"}
-        action={async (inputs) => {
+      <EditFormDialog
+        id={domain.id}
+        name="Domain"
+        context={context}
+        action={async (inputs, dialogContext) => {
           "use server"
           await actionAdminOnly(`/${ project.id }`)
           const res = await updateDomain({
@@ -48,9 +46,9 @@ export default async function ProjectDomainPage(props: PageProps<'/[projectid]/d
             origin: inputs.origin,
             redirect_url: inputs.origin + inputs.redirect_url,
           }, domain.id)
-          actionResolveError(res, inputs)
-          revalidatePath(`/${ project.id }`, 'layout')
-          triggerSuccessBanner("updated")
+          actionResolveError(res, { ...inputs, ...dialogContext })
+          revalidatePath(`/${ project.id }`)
+          actionNavigate(`/${ project.id }?success=updated+${ nanoid(3) }`, "replace", context)
         }}
         fields={{
           project_id: {
@@ -75,7 +73,7 @@ export default async function ProjectDomainPage(props: PageProps<'/[projectid]/d
             defaultValue: domain.redirect_url.replace(domain.origin, '')
           }
         }}
-        searchParams={await props.searchParams}
+        searchParams={props.searchParams}
         errorCallout={<ErrorCallout<typeof updateDomain> messages={{
           missing_fields: "please fill out all required fields.",
           project_not_found: "project not found.",
@@ -84,15 +82,17 @@ export default async function ProjectDomainPage(props: PageProps<'/[projectid]/d
           mismatched_domains: "callback and redirect urls must share the same domain.",
           insecure_origin: "origin must use https unless using localhost.",
           insecure_redirect_url: "redirect url must use https unless using localhost.",
+          domain_exists: "domain already exists for this project.",
+          domain_in_use: `domain is already in use by another project: $1`,
         }} />}
       />
     </section>
 
     <section className="category">
       <p className="category-title">danger zone ↓</p>
-
       <DeleteDialogButton
-        name={'domain'}
+        name={`domain-${ domain.id }`}
+        context2={context}
         label="Delete Project Domain"
         alertTitle="Are you sure you want to permanently delete this domain?"
         alertDescription="This action cannot be undone. Any applications using this domain will no longer be able to access the project."
@@ -106,5 +106,5 @@ export default async function ProjectDomainPage(props: PageProps<'/[projectid]/d
         }}
       />
     </section>
-  </>
-} 
+  </div>
+}

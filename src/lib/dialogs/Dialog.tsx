@@ -18,7 +18,7 @@ export function Dialog(props: {
       wide?: boolean,
       className?: string
     }) => ReactNode,
-    context?: PageContext,
+    context: PageContext,
   ) => ReactNode
 }) {
   const { name, context, children } = props

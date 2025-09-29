@@ -16,6 +16,8 @@ import { NavigationBar } from "@/lib/NavigationBar"
 import { Dialog, DialogTitle } from "@/lib/dialogs/dialog"
 import { SubPage } from "@/lib/dialogs/dialog-subpage"
 import { Link } from "@/lib/link/link"
+import { ProjectDomainItemSubpage } from "./subpage-domain"
+import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -46,62 +48,57 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     </header>
 
     <AUTH.AdminOnly>
-      <Dialog name={`edit_project_${ project.id }`}>
-        {(EditButton, EditDialog, dialogContext) => <>
-          <EditButton className="button small -mt-8">
-            Edit Project Details
-          </EditButton>
+      <EditFormDialog
+        id={project.id}
+        name="Project"
+        fields={{
+          name: {
+            type: "text",
+            label: "project name",
+            helper: "give your project a name for identification",
+            defaultValue: project.name,
+            required: true,
+            autoFocus: true,
+          },
+          id: {
+            type: "text",
+            label: "project id",
+            helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
+            prefix: "https://auth.alfon.dev/",
+            defaultValue: project.id ?? "",
+            required: true
+          },
+          description: {
+            type: "text",
+            label: "description",
+            helper: "describe your project for future reference (optional)",
+            defaultValue: project.description ?? "",
+          }
+        }}
+        action={async (inputs, dialogContext) => {
+          "use server"
+          await actionAdminOnly(`/${ project.id }`)
+          const res = await updateProject(inputs, project.id)
+          actionResolveError(res, { ...inputs, ...dialogContext })
+          revalidatePath(`/`, 'layout')
+          actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
+        }}
+        searchParams={searchParams}
+        errorCallout={<ErrorCallout<typeof updateProject> messages={{
+          invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
+          missing_fields: "please fill out all required fields.",
+          not_found: "project not found.",
+          id_exists: "project id already exists.",
+        }} />} />
 
-          <EditDialog wide>
-            <DialogTitle>Edit Project</DialogTitle>
-            <form.EditForm
-              name="edit_project"
-              fields={{
-                name: {
-                  type: "text",
-                  label: "project name",
-                  helper: "give your project a name for identification",
-                  defaultValue: project.name,
-                  required: true,
-                  autoFocus: true,
-                },
-                id: {
-                  type: "text",
-                  label: "project id",
-                  helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
-                  prefix: "https://auth.alfon.dev/",
-                  defaultValue: project.id ?? "",
-                  required: true
-                },
-                description: {
-                  type: "text",
-                  label: "description",
-                  helper: "describe your project for future reference (optional)",
-                  defaultValue: project.description ?? "",
-                }
-              }}
-              action={async (inputs) => {
-                "use server"
-                await actionAdminOnly(`/${ project.id }`)
-                const res = await updateProject(inputs, project.id)
-                actionResolveError(res, { ...inputs, ...dialogContext })
-                revalidatePath(`/`, 'layout')
-                actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
-              }}
-              searchParams={searchParams}
-              errorCallout={<ErrorCallout<typeof updateProject> messages={{
-                invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
-                missing_fields: "please fill out all required fields.",
-                not_found: "project not found.",
-                id_exists: "project id already exists.",
-              }} />}
-            />
-          </EditDialog>
-        </>}
-      </Dialog>
+      <ProjectDomainsList
+        projectid={project.id}
+        searchParams={searchParams}
+      />
 
-      <ProjectDomainsList projectid={project.id} searchParams={searchParams} />
-      <ProjectKeysList projectid={project.id} />
+      <ProjectKeysList
+        projectid={project.id}
+      />
 
       <section className="category">
         <p className="category-title">danger zone ↓</p>
@@ -121,7 +118,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
           }}
         />
       </section>
-    </AUTH.AdminOnly>
+    </AUTH.AdminOnly >
   </>
 }
 
@@ -147,26 +144,23 @@ async function ProjectDomainsList(props: { projectid: string, searchParams: Page
           const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
           const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
           return <li className="relative group" key={domain.id}>
-            <SubPage name={`domain_${ domain.id }`}>
-              {(Button, SubPage) => <>
-                <Button className="button ghost flex flex-col py-3 w-full items-start">
-                  <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
-                    <span className="text-foreground-body/50">{protocol}</span>
-                    <span className="font-medium text-foreground">{origin}</span>
-                    <span>{domain.redirect_url.replace(domain.origin, '')}</span>
-                  </div>
-                </Button>
-
-                <SubPage>
-                  <ProjectDomainItemSubpage
-                    context={{ [`domain_${ domain.id }`]: '' }}
-                    domainid={domain.id}
-                    projectid={project.id}
-                    searchParams={props.searchParams}
-                  />
-                </SubPage>
-              </>}
-            </SubPage>
+            <SubPage name={`domain_${ domain.id }`} children={(Button, SubPage) => <>
+              <Button className="button ghost flex flex-col py-3 w-full items-start">
+                <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
+                  <span className="text-foreground-body/50">{protocol}</span>
+                  <span className="font-medium text-foreground">{origin}</span>
+                  <span>{domain.redirect_url.replace(domain.origin, '')}</span>
+                </div>
+              </Button>
+              <SubPage>
+                <ProjectDomainItemSubpage
+                  context={{ [`domain_${ domain.id }`]: '' }}
+                  domainid={domain.id}
+                  projectid={project.id}
+                  searchParams={props.searchParams}
+                />
+              </SubPage>
+            </>} />
           </li>
         })}
       </ul>
@@ -233,112 +227,7 @@ async function ProjectDomainsList(props: { projectid: string, searchParams: Page
   )
 }
 
-async function ProjectDomainItemSubpage(props: { projectid: string, domainid: string, context?: PageContext, searchParams: PageSearchParams }) {
 
-  const { projectid, domainid, context } = props
-  const { domain, project, error } = await pageData.projectDomainPage2(projectid, domainid)
-  if (error) return error
-
-  return <div className="flex flex-col gap-12">
-    <SuccessCallout messages={{
-      "created": "key created successfully!",
-      "updated": "key updated!"
-    }} />
-
-    <header>
-      <h1 className="page-h1">{domain.origin}</h1>
-      <DataGridDisplay data={{
-        'redirect url': domain.redirect_url,
-        'created at': new Date(domain.createdAt),
-        'updated at': new Date(domain.updatedAt)
-      }} />
-    </header>
-
-    <section className="category">
-      <Dialog name={`edit_domain_${ domain.id }`} context={context}>
-        {(EditButton, EditDialog, dialogContext) => <>
-          <EditButton className="button small -mt-8">
-            Edit Domain Details
-          </EditButton>
-          <EditDialog wide>
-            <DialogTitle>
-              Edit Domain
-            </DialogTitle>
-            <form.EditForm
-              name={"edit_project_domain"}
-              action={async (inputs) => {
-                "use server"
-                await actionAdminOnly(`/${ project.id }`)
-                const res = await updateDomain({
-                  project_id: inputs.project_id,
-                  origin: inputs.origin,
-                  redirect_url: inputs.origin + inputs.redirect_url,
-                }, domain.id)
-                actionResolveError(res, { ...inputs, ...dialogContext })
-                revalidatePath(`/${ project.id }`)
-                actionNavigate(`/${ project.id }?success=updated+${ nanoid(3) }`, "replace", context)
-              }}
-              fields={{
-                project_id: {
-                  type: 'readonly',
-                  value: project.id,
-                },
-                origin: {
-                  label: "allowed incoming domain",
-                  helper: "the domain where your application is hosted. (no trailing slash)",
-                  placeholder: "https://example.com",
-                  type: "text",
-                  required: true,
-                  defaultValue: domain.origin
-                },
-                redirect_url: {
-                  label: "redirect path",
-                  prefix: 'https://your.domain.com',
-                  placeholder: "/api/auth/callback",
-                  type: "text",
-                  required: true,
-                  helper: "must be on the same domain as callback url",
-                  defaultValue: domain.redirect_url.replace(domain.origin, '')
-                }
-              }}
-              searchParams={props.searchParams}
-              errorCallout={<ErrorCallout<typeof updateDomain> messages={{
-                missing_fields: "please fill out all required fields.",
-                project_not_found: "project not found.",
-                invalid_origin: "invalid origin.",
-                invalid_redirect_url: "invalid redirect url.",
-                mismatched_domains: "callback and redirect urls must share the same domain.",
-                insecure_origin: "origin must use https unless using localhost.",
-                insecure_redirect_url: "redirect url must use https unless using localhost.",
-                domain_exists: "domain already exists for this project.",
-                domain_in_use: `domain is already in use by another project: $1`,
-              }} />}
-            />
-          </EditDialog>
-        </>}
-      </Dialog>
-    </section>
-
-    <section className="category">
-      <p className="category-title">danger zone ↓</p>
-      <DeleteDialogButton
-        name={`domain-${ domain.id }`}
-        context2={context}
-        label="Delete Project Domain"
-        alertTitle="Are you sure you want to permanently delete this domain?"
-        alertDescription="This action cannot be undone. Any applications using this domain will no longer be able to access the project."
-        action={async () => {
-          "use server"
-          await actionAdminOnly()
-          const res = await deleteDomain(domain.id)
-          actionResolveError(res, { delete: 'show' })
-          revalidatePath(`/${ project.id }`)
-          actionNavigate(`/${ project.id }?success=domain_deleted`)
-        }}
-      />
-    </section>
-  </div>
-}
 
 
 async function ProjectKeysList(props: { projectid: string }) {
