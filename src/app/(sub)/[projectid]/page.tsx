@@ -2,7 +2,7 @@ import { getCurrentUser, actionAdminOnly, isAdmin } from "@/lib/auth"
 import { actionResolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { createDomain, deleteDomain, deleteProject, getAllProjectDomains, getAllProjectKeys, updateDomain, updateProject } from "@/services/projects"
+import { createDomain, createProjectKey, deleteDomain, deleteProject, getAllProjectDomains, getAllProjectKeys, updateDomain, updateProject } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/basic-form/app-form"
 import { AUTH } from "@/lib/auth_ui"
@@ -122,7 +122,10 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 }
 
 
-async function ProjectDomainsList(props: { projectid: string, searchParams: PageSearchParams }) {
+async function ProjectDomainsList(props: {
+  projectid: string,
+  searchParams: PageSearchParams
+}) {
 
   const { project, error } = await pageData.projectPage2(props.projectid)
   if (error) return error
@@ -235,7 +238,7 @@ export async function ProjectDomainItemSubpage(props: {
   const { domain, project, error } = await pageData.projectDomainPage2(projectid, domainid)
   if (error) return error
 
-  return <div className="flex flex-col gap-12">
+  return <>
     <SuccessCallout messages={{
       "created": "key created successfully!",
       "updated": "key updated!"
@@ -323,17 +326,24 @@ export async function ProjectDomainItemSubpage(props: {
         }}
       />
     </section>
-  </div>
+  </>
 }
 
 
 
 
-async function ProjectKeysList(props: { projectid: string }) {
+async function ProjectKeysList(props: {
+  projectid: string,
+  searchParams?: PageSearchParams
+}) {
+
   const { projectid } = props
+  const { project, error } = await pageData.projectPage2(projectid)
+  if (error) return null
   const user = await getCurrentUser()
   if (!isAdmin(user)) return null
   const project_keys = await getAllProjectKeys(projectid)
+
   return (
     <section className="category">
       <div className="category-title">
@@ -369,9 +379,47 @@ async function ProjectKeysList(props: { projectid: string }) {
           </li>
         )}
       </ul>
-      <Link className="button  small -mt-1" href={`/${ projectid }/key/create`}>
-        Create API Key
-      </Link>
+
+      <Dialog name="add_key" children={dialog => <>
+        <dialog.Button className="button small -mt-1">
+          Create Secret Key
+        </dialog.Button>
+
+        <dialog.Content wide>
+          <DialogTitle>Create Secret Key</DialogTitle>
+          <p className="mb-4 -mt-3">
+            Project keys are used to authorize your application to use the authentication services.
+          </p>
+          <form.CreateForm
+            name="Create Project Key"
+            action={async inputs => {
+              "use server"
+              await actionAdminOnly(`/${ project.id }`)
+              const res = await createProjectKey(inputs)
+              actionResolveError(res, { ...inputs, ...dialog.context })
+              revalidatePath(`/${ project.id }`)
+              actionNavigate(`/${ project.id }?success=key_added`)
+            }}
+            fields={{
+              name: {
+                type: "text",
+                label: "Key Name",
+                placeholder: "My Secret Key",
+                required: true,
+              },
+              project_id: {
+                type: 'readonly',
+                value: project.id,
+              },
+            }}
+            searchParams={props.searchParams}
+            errorCallout={<ErrorCallout<typeof createProjectKey> messages={{
+              missing_fields: "missing required fields.",
+              project_not_found: "project not found.",
+            }} />}
+          />
+        </dialog.Content>
+      </>} />
     </section>
   )
 }

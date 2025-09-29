@@ -17,11 +17,6 @@ export function SearchParamModal(props: {
   </ModalShell>
 }
 
-
-
-
-
-
 function ModalShell({ show, ...props }: ComponentProps<"div"> & {
   show: boolean
 }) {
