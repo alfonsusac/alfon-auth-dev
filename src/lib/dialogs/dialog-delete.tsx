@@ -24,6 +24,7 @@ export function DeleteDialogButton(
           backHref={'?'}
           actionLabel="Delete"
           action={props.action}
+          context={props.context2}
         />
       </dialog.Content>
     </>}
