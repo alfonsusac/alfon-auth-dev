@@ -4,6 +4,14 @@ import { getAllProjects, getProject, getProjectDomain, getProjectKey } from "@/s
 
 export const pageData = {
 
+  resolve:
+    async <P extends PageProps<any>>(props: P) => {
+      const user = await getCurrentUser()
+      const params = await props.params as Awaited<P['params']>
+      const searchParams = await props.searchParams as Awaited<P['searchParams']>
+      return { user, params, searchParams }
+    },
+
   homePage:
     async () => {
       const user = await getCurrentUser()
@@ -75,10 +83,10 @@ export const pageData = {
       return { project, key }
 
     },
-  
+
   projectDomainPage:
     async (props: PageProps<'/[projectid]/domain/[domainid]'>) => {
-      
+
       const { project, error } = await pageData.projectPage(props as any)
       if (error) return { error }
 

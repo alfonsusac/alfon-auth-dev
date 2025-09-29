@@ -30,6 +30,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       updated: "project updated!"
     }} />
     <NavigationBar back={['Home', '/']} />
+
     <header>
       <h1 className="page-h1">{project.name}</h1>
       <code className="page-subtitle-code">
@@ -41,6 +42,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
         'description': project.description,
       }} />
     </header>
+
     <AUTH.AdminOnly>
       <Dialog name={`edit_project_${ project.id }`}>
         {async (EditButton, EditDialog) => <>
@@ -54,17 +56,17 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
               name="edit_project"
               fields={{
                 name: {
+                  type: "text",
                   label: "project name",
                   helper: "give your project a name for identification",
-                  type: "text",
                   defaultValue: project.name,
                   required: true,
                   autoFocus: true,
                 },
                 id: {
+                  type: "text",
                   label: "project id",
                   helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
-                  type: "text",
                   prefix: "https://auth.alfon.dev/",
                   defaultValue: project.id ?? "",
                   required: true
@@ -126,9 +128,10 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
 async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
 
+  const { user, params, searchParams } = await pageData.resolve(props.props)
+
   const { project, error } = await pageData.projectPage(props.props)
   if (error) return error
-  const user = await getCurrentUser()
   if (!isAdmin(user)) return null
   const domains = await getAllProjectDomains(project.id)
 
