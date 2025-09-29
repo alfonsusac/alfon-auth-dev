@@ -6,7 +6,6 @@ import { SuccessCallout } from "@/lib/toast/search-param-toast.client"
 import { meta } from "@/meta"
 import Link from "next/link"
 import { pageData } from "./data"
-import { ScreenSize } from "./page.client"
 
 export default async function Home() {
 
