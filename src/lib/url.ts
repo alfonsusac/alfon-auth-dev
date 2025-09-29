@@ -4,9 +4,14 @@ export function validateSecureURLwithLocalhost(url?: string | null | { set?: str
   }
   if (!url) return false
 
-  if (url.startsWith('http://localhost')) return new URL(url)
-  if (url.startsWith('https://localhost')) return new URL(url)
-  if (url.startsWith('localhost')) return new URL('http://' + url)
+  try {
+    if (url.startsWith('http://localhost')) return new URL(url)
+    if (url.startsWith('https://localhost')) return new URL(url)
+    if (url.startsWith('localhost')) return new URL('http://' + url)
+  } catch (error) {
+    return false
+  }
+
 
   if (url.includes('://')) {
     const [protocol, rest] = url.split('://', 2)

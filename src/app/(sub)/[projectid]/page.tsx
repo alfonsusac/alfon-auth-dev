@@ -19,7 +19,9 @@ import { Link } from "@/lib/link/link"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
-  const { project, error } = await pageData.projectPage(props)
+  const { projectid, searchParams, user } = await pageData.resolve(props)
+  const { project, error } = await pageData.projectPage2(projectid)
+
   if (error) return error
 
   return <>
@@ -45,7 +47,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
     <AUTH.AdminOnly>
       <Dialog name={`edit_project_${ project.id }`}>
-        {async (EditButton, EditDialog) => <>
+        {(EditButton, EditDialog, dialogContext) => <>
           <EditButton className="button small -mt-8">
             Edit Project Details
           </EditButton>
@@ -72,9 +74,9 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
                   required: true
                 },
                 description: {
+                  type: "text",
                   label: "description",
                   helper: "describe your project for future reference (optional)",
-                  type: "text",
                   defaultValue: project.description ?? "",
                 }
               }}
@@ -82,11 +84,11 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
                 "use server"
                 await actionAdminOnly(`/${ project.id }`)
                 const res = await updateProject(inputs, project.id)
-                actionResolveError(res, { ...inputs, edit: 'show' })
+                actionResolveError(res, { ...inputs, ...dialogContext })
                 revalidatePath(`/`, 'layout')
                 actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
               }}
-              searchParams={await props.searchParams}
+              searchParams={searchParams}
               errorCallout={<ErrorCallout<typeof updateProject> messages={{
                 invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
                 missing_fields: "please fill out all required fields.",
@@ -98,7 +100,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
         </>}
       </Dialog>
 
-      <ProjectDomainsList props={props} />
+      <ProjectDomainsList projectid={project.id} searchParams={searchParams} />
       <ProjectKeysList projectid={project.id} />
 
       <section className="category">
@@ -113,26 +115,21 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             "use server"
             await actionAdminOnly()
             const res = await deleteProject(project.id)
-            actionResolveError(res, { delete: 'show' })
+            actionResolveError(res, { delete: '' })
             revalidatePath('/', 'layout')
             actionNavigate('/?success=deleted')
           }}
         />
       </section>
     </AUTH.AdminOnly>
-
   </>
-
 }
 
 
-async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
+async function ProjectDomainsList(props: { projectid: string, searchParams: PageSearchParams }) {
 
-  const { user, params, searchParams } = await pageData.resolve(props.props)
-
-  const { project, error } = await pageData.projectPage(props.props)
+  const { project, error } = await pageData.projectPage2(props.projectid)
   if (error) return error
-  if (!isAdmin(user)) return null
   const domains = await getAllProjectDomains(project.id)
 
   return (
@@ -161,10 +158,12 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
                 </Button>
 
                 <SubPage>
-                  <ProjectDomainItemSubpage props={{
-                    params: new Promise(res => res({ projectid: project.id, domainid: domain.id })),
-                    searchParams: props.props.searchParams
-                  }} />
+                  <ProjectDomainItemSubpage
+                    context={{ [`domain_${ domain.id }`]: '' }}
+                    domainid={domain.id}
+                    projectid={project.id}
+                    searchParams={props.searchParams}
+                  />
                 </SubPage>
               </>}
             </SubPage>
@@ -173,7 +172,7 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
       </ul>
 
       <Dialog name="add_url">
-        {async (Button, Dialog) => <>
+        {(Button, Dialog, dialogContext) => <>
           <Button className="button small -mt-1">
             Add URL
           </Button>
@@ -189,7 +188,7 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
                   origin: inputs.origin,
                   redirect_url: inputs.origin + inputs.redirect_url,
                 })
-                actionResolveError(res, { ...inputs, add_url: 'show' })
+                actionResolveError(res, { ...inputs, ...dialogContext })
                 revalidatePath(`/${ project.id }`)
                 actionNavigate(`/${ project.id }?success=domain_added`)
               }}
@@ -214,7 +213,7 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
                   helper: "must be on the same domain as callback url"
                 }
               }}
-              searchParams={await props.props.searchParams}
+              searchParams={props.searchParams}
               errorCallout={<ErrorCallout<typeof createDomain> messages={{
                 project_not_found: "project not found.",
                 missing_fields: "missing required fields.",
@@ -234,11 +233,11 @@ async function ProjectDomainsList(props: { props: PageProps<"/[projectid]"> }) {
   )
 }
 
-async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/domain/[domainid]"> }) {
+async function ProjectDomainItemSubpage(props: { projectid: string, domainid: string, context?: PageContext, searchParams: PageSearchParams }) {
 
-  const { project, domain, error } = await pageData.projectDomainPage(props.props)
+  const { projectid, domainid, context } = props
+  const { domain, project, error } = await pageData.projectDomainPage2(projectid, domainid)
   if (error) return error
-  const context = { [`domain_${ domain.id }`]: '' }
 
   return <div className="flex flex-col gap-12">
     <SuccessCallout messages={{
@@ -257,7 +256,7 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
 
     <section className="category">
       <Dialog name={`edit_domain_${ domain.id }`} context={context}>
-        {async (EditButton, EditDialog) => <>
+        {(EditButton, EditDialog, dialogContext) => <>
           <EditButton className="button small -mt-8">
             Edit Domain Details
           </EditButton>
@@ -275,7 +274,7 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
                   origin: inputs.origin,
                   redirect_url: inputs.origin + inputs.redirect_url,
                 }, domain.id)
-                actionResolveError(res, { ...inputs, ...context })
+                actionResolveError(res, { ...inputs, ...dialogContext })
                 revalidatePath(`/${ project.id }`)
                 actionNavigate(`/${ project.id }?success=updated+${ nanoid(3) }`, "replace", context)
               }}
@@ -302,7 +301,7 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
                   defaultValue: domain.redirect_url.replace(domain.origin, '')
                 }
               }}
-              searchParams={await props.props.searchParams}
+              searchParams={props.searchParams}
               errorCallout={<ErrorCallout<typeof updateDomain> messages={{
                 missing_fields: "please fill out all required fields.",
                 project_not_found: "project not found.",
@@ -311,6 +310,8 @@ async function ProjectDomainItemSubpage(props: { props: PageProps<"/[projectid]/
                 mismatched_domains: "callback and redirect urls must share the same domain.",
                 insecure_origin: "origin must use https unless using localhost.",
                 insecure_redirect_url: "redirect url must use https unless using localhost.",
+                domain_exists: "domain already exists for this project.",
+                domain_in_use: `domain is already in use by another project: $1`,
               }} />}
             />
           </EditDialog>

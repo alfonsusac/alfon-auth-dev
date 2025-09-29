@@ -17,7 +17,8 @@ export function Dialog(props: {
       hideCloseButton?: boolean,
       wide?: boolean,
       className?: string
-    }) => ReactNode
+    }) => ReactNode,
+    context?: PageContext,
   ) => ReactNode
 }) {
   const { name, context, children } = props
@@ -41,11 +42,12 @@ export function Dialog(props: {
           <DialogJustPaper className={cn(
             props.wide && "p-8 max-w-(--dialog-wide-w)",
           )}>
-            {!props.hideCloseButton && <DialogCloseButton />}
+            {!props.hideCloseButton && <DialogCloseButton context={context} />}
             {props.children}
           </DialogJustPaper>
 
-        </SearchParamModal>
+        </SearchParamModal>,
+      { ...context, [name]: '' },
     )}
   </>
 }

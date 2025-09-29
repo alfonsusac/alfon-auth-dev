@@ -193,6 +193,12 @@ const validateProjectDomainInput = validation(async (input: DomainInput) => {
   if (!origin) return "invalid_redirect_url"
   if (!redirectURL) return "invalid_origin"
   if (redirectURL.host !== origin.host) return "mismatched_domains"
+
+  const existing = await get_project_domain_by_origin(input.origin)
+  if (existing && existing.project_id === input.project_id && existing.origin === input.origin) return "domain_exists"
+  if (existing && existing.project_id !== input.project_id && !input.origin.includes('localhost')) return `domain_in_use=${ existing.project_id }` as const
+  if (existing && existing.project_id === input.project_id && !input.origin.includes('localhost')) return "domain_exists"
+
   return {
     project_id: input.project_id,
     origin: origin.origin,
@@ -205,10 +211,9 @@ export async function createDomain(input: DomainInput) {
   const { error, data } = await validateProjectDomainInput(input)
   if (error) return error
 
-  const existing = await get_project_domain_by_origin(data.origin)
-
-  if (existing && existing.project_id !== data.project_id && !data.origin.includes('localhost')) return `domain_in_use=${ existing.project_id }` as const
-  if (existing && existing.project_id === data.project_id && !data.origin.includes('localhost')) return "domain_exists"
+  // const existing = await get_project_domain_by_origin(data.origin)
+  // if (existing && existing.project_id !== data.project_id && !data.origin.includes('localhost')) return `domain_in_use=${ existing.project_id }` as const
+  // if (existing && existing.project_id === data.project_id && !data.origin.includes('localhost')) return "domain_exists"
 
   if (!await getProject(data.project_id)) return "project_not_found"
   return prisma.domain.create({ data })
