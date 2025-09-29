@@ -11,7 +11,8 @@ import { actionResolveError } from "@/lib/redirects"
 
 export default async function CreateProjectKeyPage(props: PageProps<'/[projectid]/key/create'>) {
 
-  const { project, error } = await pageData.projectPage(props as any)
+  const { projectid } = await pageData.resolve(props)
+  const { project, error } = await pageData.projectPage2(projectid)
   if (error) return error
 
   return <>

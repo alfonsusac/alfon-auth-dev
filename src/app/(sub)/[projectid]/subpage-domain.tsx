@@ -12,7 +12,12 @@ import { updateDomain, deleteDomain } from "@/services/projects"
 import { nanoid } from "nanoid"
 import { revalidatePath } from "next/cache"
 
-export async function ProjectDomainItemSubpage(props: { projectid: string, domainid: string, context?: PageContext, searchParams: PageSearchParams }) {
+export async function ProjectDomainItemSubpage(props: {
+  projectid: string,
+  domainid: string,
+  context?: PageContext,
+  searchParams: PageSearchParams
+}) {
 
   const { projectid, domainid, context } = props
   const { domain, project, error } = await pageData.projectDomainPage2(projectid, domainid)

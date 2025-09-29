@@ -21,7 +21,7 @@ import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
-  const { projectid, searchParams, user } = await pageData.resolve(props)
+  const { projectid, searchParams } = await pageData.resolve(props)
   const { project, error } = await pageData.projectPage2(projectid)
 
   if (error) return error

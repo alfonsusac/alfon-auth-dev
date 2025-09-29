@@ -5,7 +5,6 @@ import { CopyButton } from "@/lib/CopyButton"
 import { deleteProjectKey, regenerateProjectKeySecret, updateProjectKey } from "@/services/projects"
 import { form } from "@/lib/basic-form/app-form"
 import { Form } from "@/lib/basic-form/form"
-import { triggerSuccessBanner } from "@/lib/toast/trigger"
 import { ErrorCallout, SuccessCallout } from "@/lib/toast/search-param-toast.client"
 import { DeleteDialogButton } from "@/lib/dialogs/dialog-delete"
 import { actionNavigate } from "@/lib/resolveAction"
@@ -17,7 +16,8 @@ import { actionResolveError } from "@/lib/redirects"
 
 export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/[keyid]">) {
 
-  const { project, key, error } = await pageData.projectKeyPage(props)
+  const { projectid, keyid, searchParams, user } = await pageData.resolve(props)
+  const { project, key, error } = await pageData.projectKeyPage2(projectid, keyid)
   if (error) return error
 
   return <>
