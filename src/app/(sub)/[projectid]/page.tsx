@@ -100,7 +100,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       />
 
       <section className="category">
-        <p className="category-title">danger zone ↓</p>
+        <p className="category-header">danger zone ↓</p>
         <DeleteDialogButton
           name={`project-${ project.id }`}
           label="Delete Project"
@@ -133,12 +133,12 @@ async function ProjectDomainsList(props: {
 
   return (
     <section className="category">
-      <div className="category-title">
-        redirect urls ↓
+      <div className="category-header">
+        <h2>redirect urls ↓</h2>
+        <p className="text-xxs">
+          these urls are authorized to redirect to after authentication and also used to validate incoming requests.
+        </p>
       </div>
-      <p className="category-title text-xxs">
-        these urls are authorized to redirect to after authentication and also used to validate incoming requests.
-      </p>
 
       <ul className="list">
         {domains.length === 0 && <div className="list-empty">Domains not yet set up.</div>}
@@ -168,7 +168,7 @@ async function ProjectDomainsList(props: {
       </ul>
 
       <Dialog name="add_url" children={dialog => <>
-        <dialog.Button className="button small -mt-1">
+        <dialog.Button className="button small">
           Add URL
         </dialog.Button>
         <dialog.Content wide>
@@ -309,7 +309,7 @@ export async function ProjectDomainItemSubpage(props: {
     </section>
 
     <section className="category">
-      <p className="category-title">danger zone ↓</p>
+      <p className="category-header">danger zone ↓</p>
       <DeleteDialogButton
         name={`domain-${ domain.id }`}
         context2={context}
@@ -346,18 +346,22 @@ async function ProjectKeysList(props: {
 
   return (
     <section className="category">
-      <div className="category-title">
+      <div className="category-header">
         secret keys ↓
+        <p className="text-xxs">
+          you can create multiple keys for different environments (e.g. development, staging, production).
+          this will be used to validate requests to /token endpoints.
+        </p>
       </div>
-      <p className="category-title text-xxs">
-        you can create multiple keys for different environments (e.g. development, staging, production).
-        this will be used to validate requests to /token endpoints.
-      </p>
 
       <ul className="list">
         {project_keys.length === 0 && <div className="list-empty">No API keys present</div>}
-        {project_keys.map((key) =>
-          <li className="relative group" key={key.id} >
+        {project_keys.map(key =>
+          <li className="relative group" key={key.id}>
+            <
+
+            />
+            
             <Link className="list-row" href={`/${ projectid }/key/${ key.id }`} >
               <div className="flex flex-col gap-1 min-w-0">
                 <div className="text-foreground-body font-semibold leading-3 text-xs">
@@ -381,7 +385,7 @@ async function ProjectKeysList(props: {
       </ul>
 
       <Dialog name="add_key" children={dialog => <>
-        <dialog.Button className="button small -mt-1">
+        <dialog.Button className="button small">
           Create Secret Key
         </dialog.Button>
 

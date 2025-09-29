@@ -58,7 +58,7 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
     </div>
 
     <section className="category">
-      <p className="category-title">edit details ↓</p>
+      <p className="category-header">edit details ↓</p>
       <form.EditForm
         name={"edit_project_key"}
         action={async (inputs) => {
@@ -92,7 +92,7 @@ export default async function ProjectKeyPage(props: PageProps<"/[projectid]/key/
     </section>
 
     <section className="category">
-      <p className="category-title">danger zone ↓</p>
+      <p className="category-header">danger zone ↓</p>
 
       <DeleteDialogButton
         name="project_key"

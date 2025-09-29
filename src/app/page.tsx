@@ -31,7 +31,7 @@ export default async function Home() {
       </header>
 
       <div className="category">
-        <p className="category-title">manage your accounts ↓</p>
+        <p className="category-header">manage your accounts ↓</p>
         {
           user ?
             <div className="flex gap-2">
@@ -68,7 +68,7 @@ export default async function Home() {
       </div>
 
       <section className="category">
-        <p className="category-title">my projects ↓</p>
+        <p className="category-header">my projects ↓</p>
         {no_projects && <div className="text-xs text-foreground-body my-4">no projects found.</div>}
 
         <div className="flex flex-col gap-px">

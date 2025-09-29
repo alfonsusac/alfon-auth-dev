@@ -254,10 +254,10 @@ body:has(.modal-opened) {
   }
 
   .category {
-    @apply max-w-120 flex flex-col gap-4
+    @apply max-w-120 flex flex-col gap-3
   }
-  .category-title {
-    @apply text-pretty text-xs text-foreground-body/40 font-medium py-1 -my-2.5 flex flex-col gap-0.5
+  .category-header {
+    @apply text-pretty text-xs text-foreground-body/40 font-medium py-1  flex flex-col gap-0.5
   }
 
   hr {
