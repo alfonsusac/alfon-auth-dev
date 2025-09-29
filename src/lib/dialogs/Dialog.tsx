@@ -1,7 +1,7 @@
 
 import { type ComponentProps, type ReactNode } from "react"
 import { cn } from "lazy-cn"
-import { DialogButtonBase, DialogJustButtonBase } from "./dialog.client"
+import { DialogJustButtonBase } from "./dialog.client"
 import { Link } from "../link/link"
 import { SearchParamModal } from "../sp-modal/search-param-modal.client"
 import { IconClose } from "../icons"
@@ -24,9 +24,6 @@ export function Dialog(props: {
   ) => ReactNode
 }) {
   const { name, context, children } = props
-
-  //   // TODO - u can pass children from props instead of return components
-  //   // TODO? Custom Close Button that resets specific search params
 
   return <>
     {children?.(
@@ -76,11 +73,6 @@ export function DialogJustPaper(props: ComponentProps<"div">) {
 
 export function DialogTitle(props: ComponentProps<"h2">) {
   return <h2 {...props} className={cn("text-lg font-semibold mb-4", props.className)} />
-}
-
-
-export function DialogButton(props: ComponentProps<typeof DialogButtonBase>) {
-  return <DialogButtonBase {...props} />
 }
 
 

@@ -19,6 +19,9 @@ export function SearchParamModal(props: {
 
 
 
+
+
+
 function ModalShell({ show, ...props }: ComponentProps<"div"> & {
   show: boolean
 }) {
@@ -26,6 +29,12 @@ function ModalShell({ show, ...props }: ComponentProps<"div"> & {
     {...props}
     data-show={show ? "" : undefined}
     className={cn(
+      // Animated
+      "transition-all duration-50",
+      show ? "" : "duration-100",
+
+
+      // Base
       show ? "modal-opened pointer-events-auto" : "pointer-events-none opacity-0",
       "fixed top-0 left-0 w-screen h-screen z-(--z-dialog)",
       "flex items-center justify-center",
