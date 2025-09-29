@@ -8,7 +8,6 @@ export async function GET(request: NextRequest) {
   const state = request.nextUrl.searchParams.get('state') ?? undefined
 
   const redirectToUrl = await signInHandleCallback(code, state)
-  console.log("Redirecting to:", JSON.stringify(redirectToUrl))
 
   redirect(redirectToUrl)
 }
