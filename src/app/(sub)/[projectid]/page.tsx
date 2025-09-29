@@ -144,22 +144,22 @@ async function ProjectDomainsList(props: { projectid: string, searchParams: Page
           const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
           const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
           return <li className="relative group" key={domain.id}>
-            <SubPage name={`domain_${ domain.id }`} children={(Button, SubPage) => <>
-              <Button className="button ghost flex flex-col py-3 w-full items-start">
+            <SubPage name={`domain_${ domain.id }`} children={subpage => <>
+              <subpage.Button className="button ghost flex flex-col py-3 w-full items-start">
                 <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
                   <span className="text-foreground-body/50">{protocol}</span>
                   <span className="font-medium text-foreground">{origin}</span>
                   <span>{domain.redirect_url.replace(domain.origin, '')}</span>
                 </div>
-              </Button>
-              <SubPage>
+              </subpage.Button>
+              <subpage.Content>
                 <ProjectDomainItemSubpage
                   context={{ [`domain_${ domain.id }`]: '' }}
                   domainid={domain.id}
                   projectid={project.id}
                   searchParams={props.searchParams}
                 />
-              </SubPage>
+              </subpage.Content>
             </>} />
           </li>
         })}
