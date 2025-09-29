@@ -18,12 +18,12 @@ export function EditFormDialog<F extends TypedForm.FormFieldMap>(
 ) {
   return (
     <Dialog name={`edit_${ props.id }`} context={props.context}>
-      {(EditButton, EditDialog, dialogContext) => <>
-        <EditButton className="button small -mt-8">
+      {dialog => <>
+        <dialog.Button className="button small -mt-8">
           Edit {props.name} Details
-        </EditButton>
+        </dialog.Button>
 
-        <EditDialog wide>
+        <dialog.Content wide>
           <DialogTitle>Edit {props.name}</DialogTitle>
           <form.EditForm
             name={`edit_${ props.name }_${ props.id }`}
@@ -32,10 +32,10 @@ export function EditFormDialog<F extends TypedForm.FormFieldMap>(
             errorCallout={props.errorCallout}
             action={async (inputs) => {
               "use server"
-              await props.action(inputs, dialogContext)
+              await props.action(inputs, dialog.context)
             }}
           />
-        </EditDialog>
+        </dialog.Content>
       </>}
     </Dialog>
   )

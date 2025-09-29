@@ -10,15 +10,17 @@ import { IconClose } from "../icons"
 export function Dialog(props: {
   name: string,
   context?: PageContext,
-  children?: (
-    Button: (props: Omit<ComponentProps<typeof DialogJustButtonBase>, 'href' | 'context'>) => ReactNode,
-    Content: (props: {
-      children?: ReactNode,
-      hideCloseButton?: boolean,
-      wide?: boolean,
-      className?: string
-    }) => ReactNode,
-    context: PageContext,
+  children?: (dialog:
+    {
+      Button: (props: Omit<ComponentProps<typeof DialogJustButtonBase>, 'href' | 'context'>) => ReactNode,
+      Content: (props: {
+        children?: ReactNode,
+        hideCloseButton?: boolean,
+        wide?: boolean,
+        className?: string
+      }) => ReactNode,
+      context: PageContext
+    }
   ) => ReactNode
 }) {
   const { name, context, children } = props
@@ -28,26 +30,30 @@ export function Dialog(props: {
 
   return <>
     {children?.(
-      props =>
-        <DialogJustButtonBase {...props}
-          href={`?${ name }`}
-          context={context}
-        />,
+      {
+        Button: props =>
+          <DialogJustButtonBase {...props}
+            href={`?${ name }`}
+            context={context}
+          />,
 
-      props =>
-        <SearchParamModal name={name}>
-          <DialogBackdropLink context={context} />
+        Content: props =>
+          <SearchParamModal name={name}>
+            <DialogBackdropLink context={context} />
 
-          {/* Actual Paper */}
-          <DialogJustPaper className={cn(
-            props.wide && "p-8 max-w-(--dialog-wide-w)",
-          )}>
-            {!props.hideCloseButton && <DialogCloseButton context={context} />}
-            {props.children}
-          </DialogJustPaper>
+            {/* Actual Paper */}
+            <DialogJustPaper className={cn(
+              props.wide && "p-8 max-w-(--dialog-wide-w)",
+            )}>
+              {!props.hideCloseButton && <DialogCloseButton context={context} />}
+              {props.children}
+            </DialogJustPaper>
 
-        </SearchParamModal>,
-      { ...context, [name]: '' },
+          </SearchParamModal>,
+
+        context:
+          { ...context, [name]: '' },
+      }
     )}
   </>
 }

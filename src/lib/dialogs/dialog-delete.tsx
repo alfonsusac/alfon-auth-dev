@@ -13,11 +13,11 @@ export function DeleteDialogButton(
   }
 ) {
   return <Dialog name={`delete_${ props.name }`} context={props.context2}>
-    {(Button, Dialog) => <>
-      <Button className="button destructive small">
+    {dialog => <>
+      <dialog.Button className="button destructive small">
         {props.label}
-      </Button>
-      <Dialog>
+      </dialog.Button>
+      <dialog.Content>
         <DeleteAlert2
           title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
           description={props.alertDescription || "This action cannot be undone."}
@@ -25,7 +25,7 @@ export function DeleteDialogButton(
           actionLabel="Delete"
           action={props.action}
         />
-      </Dialog>
+      </dialog.Content>
     </>}
   </Dialog>
 }

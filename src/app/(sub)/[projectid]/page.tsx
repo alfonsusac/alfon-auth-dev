@@ -166,11 +166,11 @@ async function ProjectDomainsList(props: { projectid: string, searchParams: Page
       </ul>
 
       <Dialog name="add_url">
-        {(Button, Dialog, dialogContext) => <>
-          <Button className="button small -mt-1">
+        {dialog => <>
+          <dialog.Button className="button small -mt-1">
             Add URL
-          </Button>
-          <Dialog wide>
+          </dialog.Button>
+          <dialog.Content wide>
             <DialogTitle>Add Project URL</DialogTitle>
             <form.CreateForm
               name="Add Project Domain"
@@ -182,7 +182,7 @@ async function ProjectDomainsList(props: { projectid: string, searchParams: Page
                   origin: inputs.origin,
                   redirect_url: inputs.origin + inputs.redirect_url,
                 })
-                actionResolveError(res, { ...inputs, ...dialogContext })
+                actionResolveError(res, { ...inputs, ...dialog.context })
                 revalidatePath(`/${ project.id }`)
                 actionNavigate(`/${ project.id }?success=domain_added`)
               }}
@@ -220,7 +220,7 @@ async function ProjectDomainsList(props: { projectid: string, searchParams: Page
                 domain_in_use: `domain is already in use by another project: $1`,
               }} />}
             />
-          </Dialog>
+          </dialog.Content>
         </>}
       </Dialog>
     </section>
