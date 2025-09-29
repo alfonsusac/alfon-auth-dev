@@ -269,7 +269,7 @@ body:has(.modal-opened) {
     border border-border rounded-xl bg-background
   }
   .list-row {
-    @apply flex flex-row items-center p-3 gap-1 grow min-w-0
+    @apply flex flex-row items-center p-3 gap-1 grow min-w-0 text-start
     hover:bg-foreground/5 rounded-lg relative
     active:bg-foreground/8
   }

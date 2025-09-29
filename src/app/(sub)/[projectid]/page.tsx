@@ -2,7 +2,7 @@ import { getCurrentUser, actionAdminOnly, isAdmin } from "@/lib/auth"
 import { actionResolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
 import { formatDate } from "@/lib/date"
-import { createDomain, createProjectKey, deleteDomain, deleteProject, getAllProjectDomains, getAllProjectKeys, updateDomain, updateProject } from "@/services/projects"
+import { createDomain, createProjectKey, deleteDomain, deleteProject, deleteProjectKey, getAllProjectDomains, getAllProjectKeys, regenerateProjectKeySecret, updateDomain, updateProject, updateProjectKey } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/basic-form/app-form"
 import { AUTH } from "@/lib/auth_ui"
@@ -15,8 +15,9 @@ import { pageData } from "@/app/data"
 import { NavigationBar } from "@/lib/NavigationBar"
 import { Dialog, DialogTitle } from "@/lib/dialogs/dialog"
 import { SubPage } from "@/lib/dialogs/dialog-subpage"
-import { Link } from "@/lib/link/link"
 import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
+import { Form } from "@/lib/basic-form/form"
+import { FormButton } from "@/lib/FormButton"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -120,6 +121,10 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     </AUTH.AdminOnly >
   </>
 }
+
+
+
+
 
 
 async function ProjectDomainsList(props: {
@@ -227,6 +232,8 @@ async function ProjectDomainsList(props: {
   )
 }
 
+
+
 export async function ProjectDomainItemSubpage(props: {
   projectid: string,
   domainid: string,
@@ -240,8 +247,8 @@ export async function ProjectDomainItemSubpage(props: {
 
   return <>
     <SuccessCallout messages={{
-      "created": "key created successfully!",
-      "updated": "key updated!"
+      "created": "domain created successfully!",
+      "updated": "domain updated!"
     }} />
 
     <header>
@@ -332,6 +339,8 @@ export async function ProjectDomainItemSubpage(props: {
 
 
 
+
+
 async function ProjectKeysList(props: {
   projectid: string,
   searchParams?: PageSearchParams
@@ -358,23 +367,34 @@ async function ProjectKeysList(props: {
         {project_keys.length === 0 && <div className="list-empty">No API keys present</div>}
         {project_keys.map(key =>
           <li className="relative group" key={key.id}>
-            <
+            <SubPage name={`key_${ key.id }`} children={subpage => <>
+              <subpage.Button>
+                <button className="list-row">
+                  <div className="flex flex-col gap-1 min-w-0">
+                    <div className="text-foreground-body font-semibold leading-3 text-xs">
+                      🔑 {key.name}
+                      <span className="text-foreground-body/75 font-normal leading-3 text-xs">
+                        {' - '}{formatDate(key.createdAt)}
+                      </span>
+                    </div>
+                    <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0">
+                      {key.client_secret}
+                    </div>
+                  </div>
+                </button>
+              </subpage.Button>
 
-            />
-            
-            <Link className="list-row" href={`/${ projectid }/key/${ key.id }`} >
-              <div className="flex flex-col gap-1 min-w-0">
-                <div className="text-foreground-body font-semibold leading-3 text-xs">
-                  🔑 {key.name}
-                  <span className="text-foreground-body/75 font-normal leading-3 text-xs">
-                    {' - '}{formatDate(key.createdAt)}
-                  </span>
-                </div>
-                <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0">
-                  {key.client_secret}
-                </div>
-              </div>
-            </Link>
+              <subpage.Content>
+                <ProjectKeySubpage
+                  context={{ [`key_${ key.id }`]: '' }}
+                  keyid={key.id}
+                  projectid={project.id}
+                  searchParams={props.searchParams ?? {}}
+                />
+              </subpage.Content>
+            </>} />
+
+
             <div className="absolute top-1 right-1">
               <CopyButton text={key.client_secret} className="button small floating opacity-0 group-hover:opacity-100">
                 copy
@@ -426,4 +446,108 @@ async function ProjectKeysList(props: {
       </>} />
     </section>
   )
+}
+
+
+
+async function ProjectKeySubpage(props: {
+  projectid: string,
+  keyid: string,
+  context?: PageContext,
+  searchParams: PageSearchParams
+}) {
+
+  const { projectid, keyid, context } = props
+  const { key, project, error } = await pageData.projectKeyPage2(projectid, keyid)
+  if (error) return error
+
+  return <>
+    <SuccessCallout messages={{
+      "created": "key created successfully!",
+      "updated": "key updated!"
+    }} />
+
+    <header>
+      <h1 className="page-h1">{key.name}</h1>
+      <DataGridDisplay data={{
+        'key secret': key.client_secret,
+        'created at': key.createdAt,
+        'updated at': key.updatedAt
+      }} />
+    </header>
+
+    <div className="flex gap-2">
+      <CopyButton className="button primary small" text={key.client_secret}>
+        Copy Key
+      </CopyButton>
+      <Form action={async () => {
+        "use server"
+        await actionAdminOnly(`/${ project.id }`)
+        const res = await regenerateProjectKeySecret(key.id)
+        actionResolveError(res, context)
+        revalidatePath(`/${ project.id }`)
+        actionNavigate(`/${ project.id }?success=updated`, "replace", context)
+      }}>
+        <FormButton className="button small" loading="Regenerating...">
+          Regenerate Secret <div className="icon-end">🔄</div>
+        </FormButton>
+      </Form>
+    </div>
+
+
+    <section className="category">
+      <EditFormDialog
+        id={key.id}
+        name="Domain"
+        context={context}
+        action={async (inputs, dialogContext) => {
+          "use server"
+          await actionAdminOnly(`/${ project.id }`)
+          const res = await updateProjectKey(inputs, key.id)
+          actionResolveError(res, { ...inputs, ...dialogContext })
+          revalidatePath(`/${ project.id }`)
+          actionNavigate(`/${ project.id }?success=updated`, "replace", context)
+        }}
+        fields={{
+          name: {
+            label: "key name",
+            type: "text",
+            defaultValue: key.name,
+            helper: "describe your project key to differentiate with other keys",
+            required: true,
+          },
+          project_id: {
+            type: 'readonly',
+            value: project.id,
+          }
+        }}
+        searchParams={props.searchParams}
+        errorCallout={<ErrorCallout<typeof updateProjectKey> messages={{
+          missing_fields: "please fill out all required fields.",
+          not_found: "project key not found.",
+          project_not_found: "project not found.",
+        }} />}
+      />
+    </section>
+
+    <section className="category">
+      <p className="category-header">danger zone ↓</p>
+      <DeleteDialogButton
+        name={`project-key-${ key.id }`}
+        context2={context}
+        label="Delete Project Key"
+        alertTitle="Are you sure you want to permanently delete this project key?"
+        alertDescription="This action cannot be undone. Any applications using this key will no longer be able to access the project."
+        action={async () => {
+          "use server"
+          await actionAdminOnly()
+          const res = await deleteProjectKey(key.id)
+          actionResolveError(res, { delete: 'show' })
+          revalidatePath(`/${ project.id }`)
+          actionNavigate(`/${ project.id }?success=domain_deleted`)
+        }}
+      />
+    </section>
+  </>
+
 }
