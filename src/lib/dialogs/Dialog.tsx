@@ -41,6 +41,7 @@ export function Dialog(props: {
             {/* Actual Paper */}
             <DialogJustPaper className={cn(
               props.wide && "p-8 max-w-(--dialog-wide-w)",
+              props.className
             )}>
               {!props.hideCloseButton && <DialogCloseButton context={context} />}
               {props.children}

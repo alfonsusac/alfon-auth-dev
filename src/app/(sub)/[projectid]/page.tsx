@@ -18,6 +18,7 @@ import { SubPage } from "@/lib/dialogs/dialog-subpage"
 import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 import { Form } from "@/lib/basic-form/form"
 import { FormButton } from "@/lib/FormButton"
+import type { SVGProps } from "react"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -31,67 +32,20 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       new: "project created successfully!",
       key_deleted: "key deleted successfully!",
       domain_deleted: "domain deleted successfully!",
-      updated: "project updated!"
+      updated: "project updated!",
     }} />
     <NavigationBar back={['Home', '/']} />
-
     <header>
       <h1 className="page-h1">{project.name}</h1>
-      <code className="page-subtitle-code">
-        auth.alfon.dev/{project.id}
-      </code>
       <DataGridDisplay data={{
+        'project id': project.id,
+        'description': project.description,
         'created at': new Date(project.createdAt),
         'updated at': new Date(project.updatedAt),
-        'description': project.description,
       }} />
     </header>
 
     <AUTH.AdminOnly>
-      <section className="-mt-8 flex">
-        <EditFormDialog
-          id={project.id}
-          name="Project"
-          fields={{
-            name: {
-              type: "text",
-              label: "project name",
-              helper: "give your project a name for identification",
-              defaultValue: project.name,
-              required: true,
-              autoFocus: true,
-            },
-            id: {
-              type: "text",
-              label: "project id",
-              helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
-              prefix: "https://auth.alfon.dev/",
-              defaultValue: project.id ?? "",
-              required: true
-            },
-            description: {
-              type: "text",
-              label: "description",
-              helper: "describe your project for future reference (optional)",
-              defaultValue: project.description ?? "",
-            }
-          }}
-          action={async (inputs, dialogContext) => {
-            "use server"
-            await actionAdminOnly(`/${ project.id }`)
-            const res = await updateProject(inputs, project.id)
-            actionResolveError(res, { ...inputs, ...dialogContext })
-            revalidatePath(`/`, 'layout')
-            actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
-          }}
-          searchParams={searchParams}
-          errorCallout={<ErrorCallout<typeof updateProject> messages={{
-            invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
-            missing_fields: "please fill out all required fields.",
-            not_found: "project not found.",
-            id_exists: "project id already exists.",
-          }} />} />
-      </section>
 
       <ProjectDomainsList
         projectid={project.id}
@@ -102,26 +56,97 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
         projectid={project.id}
       />
 
-      <section className="category">
-        <p className="category-header">danger zone ↓</p>
-        <DeleteDialogButton
-          name={`project-${ project.id }`}
-          label="Delete Project"
-          alertTitle={`Are you sure you want to permanently delete "${ project.name }"?`}
-          alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
-          alertActionLabel="Delete Project"
-          action={async () => {
-            "use server"
-            await actionAdminOnly()
-            const res = await deleteProject(project.id)
-            actionResolveError(res, { delete: '' })
-            revalidatePath('/', 'layout')
-            actionNavigate('/?success=deleted')
-          }}
-        />
-      </section>
+
+      <Dialog name={`project_setting_${ project.id }`}>{dialog => <>
+        <dialog.Button className="button small ghost">
+          <SolarSettingsMinimalisticLinear className="icon icon-start" />
+          Settings
+        </dialog.Button>
+        <dialog.Content className="max-w-120 w-full" wide>
+
+          <section className="category">
+            <h2 className="page-h2">Project Settings</h2>
+            <h3 className="category-header">project details ↓</h3>
+            <form.EditForm
+              name={`edit_project_${ project.id }`}
+              fields={{
+                name: {
+                  type: "text",
+                  label: "project name",
+                  helper: "give your project a name for identification",
+                  defaultValue: project.name,
+                  required: true,
+                  autoFocus: true,
+                },
+                id: {
+                  type: "text",
+                  label: "project id",
+                  helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
+                  prefix: "https://auth.alfon.dev/",
+                  defaultValue: project.id ?? "",
+                  required: true
+                },
+                description: {
+                  type: "text",
+                  label: "description",
+                  helper: "describe your project for future reference (optional)",
+                  defaultValue: project.description ?? "",
+                }
+              }}
+              searchParams={searchParams}
+              errorCallout={<ErrorCallout<typeof updateProject> messages={{
+                invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
+                missing_fields: "please fill out all required fields.",
+                not_found: "project not found.",
+                id_exists: "project id already exists.",
+              }} />}
+              action={async (inputs) => {
+                "use server"
+                await actionAdminOnly(`/${ project.id }`)
+                const res = await updateProject(inputs, project.id)
+                actionResolveError(res, { ...inputs, ...dialog.context })
+                revalidatePath(`/`, 'layout')
+                actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
+              }}
+            />
+          </section>
+
+          <section className="category">
+            <h3 className="category-header">danger zone ↓</h3>
+            <DeleteDialogButton
+              context2={dialog.context}
+              name={`project-${ project.id }`}
+              label="Delete Project"
+              alertTitle={`Are you sure you want to permanently delete "${ project.name }"?`}
+              alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
+              alertActionLabel="Delete Project"
+              action={async () => {
+                "use server"
+                await actionAdminOnly()
+                const res = await deleteProject(project.id)
+                actionResolveError(res, { delete: '' })
+                revalidatePath('/', 'layout')
+                actionNavigate('/?success=deleted')
+              }}
+            />
+          </section>
+
+        </dialog.Content>
+      </>}
+      </Dialog>
     </AUTH.AdminOnly >
+
   </>
+}
+
+
+
+
+
+export function SolarSettingsMinimalisticLinear(props: SVGProps<SVGSVGElement>) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}>{/* Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ */}<g fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7.843 3.802C9.872 2.601 10.886 2 12 2s2.128.6 4.157 1.802l.686.406c2.029 1.202 3.043 1.803 3.6 2.792c.557.99.557 2.19.557 4.594v.812c0 2.403 0 3.605-.557 4.594s-1.571 1.59-3.6 2.791l-.686.407C14.128 21.399 13.114 22 12 22s-2.128-.6-4.157-1.802l-.686-.407c-2.029-1.2-3.043-1.802-3.6-2.791C3 16.01 3 14.81 3 12.406v-.812C3 9.19 3 7.989 3.557 7s1.571-1.59 3.6-2.792z" /><circle cx="12" cy="12" r="3" /></g></svg>
+  )
 }
 
 

@@ -28,9 +28,8 @@ function ModalShell({ show, ...props }: ComponentProps<"div"> & {
       "transition-all duration-50",
       show ? "" : "duration-100",
 
-
       // Base
-      show ? "modal-opened pointer-events-auto" : "pointer-events-none opacity-0",
+      show ? "modal-opened pointer-events-auto" : "pointer-events-none opacity-0 select-none",
       "fixed top-0 left-0 w-screen h-screen z-(--z-dialog)",
       "flex items-center justify-center",
       props.className,

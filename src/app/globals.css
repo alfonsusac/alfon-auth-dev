@@ -130,11 +130,11 @@ body:has(.modal-opened) {
   }
   
   .button {
-    @apply block
+    @apply 
     border border-foreground/10 
     p-1.5 px-3.5 rounded-md
     text-sm 
-    flex gap-1 justify-center
+    inline-flex gap-1 justify-center
   
     self-start
   
@@ -160,6 +160,10 @@ body:has(.modal-opened) {
 
     text-nowrap
   }
+  .button.inline {
+    @apply -mx-3.5
+  }
+
   .button.floating {
     @apply shadow-md bg-background z-10
     hover:bg-[color-mix(in_oklab,_var(--color-foreground)_3%,_var(--color-background))] 
@@ -169,6 +173,7 @@ body:has(.modal-opened) {
   .button.lg {
     @apply p-2 px-3.5 rounded-lg
   }
+
   .button.primary {
     @apply font-medium
     shadow-md
@@ -184,13 +189,17 @@ body:has(.modal-opened) {
     hover:bg-foreground/4 active:bg-foreground/6;
   }
   .button.ghost {
-    @apply border-none shadow-none
-    bg-background
-    hover:bg-foreground/3 
+    @apply border-none 
+    bg-background text-foreground-body/60
+    hover:bg-foreground/3 hover:text-foreground-body/75
     active:bg-foreground/5
+    shadow-none
   }
   .button.small {
     @apply p-1.5 px-3 text-xs rounded-md
+  }
+  .button.small.inline {
+    @apply -mx-3
   }
   .button.destructive {
     @apply border-red-200 text-red-600
@@ -200,9 +209,11 @@ body:has(.modal-opened) {
     @apply text-background bg-red-500/75 font-medium border-transparent
     hover:bg-red-500/70 active:bg-red-500/75;
   }
-
-  .button .icon-end {
-    @apply ml-1
+  .button .icon {
+    @apply self-center 
+  }
+  .button.ghost .icon {
+    /* @apply text-current/50 */
   }
   
 
@@ -288,6 +299,9 @@ body:has(.modal-opened) {
   }
   .page-h1 {
     @apply text-2xl font-semibold tracking-tight break-words;
+  }
+  .page-h2 {
+    @apply text-xl font-semibold tracking-tight break-words;
   }
   .page-subtitle {
     @apply text-xs text-foreground-body leading-normal
