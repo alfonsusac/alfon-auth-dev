@@ -13,6 +13,7 @@
     "@prisma/adapter-neon": "^6.16.2",
     "@prisma/client": "^6.16.2",
     "arctic": "^3.7.0",
+    "date-fns": "^4.1.0",
     "jose": "^6.1.0",
     "lazy-cn": "^1.0.0",
     "nanoid": "^5.1.6",

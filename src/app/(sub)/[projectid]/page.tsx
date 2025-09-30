@@ -1,7 +1,6 @@
 import { getCurrentUser, actionAdminOnly, isAdmin } from "@/lib/auth"
 import { actionResolveError } from "@/lib/redirects"
 import { revalidatePath } from "next/cache"
-import { formatDate } from "@/lib/date"
 import { createDomain, createProjectKey, deleteDomain, deleteProject, deleteProjectKey, getAllProjectDomains, getAllProjectKeys, regenerateProjectKeySecret, updateDomain, updateProject, updateProjectKey } from "@/services/projects"
 import { CopyButton } from "@/lib/CopyButton"
 import { form } from "@/lib/basic-form/app-form"
@@ -19,6 +18,7 @@ import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 import { Form } from "@/lib/basic-form/form"
 import { FormButton } from "@/lib/FormButton"
 import { IconAdd, IconSettings } from "@/lib/icons"
+import { DateTime } from "@/lib/date.ui"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -26,6 +26,8 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
   const { project, error } = await pageData.projectPage2(projectid)
 
   if (error) return error
+
+  console.log("Created At", project.createdAt)
 
   return <>
     <SuccessCallout messages={{
@@ -40,8 +42,8 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       <DataGridDisplay data={{
         'project id': project.id,
         'description': project.description,
-        'created at': new Date(project.createdAt),
-        'updated at': new Date(project.updatedAt),
+        'updated at': <DateTime date={project.updatedAt} />,
+        'created at': <DateTime date={project.createdAt} />,
       }} />
     </header>
 
@@ -392,7 +394,7 @@ async function ProjectKeysList(props: {
                     <div className="text-foreground-body font-semibold leading-3 text-xs">
                       🔑 {key.name}
                       <span className="text-foreground-body/75 font-normal leading-3 text-xs">
-                        {' - '}{formatDate(key.createdAt)}
+                        {' - '}<DateTime date={key.createdAt} />
                       </span>
                     </div>
                     <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0">

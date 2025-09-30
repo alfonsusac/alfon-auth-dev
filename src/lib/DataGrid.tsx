@@ -1,6 +1,7 @@
 import { cn } from "lazy-cn"
 import { Fragment } from "react"
 import { formatDate } from "./date"
+import { DateTime } from "./date.ui"
 
 export function DataGridDisplay<
   T extends object
@@ -22,7 +23,7 @@ export function DataGridDisplay<
           return (
             <Fragment key={key}>
               <div className="opacity-50 whitespace-nowrap">{key}</div>
-              <div className="break-words min-w-0">{String(value)}</div>
+              <div className="break-words min-w-0">{String(value) || <span className="opacity-50">-</span>}</div>
             </Fragment>
           )
         }
@@ -30,7 +31,7 @@ export function DataGridDisplay<
           return (
             <Fragment key={key}>
               <div className="opacity-50 whitespace-nowrap">{key}</div>
-              <div className="break-words min-w-0">{formatDate(value)}</div>
+              <div className="break-words min-w-0"><DateTime date={value} /></div>
             </Fragment>
           )
         }
@@ -46,7 +47,7 @@ export function DataGridDisplay<
         return (
           <Fragment key={key}>
             <div className="opacity-50 whitespace-nowrap">{key}</div>
-            <div className="opacity-50 italic">{value}</div>
+            <div className="">{value}</div>
           </Fragment>
         )
       })}
