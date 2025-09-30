@@ -19,6 +19,7 @@ import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 import { Form } from "@/lib/basic-form/form"
 import { FormButton } from "@/lib/FormButton"
 import type { SVGProps } from "react"
+import { IconAdd, IconSettings } from "@/lib/icons"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -59,10 +60,10 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
       <Dialog name={`project_setting_${ project.id }`}>{dialog => <>
         <dialog.Button className="button small ghost">
-          <SolarSettingsMinimalisticLinear className="icon icon-start" />
+          <IconSettings className="icon icon-start" />
           Settings
         </dialog.Button>
-        <dialog.Content className="max-w-120 w-full" wide>
+        <dialog.Content wider>
 
           <section className="category">
             <h2 className="page-h2">Project Settings</h2>
@@ -143,12 +144,6 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
 
 
-export function SolarSettingsMinimalisticLinear(props: SVGProps<SVGSVGElement>) {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24" {...props}>{/* Icon from Solar by 480 Design - https://creativecommons.org/licenses/by/4.0/ */}<g fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M7.843 3.802C9.872 2.601 10.886 2 12 2s2.128.6 4.157 1.802l.686.406c2.029 1.202 3.043 1.803 3.6 2.792c.557.99.557 2.19.557 4.594v.812c0 2.403 0 3.605-.557 4.594s-1.571 1.59-3.6 2.791l-.686.407C14.128 21.399 13.114 22 12 22s-2.128-.6-4.157-1.802l-.686-.407c-2.029-1.2-3.043-1.802-3.6-2.791C3 16.01 3 14.81 3 12.406v-.812C3 9.19 3 7.989 3.557 7s1.571-1.59 3.6-2.792z" /><circle cx="12" cy="12" r="3" /></g></svg>
-  )
-}
-
 
 
 
@@ -172,36 +167,37 @@ async function ProjectDomainsList(props: {
         </p>
       </div>
 
-      <ul className="list">
-        {domains.length === 0 && <div className="list-empty">Domains not yet set up.</div>}
-        {domains.map(domain => {
-          const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
-          const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
-          return <li className="relative group" key={domain.id}>
-            <SubPage name={`domain_${ domain.id }`} children={subpage => <>
-              <subpage.Button className="button ghost flex flex-col py-3 w-full items-start">
-                <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
-                  <span className="text-foreground-body/50">{protocol}</span>
-                  <span className="font-medium text-foreground">{origin}</span>
-                  <span>{domain.redirect_url.replace(domain.origin, '')}</span>
-                </div>
-              </subpage.Button>
-              <subpage.Content>
-                <ProjectDomainSubpage
-                  context={{ [`domain_${ domain.id }`]: '' }}
-                  domainid={domain.id}
-                  projectid={project.id}
-                  searchParams={props.searchParams}
-                />
-              </subpage.Content>
-            </>} />
-          </li>
-        })}
-      </ul>
+      <div className="flex flex-col">
+        <ul className="list">
+          {domains.map(domain => {
+            const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
+            const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
+            return <li className="relative group" key={domain.id}>
+              <SubPage name={`domain_${ domain.id }`} children={subpage => <>
+                <subpage.Button className="list-row">
+                  <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
+                    <span className="text-foreground-body/50">{protocol}</span>
+                    <span className="font-medium text-foreground">{origin}</span>
+                    <span>{domain.redirect_url.replace(domain.origin, '')}</span>
+                  </div>
+                </subpage.Button>
+                <subpage.Content>
+                  <ProjectDomainSubpage
+                    context={{ [`domain_${ domain.id }`]: '' }}
+                    domainid={domain.id}
+                    projectid={project.id}
+                    searchParams={props.searchParams}
+                  />
+                </subpage.Content>
+              </>} />
+            </li>
+          })}
+        </ul>
 
+      </div>
       <Dialog name="add_url" children={dialog => <>
         <dialog.Button className="button small">
-          Add URL
+          <IconAdd className="icon" /> Add URL
         </dialog.Button>
         <dialog.Content wide>
           <DialogTitle>Add Project URL</DialogTitle>
@@ -356,11 +352,6 @@ export async function ProjectDomainSubpage(props: {
         }}
       />
     </section>
-
-    <section className="category">
-      <p className="category-header">api reference ↓</p>
-
-    </section>
   </>
 }
 
@@ -434,7 +425,7 @@ async function ProjectKeysList(props: {
 
       <Dialog name="add_key" children={dialog => <>
         <dialog.Button className="button small">
-          Create Secret Key
+          <IconAdd className="icon" /> Create Secret Key
         </dialog.Button>
 
         <dialog.Content wide>

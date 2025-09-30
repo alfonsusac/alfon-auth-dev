@@ -159,6 +159,8 @@ body:has(.modal-opened) {
     active:translate-y-px
 
     text-nowrap
+     
+    items-center
   }
   .button.inline {
     @apply -mx-3.5
@@ -183,14 +185,21 @@ body:has(.modal-opened) {
   }
   .button.secondary { 
     @apply font-medium
-    border-transparent
+    border-transparent shadow-none
   
     bg-foreground/2 text-foreground-body/75
     hover:bg-foreground/4 active:bg-foreground/6;
   }
   .button.ghost {
     @apply border-none 
-    bg-background text-foreground-body/60
+    bg-background text-foreground-body/50
+    hover:bg-foreground/3 hover:text-foreground-body/75
+    active:bg-foreground/5
+    shadow-none
+  }
+  .button.bare {
+    @apply border-none 
+    bg-transparent text-foreground-body/25
     hover:bg-foreground/3 hover:text-foreground-body/75
     active:bg-foreground/5
     shadow-none
@@ -210,10 +219,7 @@ body:has(.modal-opened) {
     hover:bg-red-500/70 active:bg-red-500/75;
   }
   .button .icon {
-    @apply self-center 
-  }
-  .button.ghost .icon {
-    /* @apply text-current/50 */
+    @apply self-center  text-[1.1em]
   }
   
 
@@ -270,7 +276,7 @@ body:has(.modal-opened) {
     @apply max-w-120 flex flex-col gap-3
   }
   .category-header {
-    @apply text-pretty text-xs text-foreground-body/40 font-medium py-1  flex flex-col gap-0.5
+    @apply text-pretty text-xs text-foreground-body/40 font-medium py-2 -my-3  flex flex-col gap-0.5
   }
 
   hr {
@@ -278,12 +284,16 @@ body:has(.modal-opened) {
   }
 
   .list {
-    @apply flex flex-col p-1
-    border border-border rounded-xl bg-background
+    @apply flex flex-col
+     /* p-1 */
+    /* border border-border */
+    rounded-lg overflow-hidden
+    bg-foreground/1
+     /* bg-background */
   }
   .list-row {
     @apply flex flex-row items-center p-3 gap-1 grow min-w-0 text-start w-full
-    hover:bg-foreground/5 rounded-lg relative
+    hover:bg-foreground/5 rounded-md relative py-2
     active:bg-foreground/8
   }
   .list-empty {

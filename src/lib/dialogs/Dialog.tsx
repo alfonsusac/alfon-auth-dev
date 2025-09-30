@@ -17,6 +17,7 @@ export function Dialog(props: {
         children?: ReactNode,
         hideCloseButton?: boolean,
         wide?: boolean,
+        wider?: boolean,
         className?: string
       }) => ReactNode,
       context: PageContext
@@ -37,16 +38,14 @@ export function Dialog(props: {
         Content: props =>
           <SearchParamModal name={name}>
             <DialogBackdropLink context={context} />
-
-            {/* Actual Paper */}
             <DialogJustPaper className={cn(
-              props.wide && "p-8 max-w-(--dialog-wide-w)",
+              props.wide && "p-8 max-w-100",
+              props.wider && "p-12 max-w-140",
               props.className
             )}>
               {!props.hideCloseButton && <DialogCloseButton context={context} />}
               {props.children}
             </DialogJustPaper>
-
           </SearchParamModal>,
 
         context:
