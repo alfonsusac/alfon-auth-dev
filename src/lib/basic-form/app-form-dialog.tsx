@@ -19,7 +19,7 @@ export function EditFormDialog<F extends TypedForm.FormFieldMap>(
   return (
     <Dialog name={`edit_${ props.id }`} context={props.context}>
       {dialog => <>
-        <dialog.Button className="button small -mt-8">
+        <dialog.Button className="button small">
           Edit {props.name} Details
         </dialog.Button>
 

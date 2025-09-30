@@ -48,48 +48,50 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     </header>
 
     <AUTH.AdminOnly>
-      <EditFormDialog
-        id={project.id}
-        name="Project"
-        fields={{
-          name: {
-            type: "text",
-            label: "project name",
-            helper: "give your project a name for identification",
-            defaultValue: project.name,
-            required: true,
-            autoFocus: true,
-          },
-          id: {
-            type: "text",
-            label: "project id",
-            helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
-            prefix: "https://auth.alfon.dev/",
-            defaultValue: project.id ?? "",
-            required: true
-          },
-          description: {
-            type: "text",
-            label: "description",
-            helper: "describe your project for future reference (optional)",
-            defaultValue: project.description ?? "",
-          }
-        }}
-        action={async (inputs, dialogContext) => {
-          "use server"
-          await actionAdminOnly(`/${ project.id }`)
-          const res = await updateProject(inputs, project.id)
-          actionResolveError(res, { ...inputs, ...dialogContext })
-          revalidatePath(`/`, 'layout')
-          actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
-        }}
-        searchParams={searchParams}
-        errorCallout={<ErrorCallout<typeof updateProject> messages={{
-          invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
-          missing_fields: "please fill out all required fields.",
-          not_found: "project not found.",
-          id_exists: "project id already exists.",
-        }} />} />
+      <section className="-mt-8">
+        <EditFormDialog
+          id={project.id}
+          name="Project"
+          fields={{
+            name: {
+              type: "text",
+              label: "project name",
+              helper: "give your project a name for identification",
+              defaultValue: project.name,
+              required: true,
+              autoFocus: true,
+            },
+            id: {
+              type: "text",
+              label: "project id",
+              helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
+              prefix: "https://auth.alfon.dev/",
+              defaultValue: project.id ?? "",
+              required: true
+            },
+            description: {
+              type: "text",
+              label: "description",
+              helper: "describe your project for future reference (optional)",
+              defaultValue: project.description ?? "",
+            }
+          }}
+          action={async (inputs, dialogContext) => {
+            "use server"
+            await actionAdminOnly(`/${ project.id }`)
+            const res = await updateProject(inputs, project.id)
+            actionResolveError(res, { ...inputs, ...dialogContext })
+            revalidatePath(`/`, 'layout')
+            actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
+          }}
+          searchParams={searchParams}
+          errorCallout={<ErrorCallout<typeof updateProject> messages={{
+            invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
+            missing_fields: "please fill out all required fields.",
+            not_found: "project not found.",
+            id_exists: "project id already exists.",
+          }} />} />
+      </section>
 
       <ProjectDomainsList
         projectid={project.id}
@@ -160,7 +162,7 @@ async function ProjectDomainsList(props: {
                 </div>
               </subpage.Button>
               <subpage.Content>
-                <ProjectDomainItemSubpage
+                <ProjectDomainSubpage
                   context={{ [`domain_${ domain.id }`]: '' }}
                   domainid={domain.id}
                   projectid={project.id}
@@ -234,7 +236,7 @@ async function ProjectDomainsList(props: {
 
 
 
-export async function ProjectDomainItemSubpage(props: {
+export async function ProjectDomainSubpage(props: {
   projectid: string,
   domainid: string,
   context?: PageContext,
@@ -260,7 +262,7 @@ export async function ProjectDomainItemSubpage(props: {
       }} />
     </header>
 
-    <section className="category">
+    <section className="category flex-row -mt-8">
       <EditFormDialog
         id={domain.id}
         name="Domain"
@@ -313,10 +315,6 @@ export async function ProjectDomainItemSubpage(props: {
           domain_in_use: `domain is already in use by another project: $1`,
         }} />}
       />
-    </section>
-
-    <section className="category">
-      <p className="category-header">danger zone ↓</p>
       <DeleteDialogButton
         name={`domain-${ domain.id }`}
         context2={context}
@@ -332,6 +330,11 @@ export async function ProjectDomainItemSubpage(props: {
           actionNavigate(`/${ project.id }?success=domain_deleted`)
         }}
       />
+    </section>
+
+    <section className="category">
+      <p className="category-header">api reference ↓</p>
+
     </section>
   </>
 }
@@ -476,7 +479,7 @@ async function ProjectKeySubpage(props: {
       }} />
     </header>
 
-    <div className="flex gap-2">
+    <div className="flex gap-2 -mt-8">
       <CopyButton className="button primary small" text={key.client_secret}>
         Copy Key
       </CopyButton>
@@ -492,10 +495,6 @@ async function ProjectKeySubpage(props: {
           Regenerate Secret <div className="icon-end">🔄</div>
         </FormButton>
       </Form>
-    </div>
-
-
-    <section className="category">
       <EditFormDialog
         id={key.id}
         name="Domain"
@@ -528,10 +527,6 @@ async function ProjectKeySubpage(props: {
           project_not_found: "project not found.",
         }} />}
       />
-    </section>
-
-    <section className="category">
-      <p className="category-header">danger zone ↓</p>
       <DeleteDialogButton
         name={`project-key-${ key.id }`}
         context2={context}
@@ -547,7 +542,7 @@ async function ProjectKeySubpage(props: {
           actionNavigate(`/${ project.id }?success=domain_deleted`)
         }}
       />
-    </section>
+    </div>
   </>
 
 }
