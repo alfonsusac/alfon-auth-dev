@@ -479,7 +479,7 @@ async function ProjectKeySubpage(props: {
       }} />
     </header>
 
-    <div className="flex gap-2 -mt-8">
+    <div className="flex gap-2 -mt-8 flex-wrap">
       <CopyButton className="button primary small" text={key.client_secret}>
         Copy Key
       </CopyButton>

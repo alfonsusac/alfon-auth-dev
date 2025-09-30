@@ -157,6 +157,8 @@ body:has(.modal-opened) {
     shadow-xs
     active:shadow-none
     active:translate-y-px
+
+    text-nowrap
   }
   .button.floating {
     @apply shadow-md bg-background z-10
