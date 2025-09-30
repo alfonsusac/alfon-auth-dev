@@ -9,10 +9,10 @@ export function DeleteDialogButton(
     alertDescription?: string,
     alertActionLabel?: string,
     action: () => Promise<void>,
-    context2?: { [key: string]: string }
+    context?: { [key: string]: string }
   }
 ) {
-  return <Dialog name={`delete_${ props.name }`} context={props.context2}>
+  return <Dialog name={`delete_${ props.name }`} context={props.context}>
     {dialog => <>
       <dialog.Button className="button destructive small">
         {props.label}
@@ -24,7 +24,7 @@ export function DeleteDialogButton(
           backHref={'?'}
           actionLabel="Delete"
           action={props.action}
-          context={props.context2}
+          context={props.context}
         />
       </dialog.Content>
     </>}

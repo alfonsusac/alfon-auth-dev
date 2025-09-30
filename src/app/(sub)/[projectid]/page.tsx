@@ -49,14 +49,9 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
     <AUTH.AdminOnly>
 
-      <ProjectDomainsList
-        projectid={project.id}
-        searchParams={searchParams}
-      />
+      <ProjectDomainsList projectid={project.id} searchParams={searchParams} />
 
-      <ProjectKeysList
-        projectid={project.id}
-      />
+      <ProjectKeysList projectid={project.id} />
 
 
       <Dialog name={`project_setting_${ project.id }`}>{dialog => <>
@@ -71,6 +66,14 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
             <h3 className="category-header">project details ↓</h3>
             <form.EditForm
               name={`edit_project_${ project.id }`}
+              action={async (inputs) => {
+                "use server"
+                await actionAdminOnly(`/${ project.id }`)
+                const res = await updateProject(inputs, project.id)
+                actionResolveError(res, { ...inputs, ...dialog.context })
+                revalidatePath(`/`, 'layout')
+                actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
+              }}
               fields={{
                 name: {
                   type: "text",
@@ -102,21 +105,14 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
                 not_found: "project not found.",
                 id_exists: "project id already exists.",
               }} />}
-              action={async (inputs) => {
-                "use server"
-                await actionAdminOnly(`/${ project.id }`)
-                const res = await updateProject(inputs, project.id)
-                actionResolveError(res, { ...inputs, ...dialog.context })
-                revalidatePath(`/`, 'layout')
-                actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
-              }}
+
             />
           </section>
 
           <section className="category">
             <h3 className="category-header">danger zone ↓</h3>
             <DeleteDialogButton
-              context2={dialog.context}
+              context={dialog.context}
               name={`project-${ project.id }`}
               label="Delete Project"
               alertTitle={`Are you sure you want to permanently delete "${ project.name }"?`}
@@ -182,6 +178,7 @@ async function ProjectDomainsList(props: {
                     <span>{domain.redirect_url.replace(domain.origin, '')}</span>
                   </div>
                 </subpage.Button>
+
                 <subpage.Content>
                   <ProjectDomainSubpage
                     context={{ [`domain_${ domain.id }`]: '' }}
@@ -339,7 +336,7 @@ export async function ProjectDomainSubpage(props: {
       />
       <DeleteDialogButton
         name={`domain-${ domain.id }`}
-        context2={context}
+        context={context}
         label="Delete Project Domain"
         alertTitle="Are you sure you want to permanently delete this domain?"
         alertDescription="This action cannot be undone. Any applications using this domain will no longer be able to access the project."
@@ -546,7 +543,7 @@ async function ProjectKeySubpage(props: {
       />
       <DeleteDialogButton
         name={`project-key-${ key.id }`}
-        context2={context}
+        context={context}
         label="Delete Project Key"
         alertTitle="Are you sure you want to permanently delete this project key?"
         alertDescription="This action cannot be undone. Any applications using this key will no longer be able to access the project."
