@@ -48,7 +48,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     </header>
 
     <AUTH.AdminOnly>
-      <section className="-mt-8">
+      <section className="-mt-8 flex">
         <EditFormDialog
           id={project.id}
           name="Project"
