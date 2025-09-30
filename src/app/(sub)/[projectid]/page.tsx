@@ -18,7 +18,6 @@ import { SubPage } from "@/lib/dialogs/dialog-subpage"
 import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 import { Form } from "@/lib/basic-form/form"
 import { FormButton } from "@/lib/FormButton"
-import type { SVGProps } from "react"
 import { IconAdd, IconSettings } from "@/lib/icons"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
