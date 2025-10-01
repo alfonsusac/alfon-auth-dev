@@ -20,7 +20,7 @@ import { FormButton } from "@/lib/FormButton"
 import { IconAdd, IconSettings } from "@/lib/icons"
 import { DateTime } from "@/lib/date.ui"
 import { EditProjectForm } from "@/services/projects.form"
-import { page } from "@/lib/page"
+import { Page, page } from "@/lib/page"
 
 export default page('/[projectid]', async props => {
 
@@ -29,15 +29,15 @@ export default page('/[projectid]', async props => {
 
   if (error) return error
 
-  return <>
-    <SuccessCallout messages={{
+  return <Page
+    toasts={{
       new: "project created successfully!",
       key_deleted: "key deleted successfully!",
       domain_deleted: "domain deleted successfully!",
       updated: "project updated!",
-    }} />
-    <NavigationBar back={['Home', '/']} />
-
+    }}
+    back={['Home', '/']}
+  >
     <header>
       <h1 className="page-h1">{project.name}</h1>
       <DataGridDisplay data={{
@@ -106,7 +106,7 @@ export default page('/[projectid]', async props => {
       </Dialog>
     </AUTH.AdminOnly >
 
-  </>
+  </Page>
 })
 
 
