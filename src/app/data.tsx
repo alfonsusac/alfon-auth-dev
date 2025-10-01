@@ -27,7 +27,7 @@ export const pageData = {
       return { user }
     },
 
-  projectPage2:
+  projectPage:
     async (projectid: string) => {
       const project = await getProject(projectid)
       if (!project) return {
@@ -42,9 +42,9 @@ export const pageData = {
     },
 
 
-  projectKeyPage2: async (projectid: string, keyid: string) => {
+  projectKeyPage: async (projectid: string, keyid: string) => {
 
-    const { project, error } = await pageData.projectPage2(projectid)
+    const { project, error } = await pageData.projectPage(projectid)
     if (error) return { error }
 
     const user = await getCurrentUser()
@@ -82,9 +82,9 @@ export const pageData = {
       return { domain }
     },
 
-  projectDomainPage2:
+  projectDomainPage:
     async (projectid: string, domainid: string) => {
-      const { project, error } = await pageData.projectPage2(projectid)
+      const { project, error } = await pageData.projectPage(projectid)
       if (error) return { error }
 
       const { domain, error: error2 } = await pageData.domainPage(domainid)

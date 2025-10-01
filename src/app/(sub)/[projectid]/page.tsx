@@ -20,11 +20,12 @@ import { FormButton } from "@/lib/FormButton"
 import { IconAdd, IconSettings } from "@/lib/icons"
 import { DateTime } from "@/lib/date.ui"
 import { EditProjectForm } from "@/services/projects.form"
+import { page } from "@/lib/page"
 
-export default async function ProjectPage(props: PageProps<"/[projectid]">) {
+export default page('/[projectid]', async props => {
 
-  const { projectid, searchParams } = await pageData.resolve(props)
-  const { project, error } = await pageData.projectPage2(projectid)
+  const { projectid, searchParams } = props
+  const { project, error } = await pageData.projectPage(projectid)
 
   if (error) return error
 
@@ -36,7 +37,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       updated: "project updated!",
     }} />
     <NavigationBar back={['Home', '/']} />
-    
+
     <header>
       <h1 className="page-h1">{project.name}</h1>
       <DataGridDisplay data={{
@@ -106,7 +107,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
     </AUTH.AdminOnly >
 
   </>
-}
+})
 
 
 
@@ -122,7 +123,7 @@ async function ProjectDomainsList(props: {
   searchParams: PageSearchParams
 }) {
 
-  const { project, error } = await pageData.projectPage2(props.projectid)
+  const { project, error } = await pageData.projectPage(props.projectid)
   if (error) return error
   const domains = await getAllProjectDomains(project.id)
 
@@ -234,7 +235,7 @@ export async function ProjectDomainSubpage(props: {
 }) {
 
   const { projectid, domainid, context } = props
-  const { domain, project, error } = await pageData.projectDomainPage2(projectid, domainid)
+  const { domain, project, error } = await pageData.projectDomainPage(projectid, domainid)
   if (error) return error
 
   return <>
@@ -335,7 +336,7 @@ async function ProjectKeysList(props: {
 }) {
 
   const { projectid } = props
-  const { project, error } = await pageData.projectPage2(projectid)
+  const { project, error } = await pageData.projectPage(projectid)
   if (error) return null
   const user = await getCurrentUser()
   if (!isAdmin(user)) return null
@@ -446,7 +447,7 @@ async function ProjectKeySubpage(props: {
 }) {
 
   const { projectid, keyid, context } = props
-  const { key, project, error } = await pageData.projectKeyPage2(projectid, keyid)
+  const { key, project, error } = await pageData.projectKeyPage(projectid, keyid)
   if (error) return error
 
   return <>

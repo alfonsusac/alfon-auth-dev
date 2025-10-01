@@ -3,6 +3,7 @@
 import { cn } from "lazy-cn"
 import { useSearchParams } from "next/navigation"
 import { IconCheckFilled } from "../icons"
+import type { ReactNode } from "react"
 
 export function ToastBanner(props: {
   messages: Record<string, string>
@@ -18,7 +19,7 @@ export function ToastBanner(props: {
 }
 
 export function SuccessCallout(props: {
-  messages: Record<string, string>
+  messages: Record<string, ReactNode>
 }) {
 
   const sp = useSearchParams()
