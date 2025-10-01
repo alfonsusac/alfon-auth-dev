@@ -19,6 +19,7 @@ import { Form } from "@/lib/basic-form/form"
 import { FormButton } from "@/lib/FormButton"
 import { IconAdd, IconSettings } from "@/lib/icons"
 import { DateTime } from "@/lib/date.ui"
+import { EditProjectForm } from "@/services/projects.form"
 
 export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
@@ -26,8 +27,6 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
   const { project, error } = await pageData.projectPage2(projectid)
 
   if (error) return error
-
-  console.log("Created At", project.createdAt)
 
   return <>
     <SuccessCallout messages={{
@@ -37,6 +36,7 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
       updated: "project updated!",
     }} />
     <NavigationBar back={['Home', '/']} />
+    
     <header>
       <h1 className="page-h1">{project.name}</h1>
       <DataGridDisplay data={{
@@ -53,59 +53,30 @@ export default async function ProjectPage(props: PageProps<"/[projectid]">) {
 
       <ProjectKeysList projectid={project.id} />
 
-
       <Dialog name={`project_setting_${ project.id }`}>{dialog => <>
         <dialog.Button className="button small ghost">
           <IconSettings className="icon icon-start" />
           Settings
         </dialog.Button>
-        <dialog.Content wider>
+        <dialog.Content wider className="flex flex-col gap-8">
 
           <section className="category">
             <h2 className="page-h2">Project Settings</h2>
             <h3 className="category-header">project details ↓</h3>
-            <form.EditForm
-              name={`edit_project_${ project.id }`}
-              action={async (inputs) => {
-                "use server"
-                await actionAdminOnly(`/${ project.id }`)
-                const res = await updateProject(inputs, project.id)
-                actionResolveError(res, { ...inputs, ...dialog.context })
-                revalidatePath(`/`, 'layout')
-                actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace")
-              }}
-              fields={{
-                name: {
-                  type: "text",
-                  label: "project name",
-                  helper: "give your project a name for identification",
-                  defaultValue: project.name,
-                  required: true,
-                  autoFocus: true,
-                },
-                id: {
-                  type: "text",
-                  label: "project id",
-                  helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
-                  prefix: "https://auth.alfon.dev/",
-                  defaultValue: project.id ?? "",
-                  required: true
-                },
-                description: {
-                  type: "text",
-                  label: "description",
-                  helper: "describe your project for future reference (optional)",
-                  defaultValue: project.description ?? "",
-                }
-              }}
+            <EditProjectForm
+              projectid={project.id}
               searchParams={searchParams}
-              errorCallout={<ErrorCallout<typeof updateProject> messages={{
-                invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
-                missing_fields: "please fill out all required fields.",
-                not_found: "project not found.",
-                id_exists: "project id already exists.",
-              }} />}
-
+              onReturn={async (error, inputs) => {
+                "use server"
+                actionResolveError(error, { ...inputs, ...dialog.context })
+                revalidatePath(`/`, 'layout')
+                actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace", dialog.context)
+              }}
+              defaultValues={{
+                name: project.name,
+                id: project.id,
+                description: project.description ?? "",
+              }}
             />
           </section>
 
@@ -559,4 +530,4 @@ async function ProjectKeySubpage(props: {
     </div>
   </>
 
-}
+} 

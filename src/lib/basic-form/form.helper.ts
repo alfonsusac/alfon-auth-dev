@@ -10,7 +10,7 @@ export namespace TypedForm {
       | { // Inputtables
         label: string
         helper?: string,
-        defaultValue?: string
+        // defaultValue?: string
         required?: boolean
         placeholder?: string
         autoFocus?: boolean

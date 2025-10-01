@@ -56,14 +56,13 @@ export function SuccessCallout(props: {
 
 type ExtractErrorFromRes<T extends (...args: any) => any> = Extract<Awaited<ReturnType<T>>, string>
 type ExtractErrorKeysFromRes<T extends string> = T extends `${ infer V }=${ string }` ? V : T
-type GetErrorValueFromErrorRes<T extends string> = T extends `${ string }=${ string }` ? `${ string }$1${ string }` : string
+export type GetErrorValueFromErrorRes<T extends string> = T extends `${ string }=${ string }` ? `${ string }$1${ string }` : string
+export type ExtractErrorMessageMapFromRes<T extends (...args: any) => any> = {
+  [K in ExtractErrorFromRes<T> as ExtractErrorKeysFromRes<K>]: GetErrorValueFromErrorRes<K>
+}
 
 export function ErrorCallout<T extends (...args: any) => any>(props: {
-  test?: T extends (...args: any) => (infer U | Promise<infer U>)
-  ? U extends string ? U extends `${ infer V }=${ string }` ? `${ V }=` : U : never : never
-  messages: {
-    [K in ExtractErrorFromRes<T> as ExtractErrorKeysFromRes<K>]: GetErrorValueFromErrorRes<K>
-  }
+  messages: ExtractErrorMessageMapFromRes<T>
 }) {
   const sp = useSearchParams()
   const error = sp.get('error')

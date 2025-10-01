@@ -9,9 +9,10 @@ export function InputGroup(props: ComponentProps<"div">) {
   return <div {...props} className={cn('input-group', props.className)} />
 }
 
-function InputFields<F extends TypedForm.FormFieldMap>(props: {
+export function InputFields<F extends TypedForm.FormFieldMap>(props: {
   name: string,
   fields: F,
+  defaultValues?: { [K in keyof F]?: string | number },
   classNames?: {
     inputBox?: string,
     input?: string,
@@ -37,7 +38,7 @@ function InputFields<F extends TypedForm.FormFieldMap>(props: {
       const inputProps = {
         name,
         id,
-        defaultValue: field.defaultValue ?? props.searchParams?.get(name) ?? '',
+        defaultValue: props.defaultValues?.[name as keyof F] ?? props.searchParams?.get(name) ?? '',
         required: field.required,
         placeholder: field.placeholder,
         type: field.type,
@@ -77,6 +78,7 @@ function EditForm<F extends TypedForm.FormFieldMap>(props: {
   name: string
   action: TypedForm.ActionFunction<F>,
   fields: F
+  defaultValues?: { [K in keyof F]?: string | number }
   errorCallout: ReactNode
   searchParams: Awaited<PageProps<any>['searchParams']>
 }) {
@@ -88,6 +90,7 @@ function EditForm<F extends TypedForm.FormFieldMap>(props: {
 
       <InputFields
         fields={props.fields}
+        defaultValues={props.defaultValues}
         name={props.name}
         classNames={{ inputBox: "small" }}
         searchParams={toNativeSearchParams(props.searchParams)} />
@@ -106,6 +109,7 @@ function CreateForm<F extends TypedForm.FormFieldMap>(props: {
   name: string
   action: TypedForm.ActionFunction<F>,
   fields: F
+  defaultValues?: { [K in keyof F]?: string | number }
   errorCallout: ReactNode
   searchParams: Awaited<PageProps<any>['params']>
 }) {
@@ -117,6 +121,7 @@ function CreateForm<F extends TypedForm.FormFieldMap>(props: {
 
       <InputFields
         fields={props.fields}
+        defaultValues={props.defaultValues}
         name={props.name}
         searchParams={toNativeSearchParams(props.searchParams)} />
 
