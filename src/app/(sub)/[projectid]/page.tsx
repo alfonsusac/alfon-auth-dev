@@ -11,8 +11,7 @@ import { nanoid } from "nanoid"
 import { DeleteDialogButton } from "@/lib/dialogs/dialog-delete"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { pageData } from "@/app/data"
-import { NavigationBar } from "@/lib/NavigationBar"
-import { Dialog, DialogTitle } from "@/lib/dialogs/dialog"
+import { Dialog, DialogCloseButton, DialogTitle } from "@/lib/dialogs/dialog"
 import { SubPage } from "@/lib/dialogs/dialog-subpage"
 import { EditFormDialog } from "@/lib/basic-form/app-form-dialog"
 import { Form } from "@/lib/basic-form/form"
@@ -21,6 +20,10 @@ import { IconAdd, IconSettings } from "@/lib/icons"
 import { DateTime } from "@/lib/date.ui"
 import { EditProjectForm } from "@/services/projects.form"
 import { Page, page } from "@/lib/page"
+import { ModalContent, ModalClose, ModalButton } from "@/lib/dialogsv2/modal.client"
+import { DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
+import { Modal } from "@/lib/dialogsv2/modal"
+import { cn } from "lazy-cn"
 
 export default page('/[projectid]', async props => {
 
@@ -44,7 +47,7 @@ export default page('/[projectid]', async props => {
         'project id': project.id,
         'description': project.description,
         'updated at': <DateTime date={project.updatedAt} />,
-        'created at': <DateTime date={project.createdAt} />,
+        'created at': <DateTime date={project.createdAt} />
       }} />
     </header>
 
@@ -54,58 +57,62 @@ export default page('/[projectid]', async props => {
 
       <ProjectKeysList projectid={project.id} />
 
-      <Dialog name={`project_setting_${ project.id }`}>{dialog => <>
-        <dialog.Button className="button small ghost">
-          <IconSettings className="icon icon-start" />
-          Settings
-        </dialog.Button>
-        <dialog.Content wider className="flex flex-col gap-8">
+      <Modal name={`project_setting_${ project.id }`}>
+        {modal => <>
 
-          <section className="category">
-            <h2 className="page-h2">Project Settings</h2>
-            <h3 className="category-header">project details ↓</h3>
-            <EditProjectForm
-              projectid={project.id}
-              searchParams={searchParams}
-              onReturn={async (error, inputs) => {
-                "use server"
-                actionResolveError(error, { ...inputs, ...dialog.context })
-                revalidatePath(`/`, 'layout')
-                actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace", dialog.context)
-              }}
-              defaultValues={{
-                name: project.name,
-                id: project.id,
-                description: project.description ?? "",
-              }}
-            />
-          </section>
+          <ModalButton className="button small ghost">
+            <IconSettings className="icon icon-start" />
+            Settings
+          </ModalButton>
 
-          <section className="category">
-            <h3 className="category-header">danger zone ↓</h3>
-            <DeleteDialogButton
-              context={dialog.context}
-              name={`project-${ project.id }`}
-              label="Delete Project"
-              alertTitle={`Are you sure you want to permanently delete "${ project.name }"?`}
-              alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
-              alertActionLabel="Delete Project"
-              action={async () => {
-                "use server"
-                await actionAdminOnly()
-                const res = await deleteProject(project.id)
-                actionResolveError(res, { delete: '' })
-                revalidatePath('/', 'layout')
-                actionNavigate('/?success=deleted')
-              }}
-            />
-          </section>
+          <ModalContent>
+            <DialogSurface wider>
 
-        </dialog.Content>
-      </>}
-      </Dialog>
+              <DialogCloseButton />
+
+              <h2 className="page-h2">Project Settings</h2>
+              <section className="category">
+                <h3 className="category-header">project details ↓</h3>
+                <EditProjectForm
+                  projectid={project.id}
+                  searchParams={searchParams}
+                  onReturn={async (error, inputs) => {
+                    "use server"
+                    actionResolveError(error, { ...inputs, ...modal.context })
+                    revalidatePath(`/`, 'layout')
+                    actionNavigate(`/${ inputs.id }?success=updated+${ nanoid(3) }`, "replace", modal.context)
+                  }}
+                  defaultValues={{
+                    name: project.name,
+                    id: project.id,
+                    description: project.description ?? "",
+                  }}
+                />
+              </section>
+
+              <section className="category">
+                <h3 className="category-header">danger zone ↓</h3>
+                <DeleteDialogButton
+                  context={modal.context}
+                  name={`project-${ project.id }`}
+                  what="Project"
+                  alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
+                  action={async () => {
+                    "use server"
+                    await actionAdminOnly()
+                    const res = await deleteProject(project.id)
+                    actionResolveError(res, { delete: '' })
+                    revalidatePath('/', 'layout')
+                    actionNavigate('/?success=deleted')
+                  }}
+                />
+              </section>
+
+            </DialogSurface>
+          </ModalContent>
+        </>}
+      </Modal>
     </AUTH.AdminOnly >
-
   </Page>
 })
 
@@ -129,12 +136,13 @@ async function ProjectDomainsList(props: {
 
   return (
     <section className="category">
-      <div className="category-header">
+
+      <header className="category-header">
         <h2>redirect urls ↓</h2>
         <p className="text-xxs">
           these urls are authorized to redirect to after authentication and also used to validate incoming requests.
         </p>
-      </div>
+      </header>
 
       <div className="flex flex-col">
         <ul className="list">
@@ -142,85 +150,105 @@ async function ProjectDomainsList(props: {
             const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
             const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
             return <li className="relative group" key={domain.id}>
-              <SubPage name={`domain_${ domain.id }`} children={subpage => <>
-                <subpage.Button className="list-row">
-                  <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
-                    <span className="text-foreground-body/50">{protocol}</span>
-                    <span className="font-medium text-foreground">{origin}</span>
-                    <span>{domain.redirect_url.replace(domain.origin, '')}</span>
-                  </div>
-                </subpage.Button>
+              <Modal name={"domain_" + domain.id}>
+                {modal => <>
+                  <ModalButton className="list-row">
+                    <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
+                      <span className="text-foreground-body/50">{protocol}</span>
+                      <span className="font-medium text-foreground">{origin}</span>
+                      <span>{domain.redirect_url.replace(domain.origin, '')}</span>
+                    </div>
+                  </ModalButton>
 
-                <subpage.Content>
-                  <ProjectDomainSubpage
-                    context={{ [`domain_${ domain.id }`]: '' }}
-                    domainid={domain.id}
-                    projectid={project.id}
-                    searchParams={props.searchParams}
-                  />
-                </subpage.Content>
-              </>} />
+                  <ModalContent>
+
+                    <DialogSurface className={cn(
+                      "max-w-2xl w-full h-full",
+                      "flex flex-col overflow-hidden p-0",
+                      "relative",
+                    )}>
+                      <DialogCloseButton className="absolute" context={modal.context} />
+                      <div className="shrink basis-0 grow min-h-0 overflow-y-auto p-8 pt-14 xs:p-12 xs:pt-18 sm:p-20 flex flex-col items-center">
+                        <div className="w-full flex flex-col gap-12">
+                          <ProjectDomainSubpage
+                            context={modal.context}
+                            domainid={domain.id}
+                            projectid={project.id}
+                            searchParams={props.searchParams}
+                          />
+                        </div>
+                      </div>
+                    </DialogSurface>
+
+                  </ModalContent>
+                </>}
+              </Modal>
             </li>
           })}
         </ul>
 
       </div>
-      <Dialog name="add_url" children={dialog => <>
-        <dialog.Button className="button small">
-          <IconAdd className="icon" /> Add URL
-        </dialog.Button>
-        <dialog.Content wide>
-          <DialogTitle>Add Project URL</DialogTitle>
-          <form.CreateForm
-            name="Add Project Domain"
-            action={async inputs => {
-              "use server"
-              await actionAdminOnly(`/${ project.id }`)
-              const res = await createDomain({
-                project_id: inputs.project_id,
-                origin: inputs.origin,
-                redirect_url: inputs.origin + inputs.redirect_url,
-              })
-              actionResolveError(res, { ...inputs, ...dialog.context })
-              revalidatePath(`/${ project.id }`)
-              actionNavigate(`/${ project.id }?success=domain_added`)
-            }}
-            fields={{
-              project_id: {
-                type: 'readonly',
-                value: project.id
-              },
-              origin: {
-                label: "domain",
-                helper: "the domain where your application is hosted. (no trailing slash)",
-                placeholder: "https://example.com",
-                type: "text",
-                required: true
-              },
-              redirect_url: {
-                label: "redirect path",
-                prefix: 'https://your.domain.com',
-                placeholder: "/api/auth/callback",
-                type: "text",
-                required: true,
-                helper: "must be on the same domain as callback url"
-              }
-            }}
-            searchParams={props.searchParams}
-            errorCallout={<ErrorCallout<typeof createDomain> messages={{
-              project_not_found: "project not found.",
-              missing_fields: "missing required fields.",
-              invalid_origin: "invalid callback url format.",
-              invalid_redirect_url: "invalid redirect url format.",
-              mismatched_domains: "redirect url must be on the same domain as callback url.",
-              insecure_origin: "origin must use https unless using localhost.",
-              insecure_redirect_url: "redirect url must use https unless using localhost.",
-              domain_exists: "domain already exists for this project.",
-              domain_in_use: `domain is already in use by another project: $1`,
-            }} />}
-          />
-        </dialog.Content>
-      </>} />
+
+      <Modal name="add_url">
+        {dialog => <>
+          <ModalButton className="button small">
+            <IconAdd className="icon" /> Add URL
+          </ModalButton>
+          <ModalContent >
+            <DialogSurface wide>
+              <DialogTitle>Add Project URL</DialogTitle>
+              <form.CreateForm
+                name="Add Project Domain"
+                action={async inputs => {
+                  "use server"
+                  await actionAdminOnly(`/${ project.id }`)
+                  const res = await createDomain({
+                    project_id: inputs.project_id,
+                    origin: inputs.origin,
+                    redirect_url: inputs.origin + inputs.redirect_url,
+                  })
+                  actionResolveError(res, { ...inputs, ...dialog.context })
+                  revalidatePath(`/${ project.id }`)
+                  actionNavigate(`/${ project.id }?success=domain_added`)
+                }}
+                fields={{
+                  project_id: {
+                    type: 'readonly',
+                    value: project.id
+                  },
+                  origin: {
+                    label: "domain",
+                    helper: "the domain where your application is hosted. (no trailing slash)",
+                    placeholder: "https://example.com",
+                    type: "text",
+                    required: true
+                  },
+                  redirect_url: {
+                    label: "redirect path",
+                    prefix: 'https://your.domain.com',
+                    placeholder: "/api/auth/callback",
+                    type: "text",
+                    required: true,
+                    helper: "must be on the same domain as callback url"
+                  }
+                }}
+                searchParams={props.searchParams}
+                errorCallout={<ErrorCallout<typeof createDomain> messages={{
+                  project_not_found: "project not found.",
+                  missing_fields: "missing required fields.",
+                  invalid_origin: "invalid callback url format.",
+                  invalid_redirect_url: "invalid redirect url format.",
+                  mismatched_domains: "redirect url must be on the same domain as callback url.",
+                  insecure_origin: "origin must use https unless using localhost.",
+                  insecure_redirect_url: "redirect url must use https unless using localhost.",
+                  domain_exists: "domain already exists for this project.",
+                  domain_in_use: `domain is already in use by another project: $1`,
+                }} />}
+              />
+            </DialogSurface>
+          </ModalContent>
+        </>}
+      </Modal>
     </section>
   )
 }
@@ -309,6 +337,7 @@ export async function ProjectDomainSubpage(props: {
       <DeleteDialogButton
         name={`domain-${ domain.id }`}
         context={context}
+
         label="Delete Project Domain"
         alertTitle="Are you sure you want to permanently delete this domain?"
         alertDescription="This action cannot be undone. Any applications using this domain will no longer be able to access the project."

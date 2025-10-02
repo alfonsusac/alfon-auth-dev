@@ -2,7 +2,10 @@
 
 import { cn } from "lazy-cn"
 import { useSearchParams } from "next/navigation"
-import type { ComponentProps } from "react"
+import { createContext, use, type ComponentProps } from "react"
+
+
+// The Search Param Modal
 
 export function SearchParamModal(props: {
   name: string,
@@ -12,14 +15,22 @@ export function SearchParamModal(props: {
   const sp = useSearchParams()
   const show = sp.get(props.name) === ''
 
-  return <ModalShell show={show} className={props.className}>
-    {props.children}
-  </ModalShell>
+  return <searchparammodalcontext.Provider value={{
+    name: props.name,
+    show
+  }}>
+    <ModalShell show={show} className={props.className}>
+      {props.children}
+    </ModalShell>
+  </searchparammodalcontext.Provider>
 }
 
 function ModalShell({ show, ...props }: ComponentProps<"div"> & {
   show: boolean
 }) {
+  const modal = use(searchparammodalcontext)
+  if (!modal) throw new Error("<ModalShell> must be used within a <SearchParamModal>")
+
   return <div
     {...props}
     data-show={show ? "" : undefined}
@@ -36,3 +47,12 @@ function ModalShell({ show, ...props }: ComponentProps<"div"> & {
     )}
   />
 }
+
+
+
+// The Search Param Modal > Context
+
+export const searchparammodalcontext = createContext(null as null | {
+  name: string,
+  show: boolean
+})

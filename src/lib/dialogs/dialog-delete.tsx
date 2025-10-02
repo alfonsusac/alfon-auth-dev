@@ -1,34 +1,40 @@
-import { DeleteAlert2 } from "../DeleteAlert"
-import { Dialog } from "./dialog"
+import { DeleteAlert } from "../DeleteAlert"
+import { DialogSurface } from "../dialogsv2/dialog.primitives"
+import { Modal } from "../dialogsv2/modal"
+import { ModalButton, ModalContent } from "../dialogsv2/modal.client"
 
 export function DeleteDialogButton(
   props: {
+    what?: string,
     name: string,
-    label: string,
+    label?: string,
     alertTitle?: string,
     alertDescription?: string,
-    alertActionLabel?: string,
     action: () => Promise<void>,
-    context?: { [key: string]: string }
+    context?: PageContext
   }
 ) {
-  return <Dialog name={`delete_${ props.name }`} context={props.context}>
+  return <Modal
+    name={"delete_" + props.name}
+    context={props.context}
+  >
     {dialog => <>
-      <dialog.Button className="button destructive small">
-        {props.label}
-      </dialog.Button>
-      <dialog.Content>
-        <DeleteAlert2
-          title={props.alertTitle || `Are you sure you want to permanently delete this item?`}
-          description={props.alertDescription || "This action cannot be undone."}
-          backHref={'?'}
-          actionLabel="Delete"
-          action={props.action}
-          context={props.context}
-        />
-      </dialog.Content>
+      <ModalButton className="button destructive small">
+        {props.label ?? `Delete ${ props.what }`}
+      </ModalButton>
+      <ModalContent>
+        <DialogSurface>
+          <DeleteAlert
+            title={props.alertTitle || `Are you sure you want to permanently delete ${ props.what ?? "this item" }?`}
+            description={props.alertDescription || "This action cannot be undone."}
+            backHref={dialog.closeHref}
+            actionLabel={`Permanently Delete ${ props.what }`}
+            action={props.action}
+          />
+        </DialogSurface>
+      </ModalContent>
     </>}
-  </Dialog>
+  </Modal>
 }
 
 
