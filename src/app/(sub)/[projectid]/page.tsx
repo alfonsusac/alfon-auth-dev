@@ -21,9 +21,10 @@ import { DateTime } from "@/lib/date.ui"
 import { EditProjectForm } from "@/services/projects.form"
 import { Page, page } from "@/lib/page"
 import { ModalContent, ModalClose, ModalButton } from "@/lib/dialogsv2/modal.client"
-import { DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
+import { DialogSurface, SubpageSurface } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { cn } from "lazy-cn"
+import { SubpageOverlay } from "@/lib/dialogsv2/dialog.templates"
 
 export default page('/[projectid]', async props => {
 
@@ -144,50 +145,32 @@ async function ProjectDomainsList(props: {
         </p>
       </header>
 
-      <div className="flex flex-col">
-        <ul className="list">
-          {domains.map(domain => {
-            const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
-            const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
-            return <li className="relative group" key={domain.id}>
-              <Modal name={"domain_" + domain.id}>
-                {modal => <>
-                  <ModalButton className="list-row">
-                    <div className="text-foreground-body/75 leading-3 text-[0.813rem]">
-                      <span className="text-foreground-body/50">{protocol}</span>
-                      <span className="font-medium text-foreground">{origin}</span>
-                      <span>{domain.redirect_url.replace(domain.origin, '')}</span>
-                    </div>
-                  </ModalButton>
+      <ul className="list">
+        {domains.map(domain => {
+          const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
+          const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
+          return <li className="relative group" key={domain.id}>
+            <Modal name={"domain_" + domain.id}>
+              {modal => <>
+                <ModalButton className="list-row text-foreground-body/75 leading-3 text-[0.813rem]">
+                  <span className="text-foreground-body/50">{protocol}</span>
+                  <span className="font-medium text-foreground">{origin}</span>
+                  <span>{domain.redirect_url.replace(domain.origin, '')}</span>
+                </ModalButton>
 
-                  <ModalContent>
-
-                    <DialogSurface className={cn(
-                      "max-w-2xl w-full h-full",
-                      "flex flex-col overflow-hidden p-0",
-                      "relative",
-                    )}>
-                      <DialogCloseButton className="absolute" context={modal.context} />
-                      <div className="shrink basis-0 grow min-h-0 overflow-y-auto p-8 pt-14 xs:p-12 xs:pt-18 sm:p-20 flex flex-col items-center">
-                        <div className="w-full flex flex-col gap-12">
-                          <ProjectDomainSubpage
-                            context={modal.context}
-                            domainid={domain.id}
-                            projectid={project.id}
-                            searchParams={props.searchParams}
-                          />
-                        </div>
-                      </div>
-                    </DialogSurface>
-
-                  </ModalContent>
-                </>}
-              </Modal>
-            </li>
-          })}
-        </ul>
-
-      </div>
+                <SubpageOverlay>
+                  <ProjectDomainSubpage
+                    context={modal.context}
+                    domainid={domain.id}
+                    projectid={project.id}
+                    searchParams={props.searchParams}
+                  />
+                </SubpageOverlay>
+              </>}
+            </Modal>
+          </li>
+        })}
+      </ul>
 
       <Modal name="add_url">
         {dialog => <>

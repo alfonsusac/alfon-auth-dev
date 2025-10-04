@@ -38,3 +38,11 @@ export function DialogCloseButton(props: ComponentProps<typeof ModalClose>) {
     </ModalClose>
   )
 }
+
+export function SubpageSurface(props: ComponentProps<"div">) {
+  return <DialogSurface {...props} className={cn(
+    'max-w-2xl w-full h-full',
+    'flex flex-col overflow-hidden p-0',
+    'relative',
+    props.className)} />
+}
