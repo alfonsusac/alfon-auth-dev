@@ -2,7 +2,7 @@
 
 :root {
   --background: color-mix(in oklab, var(--foreground) 2%, #ffffff);
-  --foreground: #171717;
+  --foreground: #3e3e40;
 
   --z-toast: 200;
   --z-dialog: 100;
@@ -23,6 +23,9 @@
   --color-foreground-body: color-mix(in oklab, var(--color-foreground) 75%, var(--color-background));
   --color-border: color-mix(in oklab, var(--color-foreground) 5%, var(--color-background));
 
+  --color-foreground-muted: color-mix(in oklab, var(--color-foreground) 40%, var(--color-background));
+
+  
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
@@ -276,7 +279,8 @@ body:has(.modal-opened) {
     @apply max-w-120 flex flex-col gap-3
   }
   .category-header {
-    @apply text-pretty text-xs text-foreground-body/40 font-medium py-2 -my-3  flex flex-col gap-0.5
+    /* @apply text-pretty text-xs text-foreground-body/40 font-medium py-2 -my-3  flex flex-col gap-0.5 */
+    @apply text-pretty text-xs text-foreground-muted font-medium flex flex-col gap-0.5
   }
 
   hr {
@@ -287,14 +291,28 @@ body:has(.modal-opened) {
     @apply flex flex-col
      /* p-1 */
     /* border border-border */
-    rounded-lg overflow-hidden
-    bg-foreground/1
+    bg-foreground/2
+    rounded-md
+    overflow-hidden
+    /* bg-foreground/1 */
+    /* p-1 */
+    /* shadow-inner */
      /* bg-background */
   }
   .list-row {
-    @apply flex items-center p-3 gap-1 grow min-w-0 text-start w-full
-    hover:bg-foreground/5 rounded-md relative py-2
-    active:bg-foreground/8
+    @apply flex items-center gap-1 grow min-w-0 text-start w-full
+    /* rounded-lg */
+    rounded-md
+    relative
+    p-3 py-2.5
+    
+    hover:bg-foreground/5 
+    /* hover:bg-background */
+    /* shadow-none */
+    /* hover:shadow-sm */
+
+    /* active:shadow-xs */
+    /* active:bg-foreground/8  */
   }
   .list-empty {
     @apply text-xs p-2 text-foreground-body/80
@@ -319,7 +337,4 @@ body:has(.modal-opened) {
   .page-subtitle-code {
     @apply font-mono text-xs tracking-tight text-foreground-body
   }
-
-
-
 }

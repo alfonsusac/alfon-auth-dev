@@ -2,7 +2,7 @@ import type { ComponentProps, ReactNode } from "react"
 import { FormButton } from "../FormButton"
 import { cn } from "lazy-cn"
 import { toNativeSearchParams } from "../searchParams"
-import { Form } from "./form"
+import { RootForm } from "./form"
 import type { TypedForm } from "./form.helper"
 
 export function InputGroup(props: ComponentProps<"div">) {
@@ -83,7 +83,7 @@ function EditForm<F extends TypedForm.FormFieldMap>(props: {
   searchParams: Awaited<PageProps<any>['searchParams']>
 }) {
   return (
-    <Form
+    <RootForm
       className="flex flex-col gap-4"
       fields={props.fields}
       action={props.action}>
@@ -101,7 +101,7 @@ function EditForm<F extends TypedForm.FormFieldMap>(props: {
         className="button primary px-6 self-end small"
         loading="Saving...">Save</FormButton>
 
-    </Form>
+    </RootForm>
   )
 }
 
@@ -114,7 +114,7 @@ function CreateForm<F extends TypedForm.FormFieldMap>(props: {
   searchParams: Awaited<PageProps<any>['params']>
 }) {
   return (
-    <Form
+    <RootForm
       className="flex flex-col gap-6"
       fields={props.fields}
       action={props.action}>
@@ -131,7 +131,7 @@ function CreateForm<F extends TypedForm.FormFieldMap>(props: {
         className="button primary px-6 mt-4 w-30"
         loading="Creating...">Create</FormButton>
 
-    </Form>
+    </RootForm>
   )
 }
 

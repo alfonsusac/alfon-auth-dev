@@ -7,8 +7,8 @@ import { actionNavigate } from "./resolveAction"
 //   else return res as Exclude<T, string>
 // }
 
-export function actionResolveError<T>(res: T, extraParams?: Record<string, string>) {
+export function actionResolveError<T>(res: T, ...extraParams: (Record<string, string> | undefined)[]) {
   if (typeof res === "string")
-    actionNavigate(`?error=${ res }${ extraParams ? '&' + new URLSearchParams(extraParams).toString() : '' }`, RedirectType.replace)
+    actionNavigate(`?error=${ res }${ extraParams ? '&' + new URLSearchParams(...extraParams).toString() : '' }`, RedirectType.replace)
   else return res as Exclude<T, string>
 }

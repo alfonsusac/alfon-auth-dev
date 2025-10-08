@@ -1,78 +1,69 @@
 import { actionAdminOnly } from "@/lib/auth"
-import prisma from "@/lib/db"
+import { datacache } from "@/lib/cache"
+import prisma, { serializeDate } from "@/lib/db"
 import { generateSecret } from "@/lib/token"
 import { validateSecureURLwithLocalhost } from "@/lib/url"
 import { validation } from "@/lib/validation"
-import { unstable_cache } from "next/cache"
-import { cache } from "react"
-
-
+import { revalidateTag } from "next/cache"
 
 // Project
+// Project > fetchers (status: over-fetching)
 
-export const getProject = cache(unstable_cache(get_project))
-export const getAllProjects = cache(unstable_cache(get_all_projects))
+export const getAllProjects = datacache(getAllUncachedProjects, 'projects')
+const revalidateProjects = () => revalidateTag('projects')
 
-async function get_project(id: string) {
-  const res = await prisma.project.findFirst({
-    where: { id },
-    include: { keys: { orderBy: { createdAt: 'desc' } }, domains: { orderBy: { createdAt: 'desc' } } }
-  })
-  if (!res) return null
-  const { keys, domains, ...project } = res
-  return project
+async function getAllUncachedProjects() {
+  return prisma.project.findMany({ orderBy: { createdAt: 'desc' } }).then(serializeDate)
 }
 
-async function get_all_projects() {
-  return prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
+
+// Project > helpers
+
+export async function getProject(id: string) {
+  const projects = await getAllProjects()
+  return projects.find(p => p.id === id)
 }
-
-export type Project = NonNullable<Awaited<ReturnType<typeof get_project>>>
-
+export type Project = NonNullable<Awaited<ReturnType<typeof getProject>>>
 
 
-// Project Mutations
+// Project > mutations
 
-export type ProjectInput = { id?: string, name?: string, description?: string }
+export type ProjectInput = { id: string, name: string, description: string }
 
 const validateProjectInput = validation(async (input: ProjectInput) => {
   if (!input.name || !input.id) return "missing_fields"
   if (!/^[a-zA-Z0-9-_]+$/.test(input.id)) return "invalid_id"
-  return input as Required<ProjectInput>
+  return input
 })
 
-export async function createProject(input: ProjectInput) {
-  const user = await actionAdminOnly()
+export async function createProject(input: ProjectInput, user_id: string) {
   const { error, data } = await validateProjectInput(input)
   if (error) return error
-  if (await get_project(data.id)) return "id_exists"
-  await prisma.project.create({
+  if (await getProject(data.id)) return "id_exists"
+  const res = await prisma.project.create({
     data: {
-      ...data,
-      user_id: user.id,
-      keys: {
-        create: {
-          name: "Default Key",
-          client_secret: generateSecret(),
-        }
-      }
+      ...data, user_id,
+      keys: { create: { name: "Default Key", client_secret: generateSecret(), } }
     }
   })
+  revalidateProjects()
+  return res
 }
 
 export async function updateProject(input: ProjectInput, id: string) {
-  await actionAdminOnly()
   const { error, data } = await validateProjectInput(input)
   if (error) return error
-  if (!await get_project(id)) return "not_found"
-  if (id !== input.id && await get_project(data.id)) return "id_exists"
-  await prisma.project.update({ where: { id }, data })
+  if (!await getProject(id)) return "not_found"
+  if (id !== input.id && await getProject(data.id)) return "id_exists"
+  const res = await prisma.project.update({ where: { id }, data })
+  revalidateProjects()
+  return res
 }
 
 export async function deleteProject(id: string) {
-  await actionAdminOnly()
-  if (!await get_project(id)) return "not_found"
+  if (!await getProject(id)) return "not_found"
   await prisma.project.delete({ where: { id } })
+  revalidateProjects()
 }
 
 
@@ -81,63 +72,71 @@ export async function deleteProject(id: string) {
 
 // Project Keys
 
-export const getProjectKey = cache(unstable_cache(get_project_key))
-export const getAllProjectKeys = cache(unstable_cache(get_all_project_keys))
+// Project Keys > fetchers
 
+export const getAllProjectKeysByProjectID = datacache(getAllUncachedProjectKeysByProjectID, projectid => `project_${ projectid }_keys`)
+const revalidateProjectProjectKeys = (projectid: string) => revalidateTag(`project_${ projectid }_keys`)
 
-async function get_project_key(id: string) {
-  return prisma.projectKey.findFirst({
-    where: { id },
-  })
-}
-
-async function get_all_project_keys(project_id: string) {
-  return prisma.projectKey.findMany({
-    where: { project_id },
-    orderBy: { createdAt: 'desc' },
-  })
+async function getAllUncachedProjectKeysByProjectID(project_id: string) {
+  return prisma.projectKey.findMany({ where: { project_id }, orderBy: { createdAt: 'desc' } }).then(serializeDate)
 }
 
 
+export const getProjectKey = datacache(getUncachedProjectKey, id => `project_key_${ id }`)
+const revalidateProjectKey = (id: string) => revalidateTag(`project_key_${ id }`)
+
+async function getUncachedProjectKey(id: string) {
+  return prisma.projectKey.findFirst({ where: { id } }).then(serializeDate)
+}
+
+
+// Project Keys > helpers
+
+// -
 
 // Project Keys Mutations
 
-export type ProjectKeyInput = {
-  name: string
-  project_id: string
-}
+export type ProjectKeyInput = { name: string, project_id: string }
 
 const validateProjectKeyInput = validation(async (input: ProjectKeyInput) => {
   if (!input.name || !input.project_id) return "missing_fields"
-  if (!await get_project(input.project_id)) return "project_not_found"
-  return input as Required<ProjectKeyInput>
+  if (!await getProject(input.project_id)) return "project_not_found"
+  return input
 })
 
 export async function createProjectKey(input: ProjectKeyInput) {
   await actionAdminOnly()
   const { error, data } = await validateProjectKeyInput(input)
   if (error) return error
-  return prisma.projectKey.create({ data: { ...data, client_secret: generateSecret() } })
+  const res = await prisma.projectKey.create({ data: { ...data, client_secret: generateSecret() } })
+  revalidateProjectProjectKeys(res.project_id)
+  revalidateProjectKey(res.id)
 }
 
 export async function updateProjectKey(input: ProjectKeyInput, id: string) {
   await actionAdminOnly()
   const { error, data } = await validateProjectKeyInput(input)
   if (error) return error
-  if (!await get_project_key(id)) return "not_found"
-  await prisma.projectKey.update({ where: { id }, data })
+  if (!await getProjectKey(id)) return "not_found"
+  const res = await prisma.projectKey.update({ where: { id }, data })
+  revalidateProjectProjectKeys(res.project_id)
+  revalidateProjectKey(res.id)
 }
 
 export async function regenerateProjectKeySecret(id: string) {
   await actionAdminOnly()
-  if (!await get_project_key(id)) return "not_found"
-  await prisma.projectKey.update({ where: { id }, data: { client_secret: generateSecret() } })
+  if (!await getProjectKey(id)) return "not_found"
+  const res = await prisma.projectKey.update({ where: { id }, data: { client_secret: generateSecret() } })
+  revalidateProjectProjectKeys(res.project_id)
+  revalidateProjectKey(res.id)
 }
 
 export async function deleteProjectKey(id: string) {
   await actionAdminOnly()
-  if (!await get_project_key(id)) return "not_found"
-  await prisma.projectKey.delete({ where: { id } })
+  if (!await getProjectKey(id)) return "not_found"
+  const res = await prisma.projectKey.delete({ where: { id } })
+  revalidateProjectProjectKeys(res.project_id)
+  revalidateProjectKey(res.id)
 }
 
 
@@ -146,46 +145,39 @@ export async function deleteProjectKey(id: string) {
 
 // Project Domains
 
-export const getProjectDomain = cache(unstable_cache(get_project_domain))
-export const getAllProjectDomains = cache(unstable_cache(get_all_project_domains))
-export const getProjectDomainByOrigin = cache(unstable_cache(get_project_domain_by_origin))
+export const getAllProjectDomainsOfProject = datacache(getAllUncachedProjectDomainsOfProject, projectid => `project_${ projectid }_domains`)
+const revalidateProjectDomainsOfProject = (projectid: string) => revalidateTag(`project_${ projectid }_domains`)
 
-
-async function get_project_domain(id: string) {
-  await actionAdminOnly()
-  return prisma.domain.findFirst({
-    where: { id },
-  })
+async function getAllUncachedProjectDomainsOfProject(project_id: string) {
+  return prisma.domain.findMany({ where: { project_id }, orderBy: { createdAt: 'desc' } }).then(serializeDate)
 }
 
-async function get_all_project_domains(project_id: string) {
-  await actionAdminOnly()
-  return prisma.domain.findMany({
-    where: { project_id },
-    orderBy: { createdAt: 'desc' },
-  })
+
+export const getProjectDomainByID = datacache(getUncachedProjectDomainByID, id => `project_domain_${ id }`)
+const revalidateProjectDomainByID = (id: string) => revalidateTag(`project_domain_${ id }`)
+
+async function getUncachedProjectDomainByID(id: string) {
+  return prisma.domain.findFirst({ where: { id } }).then(serializeDate)
 }
 
-async function get_project_domain_by_origin(origin: string) {
-  return prisma.domain.findFirst({
-    where: { origin },
-  })
+
+export const getProjectDomainByOrigin = datacache(getUncachedProjectDomainByOrigin, origin => `project_domain_origin_${ origin }`)
+const revalidateProjectDomainByOrigin = (origin: string) => revalidateTag(`project_domain_origin_${ origin }`)
+
+async function getUncachedProjectDomainByOrigin(origin: string) {
+  return prisma.domain.findFirst({ where: { origin } }).then(serializeDate)
 }
 
 
 // Project Domains Mutations
 
-
-type DomainInput = {
-  project_id: string
-  origin: string
-  redirect_url: string
-}
+type DomainInput = { project_id: string, origin: string, redirect_url: string }
 
 const validateProjectDomainInput = validation(async (input: DomainInput) => {
   if (!input.project_id || !input.origin || !input.redirect_url) return "missing_fields"
-  if (!await get_project(input.project_id)) return "project_not_found"
+  if (!await getProject(input.project_id)) return "project_not_found"
 
+  // Check that origin and redirect_url are valid URLs and secure (https or localhost)
   const origin = validateSecureURLwithLocalhost(input.origin)
   const redirectURL = validateSecureURLwithLocalhost(input.redirect_url)
   if (input.origin.startsWith('http://') && !input.origin.includes('localhost')) return "insecure_origin"
@@ -194,36 +186,48 @@ const validateProjectDomainInput = validation(async (input: DomainInput) => {
   if (!redirectURL) return "invalid_origin"
   if (redirectURL.host !== origin.host) return "mismatched_domains"
 
-  const existing = await get_project_domain_by_origin(input.origin)
-  if (existing && existing.project_id === input.project_id && existing.origin === input.origin) return "domain_exists"
-  if (existing && existing.project_id !== input.project_id && !input.origin.includes('localhost')) return `domain_in_use=${ existing.project_id }` as const
-  if (existing && existing.project_id === input.project_id && !input.origin.includes('localhost')) return "domain_exists"
+  // Check if the domain already exists
+  const existing = await getProjectDomainByOrigin(input.origin)
+  if (existing) {
+    // Domain exists! now we check whether if its from the same project or not (or localhost)
+    if (existing.project_id === input.project_id) return "domain_exists"
+    if (existing.project_id !== input.project_id && !input.origin.includes('localhost')) return `domain_in_use=${ existing.project_id }` as const
+  }
 
   return {
     project_id: input.project_id,
     origin: origin.origin,
     redirect_url: redirectURL.href,
-  } as Required<DomainInput>
+  }
 })
 
 export async function createDomain(input: DomainInput) {
   await actionAdminOnly()
   const { error, data } = await validateProjectDomainInput(input)
   if (error) return error
-
   if (!await getProject(data.project_id)) return "project_not_found"
-  return prisma.domain.create({ data })
+  const res = await prisma.domain.create({ data })
+  revalidateProjectDomainsOfProject(data.project_id)
+  revalidateProjectDomainByID(res.id)
+  revalidateProjectDomainByOrigin(data.origin)
 }
 
 export async function updateDomain(input: DomainInput, id: string) {
   await actionAdminOnly()
   const { error, data } = await validateProjectDomainInput(input)
   if (error) return error
-  return prisma.domain.update({ where: { id }, data })
+  const res = await prisma.domain.update({ where: { id }, data })
+  revalidateProjectDomainsOfProject(res.project_id)
+  revalidateProjectDomainByID(res.id)
+  revalidateProjectDomainByOrigin(data.origin)
+  revalidateProjectDomainByOrigin(res.origin)
 }
 
 export async function deleteDomain(id: string) {
   await actionAdminOnly()
-  if (!await get_project_domain(id)) return "not_found"
-  await prisma.domain.delete({ where: { id } })
+  if (!await getProjectDomainByID(id)) return "not_found"
+  const res = await prisma.domain.delete({ where: { id } })
+  revalidateProjectDomainsOfProject(res.project_id)
+  revalidateProjectDomainByID(res.id)
+  revalidateProjectDomainByOrigin(res.origin)
 }

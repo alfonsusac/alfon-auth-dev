@@ -7,6 +7,6 @@ export function resolveValidation<const T>(result: T) {
 
 export function validation<A extends any[], B>(cb: (...args: A) => Promise<B>) {
   return async (...args: A) => {
-    return resolveValidation(await cb(...args))
+    return resolveValidation(await cb(...args) as Required<B>)
   }
 }

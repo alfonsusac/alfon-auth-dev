@@ -1,16 +1,22 @@
 import { logout, signIn, signInAdminLocalhost } from "@/lib/auth"
 import { AUTH } from "@/lib/auth_ui"
-import { Form } from "@/lib/basic-form/form"
+import { RootForm } from "@/lib/basic-form/form"
 import { actionNavigate } from "@/lib/resolveAction"
 import { SuccessCallout } from "@/lib/toast/search-param-toast.client"
 import { meta } from "@/meta"
 import Link from "next/link"
 import { pageData } from "./data"
+import { headers } from "next/headers"
+import { Title } from "@/lib/primitives"
 
 export default async function Home() {
 
   const { user, projects } = await pageData.homePage()
   const no_projects = projects.length === 0
+
+  // const h = await headers()
+  // console.log("HEADERS", (h as any)["x-testttt"])
+
 
   return (
     <main className="font-sans flex flex-col gap-16">
@@ -22,7 +28,7 @@ export default async function Home() {
       }} />
 
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">
+        <h1 className="text-3xl font-semibold tracking-tight mt-8">
           {meta.title}
         </h1>
         <p className="text-pretty text-sm max-w-80 text-foreground-body">
@@ -39,7 +45,7 @@ export default async function Home() {
                 My Account
               </Link>
 
-              <Form action={async () => {
+              <RootForm action={async () => {
                 "use server"
                 await logout()
                 actionNavigate('/?success=logged_out')
@@ -47,22 +53,22 @@ export default async function Home() {
                 <button className="button">
                   Log Out
                 </button>
-              </Form>
+              </RootForm>
             </div>
             :
             <div className="flex gap-2 flex-wrap">
-              <Form action={async () => {
+              <RootForm action={async () => {
                 "use server"
                 await signIn()
               }}>
                 <button className="button primary">Login via Google</button>
-              </Form>
-              {process.env.NODE_ENV === 'development' && <Form action={async () => {
+              </RootForm>
+              {process.env.NODE_ENV === 'development' && <RootForm action={async () => {
                 "use server"
                 await signInAdminLocalhost()
               }}>
                 <button className="button">Login as Admin Localhost</button>
-              </Form>}
+              </RootForm>}
             </div>
         }
       </div>

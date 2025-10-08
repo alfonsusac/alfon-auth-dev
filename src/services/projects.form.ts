@@ -6,18 +6,15 @@ export const EditProjectForm = createForm({
   name: "edit-project",
   fields: {
     name: {
-      type: "text",
+      type: "text", required: true, autoFocus: true,
       label: "project name",
       helper: "give your project a name for identification",
-      required: true,
-      autoFocus: true,
     },
     id: {
-      type: "text",
+      type: "text", required: true,
       label: "project id",
       helper: "the unique identifier for your project that will be used as the client_id. changing this will affect all existing integrations.",
       prefix: "https://auth.alfon.dev/",
-      required: true
     },
     description: {
       type: "text",

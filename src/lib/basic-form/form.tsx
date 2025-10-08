@@ -8,6 +8,9 @@ import { FormButton } from "../FormButton"
 import { InputFields } from "./app-form"
 import { toNativeSearchParams } from "../searchParams"
 import { deepMerge } from "../deepMerge"
+import { actionResolveError } from "../redirects"
+
+
 
 // Form Builder
 
@@ -34,17 +37,14 @@ export function createForm<
     // Component
     return (props: {
       fields?: Partial<F>,
-      searchParams: PageSearchParams,
-      onReturn?: (
+      onSuccess?: (
         res: R,
         formInput: FormActionParam<F>,
       ) => Promise<void>,
       defaultValues?: { [K in keyof F]?: string | number },
     } & I) => {
 
-      const { fields, searchParams, onReturn, defaultValues, ...restInput } = props
-
-      console.log("Prop Input", restInput)
+      const { fields, searchParams, onSuccess, defaultValues, ...restInput } = props
 
       // Soft merge fields
       const newfields = deepMerge(opts.fields, props.fields || {}) as F
@@ -54,13 +54,20 @@ export function createForm<
       ) => {
         "use server"
         const res = await opts.action(input, restInput as unknown as I)
-        await props.onReturn?.(res, input)
+        await props.onSuccess?.(res, input)
+        // actionResolveError(res, { ...input, ...props.context })
+        // if (props.revalidatePath) revalidatePath(props.revalidatePath, props.revalidatePathMode)
+        // actionNavigate(await props.onSuccess?.(res, input) ?? '', props.redirectMode ?? "replace", props.context)
+        return void 0
       }
 
-      return <Form
+      return <RootForm
         className="flex flex-col gap-4"
         fields={newfields}
-        action={newAction}
+        action={async (...props) => {
+          "use server"
+          return await newAction(...props)
+        }}
       >
 
         <InputFields
@@ -68,7 +75,7 @@ export function createForm<
           name={opts.name}
           classNames={{ inputBox: "small" }}
           defaultValues={defaultValues}
-          searchParams={toNativeSearchParams(props.searchParams)} />
+          searchParams={props.searchParams && toNativeSearchParams(props.searchParams)} />
 
         <ErrorCallout messages={errorMessage} />
 
@@ -76,7 +83,7 @@ export function createForm<
           className="button primary px-6 self-end small"
           loading="Saving...">Save</FormButton>
 
-      </Form>
+      </RootForm>
 
     }
 
@@ -86,7 +93,67 @@ export function createForm<
 
 // The Form.
 
-export function Form<F extends TypedForm.FormFieldMap = {}>({ action, fields, ...props }: TypedForm.FormProps<F>) {
+export function Form<
+  F extends TypedForm.FormFieldMap,
+  R,
+  P
+>(props: {
+  name: string,
+  fields: F,
+  context: PageContext,
+  action: (
+    formInput: FormActionParam<F>,
+  ) => Promise<R>,
+  defaultValues?: { [K in keyof F]?: string | number },
+  errors?: Record<ErrorKeys<R>, string>,
+  searchParams?: PageSearchParams,
+}) {
+
+  const { fields, searchParams, defaultValues, ...restInput } = props
+
+
+  const newAction = async (
+    input: FormActionParam<F>
+  ) => {
+    "use server"
+    const res = await props.action(input)
+    actionResolveError(res, input, props.context)
+
+    // await props.onSuccess?.(res, input)
+    // actionResolveError(res, { ...input, ...props.context })
+    // if (props.revalidatePath) revalidatePath(props.revalidatePath, props.revalidatePathMode)
+    // actionNavigate(await props.onSuccess?.(res, input) ?? '', props.redirectMode ?? "replace", props.context)
+    return void 0
+  }
+
+  return <RootForm
+    className="flex flex-col gap-4"
+    fields={fields}
+    action={newAction}
+  >
+
+    <InputFields
+      fields={fields}
+      name={props.name}
+      classNames={{ inputBox: "small" }}
+      defaultValues={defaultValues}
+      searchParams={props.searchParams && toNativeSearchParams(props.searchParams)} />
+
+    <ErrorCallout messages={props.errors ?? {}} />
+
+    <FormButton
+      className="button primary px-6 self-end small"
+      loading="Saving...">Save</FormButton>
+
+  </RootForm>
+
+}
+
+
+
+// The Form. (Root)
+
+export function RootForm<F extends TypedForm.FormFieldMap = {}>({ action, fields, ...props }: TypedForm.FormProps<F>) {
   return <FormWithProgressiveCustomRedirectAndClientAction
     {...props}
     action={async form => {

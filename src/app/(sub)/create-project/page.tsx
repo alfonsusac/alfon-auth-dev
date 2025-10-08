@@ -1,26 +1,24 @@
-import { actionAdminOnly } from "@/lib/auth"
 import BackButton from "@/lib/BackButton"
-import { form } from "@/lib/basic-form/app-form"
-import { actionNavigate } from "@/lib/resolveAction"
-import { ErrorCallout } from "@/lib/toast/search-param-toast.client"
-import { createProject } from "@/services/projects"
 import { pageData } from "@/app/data"
-import { revalidatePath } from "next/cache"
-import { actionResolveError } from "@/lib/redirects"
+import { CreateProjectForm } from "@/lib/formv2/form-component"
+import { Header, Section, Title } from "@/lib/primitives"
+import { Spacer } from "@/lib/spacer"
+import { Page } from "@/lib/page"
 
 export default async function CreateProjectPage(props: PageProps<'/create-project'>) {
 
   const { error } = await pageData.createProjectPage()
   if (error) return error
 
-  return <>
-    <BackButton href="/">Home</BackButton>
+  return <Page back={['Home', '/']}>
 
-    <header>
-      <h1 className="page-h1">Create Project</h1>
-    </header>
+    <Title>Create Project</Title>
 
-    <form.CreateForm
+    <Section>
+      <CreateProjectForm />
+    </Section>
+
+    {/* <form.CreateForm
       name="create-project"
       fields={{
         id: {
@@ -38,11 +36,17 @@ export default async function CreateProjectPage(props: PageProps<'/create-projec
           helper: "will be used as the display of the project",
           placeholder: "My Project",
         },
+        description: {
+          type: "text",
+          label: "description",
+          helper: "a short description of the project",
+          placeholder: "This is my project",
+        }
       }}
       action={async (inputs) => {
         "use server"
-        await actionAdminOnly()
-        const res = await createProject(inputs)
+        const user = await actionAdminOnly()
+        const res = await createProject(inputs, user.id)
         actionResolveError(res, inputs)
         revalidatePath('/', "layout")
         actionNavigate(`/${ inputs.id }?success=created`)
@@ -55,7 +59,7 @@ export default async function CreateProjectPage(props: PageProps<'/create-projec
         }} />
       }
       searchParams={await props.searchParams}
-    />
-  </>
+    /> */}
+  </Page>
 
 }

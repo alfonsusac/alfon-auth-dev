@@ -1,6 +1,6 @@
 import { getCurrentUser, isAdmin } from "@/lib/auth"
 import { NotFoundLayout, UnauthorizedLayout } from "@/lib/NotFound"
-import { getAllProjects, getProject, getProjectDomain, getProjectKey } from "@/services/projects"
+import { getAllProjects, getProject, getProjectDomainByID, getProjectKey } from "@/services/projects"
 
 export const pageData = {
 
@@ -70,7 +70,7 @@ export const pageData = {
 
   domainPage:
     async (domainid: string) => {
-      const domain = await getProjectDomain(domainid)
+      const domain = await getProjectDomainByID(domainid)
       if (!domain) return {
         error: <NotFoundLayout
           thingName="Project Domain"
