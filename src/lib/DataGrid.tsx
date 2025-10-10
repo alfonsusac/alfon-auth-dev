@@ -13,7 +13,7 @@ export function DataGridDisplay<
 ) {
   return (
     <div className={cn(
-      "grid grid-cols-[auto_1fr] page-subtitle gap-1 gap-x-4",
+      "grid grid-cols-[auto_1fr] page-subtitle gap-1 gap-x-4 my-2",
       props.className
     )}>
 

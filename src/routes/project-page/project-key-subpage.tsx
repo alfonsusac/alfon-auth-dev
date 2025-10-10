@@ -11,7 +11,7 @@ import { ActionButton, Form } from "@/lib/formv2/form-component"
 import { editProjectKeyForm } from "./project-key-edit-form"
 import { route } from "../routes"
 import { searchParams } from "@/lib/page"
-import { Title } from "@/lib/primitives"
+import { Header, Title } from "@/lib/primitives"
 import { EditFormDialog } from "@/shared/dialog-edit"
 
 export async function ProjectKeySubpage({ project, projectKey, context }:
@@ -26,13 +26,15 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
       "created": "key created successfully!",
       "updated": "key updated!"
     }} />
-
-    <Title>{key.name}</Title>
-    <DataGridDisplay data={{
-      'key secret': key.client_secret,
-      'created at': key.createdAt,
-      'updated at': key.updatedAt
-    }} />
+    
+    <Header>
+      <Title>{key.name}</Title>
+      <DataGridDisplay data={{
+        'key secret': key.client_secret,
+        'created at': key.createdAt,
+        'updated at': key.updatedAt
+      }} />
+    </Header>
 
     <div className="flex gap-2 -mt-8 flex-wrap">
       <CopyButton className="button primary small" text={key.client_secret}>

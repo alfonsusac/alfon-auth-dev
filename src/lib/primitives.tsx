@@ -35,5 +35,5 @@ export function Header(props: ComponentProps<'header'>) {
 }
 
 export function Title(props: ComponentProps<'h1'>) {
-  return <h1 {...props} className={cn('page-h1 mb-4', props.className)} />
+  return <h1 {...props} className={cn('page-h1', props.className)} />
 }

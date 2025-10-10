@@ -30,16 +30,17 @@ export default page('/[projectid]', async page => {
   return <>
     <Page toasts={toasts} back={['Home', '/']}>
 
-      <Title>{project.name}</Title>
-      <DataGridDisplay data={{
-        'project id': project.id,
-        'description': project.description,
-        'updated at': <DateTime date={project.updatedAt} />,
-        'created at': <DateTime date={project.createdAt} />
-      }} />
+      <Header>
+        <Title>{project.name}</Title>
+        <DataGridDisplay data={{
+          'project id': project.id,
+          'description': project.description,
+          'updated at': <DateTime date={project.updatedAt} />,
+          'created at': <DateTime date={project.createdAt} />
+        }} />
+      </Header>
 
       <auth.AdminOnly>
-        <Spacer />
         <Section>
           <Header>
             <SectionTitle>redirect urls</SectionTitle>
@@ -56,7 +57,6 @@ export default page('/[projectid]', async page => {
       </auth.AdminOnly >
 
       <auth.AdminOnly>
-        <Spacer />
         <Section>
           <Header>
             <SectionTitle>secret keys</SectionTitle>
@@ -73,7 +73,6 @@ export default page('/[projectid]', async page => {
       </auth.AdminOnly>
 
       <auth.AdminOnly>
-        <Spacer />
         <ProjectSettingsModal project={project} >
           <ModalButton className="button small ghost">
             <IconSettings className="icon icon-start" />
@@ -81,7 +80,6 @@ export default page('/[projectid]', async page => {
           </ModalButton>
         </ProjectSettingsModal>
       </auth.AdminOnly>
-
     </Page>
   </>
 })

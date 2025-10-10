@@ -1,5 +1,5 @@
 import { DataGridDisplay } from "@/lib/DataGrid"
-import { Section, Title } from "@/lib/primitives"
+import { Header, Section, Title } from "@/lib/primitives"
 import { actionResolveError } from "@/lib/redirects"
 import { navigate } from "@/lib/resolveAction"
 import { SuccessCallout } from "@/lib/toast/search-param-toast.client"
@@ -9,6 +9,7 @@ import { deleteDomainAction } from "./project-domain-delete-action"
 import { Form } from "@/lib/formv2/form-component"
 import { editProjectDomainForm } from "./project-domain-edit-form"
 import { route } from "../routes"
+import { Page } from "@/lib/page"
 
 
 export async function ProjectDomainSubpage({ project, domain, context }:
@@ -17,18 +18,19 @@ export async function ProjectDomainSubpage({ project, domain, context }:
   & PageContextProp
 ) {
 
-  return <>
-    <SuccessCallout messages={{
-      "created": "domain created successfully!",
-      "updated": "domain updated!"
-    }} />
+  return <Page toasts={{
+    'domain_deleted': "domain deleted successfully!",
+    'updated': "domain updated!"
+  }}>
 
-    <Title>{domain.origin}</Title>
-    <DataGridDisplay data={{
-      'redirect url': domain.redirect_url,
-      'created at': new Date(domain.createdAt),
-      'updated at': new Date(domain.updatedAt)
-    }} />
+    <Header>
+      <Title>{domain.origin}</Title>
+      <DataGridDisplay data={{
+        'redirect url': domain.redirect_url,
+        'created at': new Date(domain.createdAt),
+        'updated at': new Date(domain.updatedAt)
+      }} />
+    </Header>
 
     <Section>
       <Form
@@ -56,6 +58,6 @@ export async function ProjectDomainSubpage({ project, domain, context }:
 
 
 
-  </>
+  </Page>
 
 }

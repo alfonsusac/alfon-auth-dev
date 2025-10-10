@@ -9,6 +9,7 @@ import { Spacer } from "./spacer"
 import { UnauthorizedLayout } from "./NotFound"
 import { resolveCustomRedirectError } from "./resolveAction"
 import { redirect, RedirectType } from "next/navigation"
+import { cn } from "lazy-cn"
 
 export async function resolvePageProps<
   P extends PageProps<any>
@@ -108,9 +109,13 @@ export function Page(props: {
 }) {
   return <>
     <SuccessCallout messages={props.toasts ?? {}} />
-    {props.back && <NavigationBar back={props.back} />}
-    <Spacer />
-    {props.children}
+    {props.back && <>
+      <NavigationBar back={props.back} />
+      <Spacer />
+    </>}
+    <div className={cn("flex flex-col gap-12")}>
+      {props.children}
+    </div>
   </>
 }
 
