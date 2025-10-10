@@ -37,3 +37,7 @@ export function Header(props: ComponentProps<'header'>) {
 export function Title(props: ComponentProps<'h1'>) {
   return <h1 {...props} className={cn('page-h1', props.className)} />
 }
+
+export function Row(props: ComponentProps<'div'>) {
+  return <div {...props} className={cn("flex flex-row gap-2 flex-wrap", props.className)} />
+}
