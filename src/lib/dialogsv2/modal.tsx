@@ -1,5 +1,5 @@
 import type { ReactNode } from "react"
-import { ModalBase } from "./modal.client"
+import { ModalBase, ModalButton, ModalContent } from "./modal.client"
 
 export type ModalServerContext = {
   name: string,
@@ -12,7 +12,8 @@ export type ModalServerContext = {
 export function Modal(props: {
   name: string,
   context?: PageContext,
-  button?: ReactNode,
+  button: (button: typeof ModalButton) => ReactNode,
+  content: (modal: ModalServerContext) => ReactNode
   children?: (modal: ModalServerContext) => ReactNode
 }) {
   const { name, context, children } = props
@@ -30,7 +31,10 @@ export function Modal(props: {
       name={name}
       must_be_called_in_Modal_Component="must_be_called_in_Modal_Component"
     >
-      {props.button}
+      {props.button?.(ModalButton)}
+      {props.content && <ModalContent>
+        {props.content({ name, context: newContext, openHref, closeHref, __modal: true })}
+      </ModalContent>}
       {children?.({ name, context: newContext, openHref, closeHref, __modal: true })}
     </ModalBase>
   )

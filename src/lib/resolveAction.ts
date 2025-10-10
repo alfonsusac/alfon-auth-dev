@@ -1,7 +1,7 @@
 import { redirect, RedirectType } from "next/navigation"
 
 export function actionNavigate(path: string, mode: "push" | "replace" = "push", context?: { [key: string]: string }): never {
-  
+
   let newpath
   if (path.includes('?')) {
     newpath = path + '&' + new URLSearchParams(context).toString()
@@ -9,11 +9,15 @@ export function actionNavigate(path: string, mode: "push" | "replace" = "push", 
     newpath = path + '?' + new URLSearchParams(context).toString()
   }
 
-
   if (mode === "push")
     redirect('/___resolve___?url=' + newpath, RedirectType.push)
   else
     redirect('/___resolve___?url=' + newpath, RedirectType.replace)
+}
+
+export const navigate = {
+  push: (path: string, ...contexts: (PageContext | undefined)[]) => actionNavigate(path, "push", contexts.reduce((a, b) => ({ ...a, ...b }), {})),
+  replace: (path: string, ...contexts: (PageContext | undefined)[]) => actionNavigate(path, "replace", contexts.reduce((a, b) => ({ ...a, ...b }), {})),
 }
 
 

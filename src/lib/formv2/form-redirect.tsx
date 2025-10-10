@@ -6,7 +6,8 @@ import { redirect, RedirectType } from "next/navigation"
 export function FormWithProgressiveRedirect(props: Omit<ComponentProps<"form">, "action"> & {
   action: (form: FormData) => Promise<void>
 }) {
-  return <FormWithClientRedirect {...props}
+  const { action, ...rest } = props
+  return <FormWithClientRedirect {...rest}
     action={async form => {
       "use server"
       try {
@@ -19,7 +20,7 @@ export function FormWithProgressiveRedirect(props: Omit<ComponentProps<"form">, 
           if (redirection.mode === "push")
             redirect(redirection.path, RedirectType.replace)
         }
-        return console.error(error)
+        return console.error('unhandled action error: ', error)
       }
     }}
     clientAction={props.action}

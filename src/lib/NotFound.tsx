@@ -1,4 +1,5 @@
 import { Link } from "./link/link"
+import { Spacer } from "./spacer"
 
 export function NotFoundLayout(props: {
   thingName: string,
@@ -18,7 +19,7 @@ export function NotFoundLayout(props: {
         {props.info}
       </p>
     </section>
-
+    <Spacer />
     <Link href={props.backHref} className="button primary">{'<-'} {props.backLabel}</Link>
   </>
 }
@@ -40,7 +41,7 @@ export function UnauthorizedLayout(props: {
         You're not authorised to view this resource.
       </p>
     </section>
-
+    <Spacer />
     <Link href={props.backHref} className="button primary">{'<-'} {props.backLabel}</Link>
   </>
 }

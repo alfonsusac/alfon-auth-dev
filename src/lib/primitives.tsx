@@ -13,7 +13,7 @@ export function List<T>(
 ) {
   const { val, children, ...rest } = props
   return <ListBase {...rest}>
-    {val.length === 0 && <div className="list-empty">{props.fallback}</div>}
+    {val.length === 0 && <div className="list-empty ml-2 my-1">{props.fallback}</div>}
     {props.val.map((item, index) => props.children(item, index))}
   </ListBase>
 }

@@ -1,8 +1,9 @@
-import { createProject } from "@/services/projects"
+import { createProject, updateProject } from "@/services/projects"
 import type { FieldMap } from "./form-fields"
 import { actionAdminOnly } from "../auth"
 import type { Action } from "./form-action"
 import type { ErrorMessages } from "./form-action-results"
+import type { ExtractErrorMessageMapFromRes } from "../toast/search-param-toast.client"
 
 
 // Form definition type
@@ -30,7 +31,7 @@ export const createForm = <
   action: Action<I, R>,
 }) => (
   opts2: { // Still logic, just slightly improve DX for errorMessage auto completion.
-    errorMessages?: ErrorMessages<R>
+    errorMessages?: ExtractErrorMessageMapFromRes<Action<I, R>>
   }
 ) => {
     return {
@@ -44,13 +45,12 @@ export const createForm = <
 
 
 
-// Usage
 
-export const createProjectForm = createForm({
-  action: async (input) => {
+export const editProjectForm = createForm({
+  action: async input => {
     "use server"
     const user = await actionAdminOnly()
-    return await createProject(input, user.id)
+    return await updateProject(input, user.id)
   },
   fields: {
     name: {
@@ -72,8 +72,9 @@ export const createProjectForm = createForm({
   }
 })({
   errorMessages: {
-    id_exists: "project id already exists.",
     invalid_id: "project id can only contain letters, numbers, hyphens, and underscores.",
     missing_fields: "please fill out all required fields.",
+    not_found: "project not found.",
+    id_exists: "project id already exists.",
   }
 })

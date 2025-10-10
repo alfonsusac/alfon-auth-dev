@@ -32,7 +32,7 @@ export function FormWithClientRedirect(props: ComponentProps<"form"> & {
             if (redirection.mode === "push")
               return router.push(redirection.path)
           }
-          return console.error(error)
+          return console.error('unhandled client-side error:', error)
         }
       })
     }}

@@ -3,7 +3,7 @@ import { LinkClient } from "./link.client"
 
 
 
-export function Link({context, ...props}: ComponentProps<typeof LinkClient> & {
+export function Link({ context, ...props }: ComponentProps<typeof LinkClient> & {
   context?: PageContext
 }) {
   let newhref
@@ -30,6 +30,7 @@ function resolveFragmentlessHrefWithMergedSearchParams(nofragmenthref: string | 
 
 declare global {
   type PageContext = { [key: string]: string }
+  type PageContextProp = { context?: PageContext }
   type PageSearchParams = Awaited<PageProps<'/'>['searchParams']>
 }
 

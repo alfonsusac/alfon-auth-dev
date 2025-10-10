@@ -1,5 +1,5 @@
 import { pageData } from "@/app/data"
-import { getAllProjectDomains, getProject, getProjectDomain } from "@/services/projects"
+import { getAllProjectDomainsOfProject, getProject } from "@/services/projects"
 
 export default async function ProjectAuthorizationPage(
   props: PageProps<'/[projectid]/authorize'>
@@ -33,7 +33,7 @@ async function validateAuthorizationParameters(props: PageProps<'/[projectid]/au
   if (!project_res) return "Project not found"
 
   // check for redirect_uri in project
-  const project_redirect_uris = await getAllProjectDomains(projectid)
+  const project_redirect_uris = await getAllProjectDomainsOfProject(projectid)
   const matched_domain = project_redirect_uris.find((domain) => {
     return domain.redirect_url === redirect_uri
   })

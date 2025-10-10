@@ -6,6 +6,14 @@ import { validateSecureURLwithLocalhost } from "@/lib/url"
 import { validation } from "@/lib/validation"
 import { revalidateTag } from "next/cache"
 
+// Types
+
+export type Project = NonNullable<Awaited<ReturnType<typeof getProject>>>
+export type ProjectDomain = NonNullable<Awaited<ReturnType<typeof getProjectDomainByID>>>
+export type ProjectKey = NonNullable<Awaited<ReturnType<typeof getProjectKey>>>
+
+
+
 // Project
 // Project > fetchers (status: over-fetching)
 
@@ -23,7 +31,6 @@ export async function getProject(id: string) {
   const projects = await getAllProjects()
   return projects.find(p => p.id === id)
 }
-export type Project = NonNullable<Awaited<ReturnType<typeof getProject>>>
 
 
 // Project > mutations

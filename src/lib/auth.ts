@@ -144,7 +144,12 @@ export const getCurrentUser = cache(async () => {
   try {
     const decoded = decodeJwt(token)
     if (typeof decoded.sub !== 'string') return null
-    return { id: decoded.sub, email: decoded.email as string, pfp: decoded.pfp as string }
+    return {
+      id: decoded.sub,
+      email: decoded.email as string,
+      pfp: decoded.pfp as string,
+      isAdmin: decoded.sub === process.env.ADMIN_USER_ID,
+    }
   } catch (e) {
     return null
   }
