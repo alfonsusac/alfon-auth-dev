@@ -38,7 +38,6 @@ export type ResultHandler<F extends FieldMap, R> = (data: {
 
 export type FormProps<F extends FormType> = {
   form: F,
-  defaultValues?: DefaultValues<F['fields']>,
   searchParams?: PageSearchParams
   navigateOnSubmit?: ResultHandler<F['fields'], string>,
   onSubmit: ResultHandler<F['fields'], void>,
@@ -58,7 +57,6 @@ export function Form<F extends FormType>(props: FormProps<F>) {
     <InputFields // TODO : determine why this needs searchParams. It shouldn't. Also, move to form v2 folder
       fields={props.form.fields}
       classNames={{ inputBox: "small" }}
-      // defaultValues={props.defaultValues}
       searchParams={props.searchParams && toNativeSearchParams(props.searchParams)} />
 
     <ErrorCallout messages={props.form.errorMessages ?? {}} />

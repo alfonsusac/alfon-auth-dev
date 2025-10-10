@@ -57,7 +57,7 @@ export function InputField<F extends Field>(props: {
   const inputProps = {
     name,
     id,
-    defaultValue: props.searchParams?.get(name) ?? '',
+    defaultValue: props.searchParams?.get(name) ?? field.defaultValue ?? '',
     required: field.required,
     placeholder: field.placeholder,
     type: field.type,
@@ -93,7 +93,6 @@ export function InputField<F extends Field>(props: {
 export function InputFields<M extends FieldMap>(props: {
   fields: M,
   classNames?: InputFieldClassNames,
-  // defaultValues?: Partial<Record<keyof M, any>>, // Not used currently
   searchParams?: URLSearchParams
 }) {
   return <>{
@@ -105,7 +104,6 @@ export function InputFields<M extends FieldMap>(props: {
         field={field}
         classNames={props.classNames}
         searchParams={props.searchParams} />
-      // return <InputField key={name} name={name} field={field} />
     })
   }</>
 }

@@ -15,6 +15,7 @@ export const createProjectForm =
         label: "project name",
         helper: "give your project a name for identification",
         placeholder: "My Project",
+        defaultValue: "New Project",
       },
       id: {
         type: "text", required: true,
