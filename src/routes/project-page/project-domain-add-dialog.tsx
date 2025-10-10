@@ -1,5 +1,4 @@
-import { DialogTitle } from "@/lib/dialogs/dialog"
-import { DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
+import { DialogSurface, DialogTitle } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { ModalContent } from "@/lib/dialogsv2/modal.client"
 import { Props } from "@/lib/page"

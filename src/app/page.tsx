@@ -1,6 +1,5 @@
 import { logout, signIn, signInAdminLocalhost } from "@/lib/auth"
 import { AUTH } from "@/lib/auth_ui"
-import { RootForm } from "@/lib/basic-form/form"
 import { actionNavigate } from "@/lib/resolveAction"
 import { SuccessCallout } from "@/lib/toast/search-param-toast.client"
 import { meta } from "@/meta"
@@ -8,11 +7,11 @@ import Link from "next/link"
 import { pageData } from "./data"
 import { headers } from "next/headers"
 import { List, Title } from "@/lib/primitives"
+import { ActionButton } from "@/lib/formv2/form-component"
 
 export default async function Home() {
 
   const { user, projects } = await pageData.homePage()
-  // projects.length = 0
 
   return (
     <main className="font-sans flex flex-col gap-16">
@@ -41,28 +40,36 @@ export default async function Home() {
                 My Account
               </Link>
 
-              <RootForm action={async () => {
-                "use server"
-                await logout()
-                actionNavigate('/?success=logged_out')
-              }}>
-                <button className="button">Log Out</button>
-              </RootForm>
+              <ActionButton
+                action={async () => {
+                  "use server"
+                  await logout()
+                  actionNavigate('/?success=logged_out')
+                }}
+                loading="Logging out..."
+              >
+                Log Out
+              </ActionButton>
             </div>
             :
             <div className="flex gap-2 flex-wrap">
-              <RootForm action={async () => {
-                "use server"
-                await signIn()
-              }}>
-                <button className="button primary">Login via Google</button>
-              </RootForm>
-              {process.env.NODE_ENV === 'development' && <RootForm action={async () => {
-                "use server"
-                await signInAdminLocalhost()
-              }}>
-                <button className="button">Login as Admin Localhost</button>
-              </RootForm>}
+              <ActionButton
+                action={async () => { "use server"; await signIn() }}
+                className="button primary"
+                loading="Redirecting..."
+              >
+                Login via Google
+              </ActionButton>
+
+              {process.env.NODE_ENV === 'development' && <>
+                <ActionButton action={async () => { "use server"; await signInAdminLocalhost() }}
+                  className="primary"
+                  loading="Redirecting..."
+                >
+                  Login as Admin Localhost
+                </ActionButton>
+              </>
+              }
             </div>
         }
       </div>

@@ -1,4 +1,4 @@
-import type { FieldMap } from "./form-fields"
+import type { FieldMap } from "./input-fields/input-fields"
 
 export type ActionParameter<F extends FieldMap>
   = { [K in keyof F]: string }

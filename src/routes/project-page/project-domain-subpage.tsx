@@ -22,7 +22,6 @@ export async function ProjectDomainSubpage({ project, domain, context }:
     'domain_deleted': "domain deleted successfully!",
     'updated': "domain updated!"
   }}>
-
     <Header>
       <Title>{domain.origin}</Title>
       <DataGridDisplay data={{

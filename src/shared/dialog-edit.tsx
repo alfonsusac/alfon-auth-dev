@@ -1,8 +1,8 @@
-import { form } from "@/lib/basic-form/app-form"
-import { MaterialSymbolsEdit } from "@/lib/basic-form/app-form-dialog"
-import { DialogTitle } from "@/lib/dialogs/dialog"
-import { DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
+// import { MaterialSymbolsEdit } from "@/lib/basic-form/app-form-dialog"
+// import { DialogTitle } from "@/lib/dialogs/dialog"
+import { DialogSurface, DialogTitle } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal, type ModalServerContext } from "@/lib/dialogsv2/modal"
+import { IconEdit } from "./icons"
 
 export function EditFormDialog(props: {
   name: string,
@@ -15,7 +15,7 @@ export function EditFormDialog(props: {
       context={props.context}
       button={Button =>
         <Button className={"button small"}>
-          <MaterialSymbolsEdit className="mt-0.5 mr-1" /> Edit Details
+          <IconEdit className="mt-0.5 mr-1" /> Edit Details
         </Button>
       }
       content={dialog =>

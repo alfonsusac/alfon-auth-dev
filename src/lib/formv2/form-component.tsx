@@ -1,5 +1,4 @@
 import type { ComponentProps } from "react"
-import { InputFields } from "../basic-form/app-form"
 import { FormButton } from "../FormButton"
 import { actionResolveError } from "../redirects"
 import { actionNavigate } from "../resolveAction"
@@ -7,9 +6,10 @@ import { toNativeSearchParams } from "../searchParams"
 import { ErrorCallout } from "../toast/search-param-toast.client"
 import { type FormType } from "./form"
 import type { ActionParameter } from "./form-action"
-import { formDataToTypedInput, type FieldMap } from "./form-fields"
 import { FormWithProgressiveRedirect } from "./form-redirect"
 import { cn } from "lazy-cn"
+import { InputFields, type FieldMap } from "./input-fields/input-fields"
+import { formDataToTypedInput } from "./input-fields/input-fields-util"
 
 // Just Server Buttons
 
@@ -20,7 +20,7 @@ export function ActionButton(props: ComponentProps<typeof FormButton> & {
   const { action, loading, ...rest } = props
   return <FormWithProgressiveRedirect action={action}>
     <FormButton {...rest}
-      className={cn("button primary small", props.className)}
+      className={cn("button", props.className)}
       loading={props.loading} />
   </FormWithProgressiveRedirect>
 }
@@ -57,9 +57,8 @@ export function Form<F extends FormType>(props: FormProps<F>) {
   >
     <InputFields // TODO : determine why this needs searchParams. It shouldn't. Also, move to form v2 folder
       fields={props.form.fields}
-      name={""}
       classNames={{ inputBox: "small" }}
-      defaultValues={props.defaultValues}
+      // defaultValues={props.defaultValues}
       searchParams={props.searchParams && toNativeSearchParams(props.searchParams)} />
 
     <ErrorCallout messages={props.form.errorMessages ?? {}} />
@@ -78,8 +77,6 @@ export function Form<F extends FormType>(props: FormProps<F>) {
 
 
 
-
-// Example Usage
 
 
 

@@ -1,6 +1,5 @@
 import { actionAdminOnly } from "@/lib/auth"
-import { DialogCloseButton } from "@/lib/dialogs/dialog"
-import { DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
+import { DialogCloseButton, DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { Props, searchParams } from "@/lib/page"
 import { actionResolveError } from "@/lib/redirects"

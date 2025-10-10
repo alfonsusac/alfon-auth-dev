@@ -2,7 +2,7 @@
 
 import { cn } from "lazy-cn"
 import { useSearchParams } from "next/navigation"
-import { IconCheckFilled } from "../icons"
+import { IconCheckFilled } from "../../shared/icons"
 import type { ReactNode } from "react"
 
 export function ToastBanner(props: {

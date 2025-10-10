@@ -1,7 +1,7 @@
 import { cn } from "lazy-cn"
 import type { ComponentProps } from "react"
 import { ModalClose } from "./modal.client"
-import { IconClose } from "../icons"
+import { IconClose } from "../../shared/icons"
 
 export function DialogSurface(props: ComponentProps<"div"> & {
   wide?: boolean,
@@ -45,4 +45,8 @@ export function SubpageSurface(props: ComponentProps<"div">) {
     'flex flex-col overflow-hidden p-0',
     'relative',
     props.className)} />
+}
+
+export function DialogTitle(props: ComponentProps<"h2">) {
+  return <h2 {...props} className={cn("text-lg font-semibold mb-4", props.className)} />
 }

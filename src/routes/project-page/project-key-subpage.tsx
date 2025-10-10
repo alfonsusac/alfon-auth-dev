@@ -3,14 +3,13 @@ import { CopyButton } from "@/lib/CopyButton"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { actionResolveError } from "@/lib/redirects"
 import { navigate } from "@/lib/resolveAction"
-import { SuccessCallout } from "@/lib/toast/search-param-toast.client"
 import { regenerateProjectKeySecret, deleteProjectKey } from "@/services/projects"
 import { DeleteButton } from "@/shared/dialog-delete"
 import type { ProjectKeyProp, ProjectProp } from "../types"
 import { ActionButton, Form } from "@/lib/formv2/form-component"
 import { editProjectKeyForm } from "./project-key-edit-form"
 import { route } from "../routes"
-import { searchParams } from "@/lib/page"
+import { Page, searchParams } from "@/lib/page"
 import { Header, Title } from "@/lib/primitives"
 import { EditFormDialog } from "@/shared/dialog-edit"
 
@@ -21,18 +20,16 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
 ) {
   const key = projectKey
   const sp = await searchParams()
-  return <>
-    <SuccessCallout messages={{
-      "created": "key created successfully!",
-      "updated": "key updated!"
-    }} />
-    
+  return <Page toasts={{
+    "created": "key created successfully!",
+    "updated": "key updated!"
+  }}>
     <Header>
       <Title>{key.name}</Title>
       <DataGridDisplay data={{
         'key secret': key.client_secret,
-        'created at': key.createdAt,
-        'updated at': key.updatedAt
+        'created at': new Date(key.createdAt),
+        'updated at': new Date(key.updatedAt)
       }} />
     </Header>
 
@@ -41,6 +38,7 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
         Copy Key
       </CopyButton>
       <ActionButton
+        className="small"
         action={async () => {
           "use server"
           await actionAdminOnly(`/${ project.id }`)
@@ -80,6 +78,6 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
         navigate.replace(route.projectPage(project.id), { success: 'domain_deleted' }, context)
       }}
     />
-  </>
+  </Page>
 
 } 

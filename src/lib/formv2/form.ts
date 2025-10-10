@@ -1,9 +1,9 @@
 import { createProject, updateProject } from "@/services/projects"
-import type { FieldMap } from "./form-fields"
 import { actionAdminOnly } from "../auth"
 import type { Action } from "./form-action"
 import type { ErrorMessages } from "./form-action-results"
 import type { ExtractErrorMessageMapFromRes } from "../toast/search-param-toast.client"
+import type { FieldMap } from "./input-fields/input-fields"
 
 
 // Form definition type

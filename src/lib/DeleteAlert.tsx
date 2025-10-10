@@ -1,8 +1,8 @@
 import type { ReactNode } from "react"
 import { DangerSymbol } from "./DangerSymbol"
-import { RootForm } from "./basic-form/form"
 import { Link } from "./link/link"
 import { FormButton } from "./FormButton"
+import { ActionButton } from "./formv2/form-component"
 
 export function DeleteAlert(props: {
   title: ReactNode,
@@ -26,13 +26,12 @@ export function DeleteAlert(props: {
       </div>
 
       <div className="flex flex-col items-stretch gap-2 my-2 self-stretch">
-        <RootForm action={props.action}>
-          <FormButton
-            loading="Deleting..."
-            className="button destructive-primary small self-stretch w-full">
-            {props.actionLabel ?? "Permanently Delete"}
-          </FormButton>
-        </RootForm>
+        <ActionButton action={props.action}
+          loading="Deleting..."
+          className="button destructive-primary small self-stretch w-full"
+        >
+          {props.actionLabel ?? "Permanently Delete"}
+        </ActionButton>
         <Link
           href={props.backHref}
           replace
