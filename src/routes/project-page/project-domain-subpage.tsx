@@ -1,5 +1,5 @@
 import { DataGridDisplay } from "@/lib/DataGrid"
-import { Header, Row, Title } from "@/lib/primitives"
+import { Header, HelperText, Row, Section, SectionTitle, Title } from "@/lib/primitives"
 import { actionResolveError } from "@/lib/redirects"
 import { navigate } from "@/lib/resolveAction"
 import { DomainProp, ProjectProp } from "@/routes/types"
@@ -10,6 +10,8 @@ import { editProjectDomainForm } from "./project-domain-edit-form"
 import { route } from "../routes"
 import { Page } from "@/lib/page"
 import { EditFormDialog } from "@/shared/dialog-edit"
+import { Link } from "@/lib/link/link"
+import { CodeBlock } from "@/lib/code-block/code-blocks"
 
 
 export async function ProjectDomainSubpage({ project, domain, context }:
@@ -18,7 +20,7 @@ export async function ProjectDomainSubpage({ project, domain, context }:
   & PageContextProp
 ) {
 
-  return <Page toasts={{
+  return <Page className="max-w-none" toasts={{
     'domain_deleted': "domain deleted successfully!",
     'updated': "domain updated!"
   }}>
@@ -59,6 +61,40 @@ export async function ProjectDomainSubpage({ project, domain, context }:
         />
       </Row>
     </Header>
+
+    <Section>
+      <Header>
+        <SectionTitle>Integration</SectionTitle>
+        <HelperText>
+          You can now use this domain in your OAuth2/OpenID Connect integration.
+          Below is the authorization URL you can use to initiate the authorization flow.
+        </HelperText>
+      </Header>
+      <Link
+        href={route.authorizePage(project.id)}
+        className="button small primary"
+        target="_blank"
+      >
+        Go to Authorization Page
+      </Link>
+    </Section>
+
+    <Section>
+      <Header>
+        <SectionTitle>API Reference</SectionTitle>
+        <HelperText>
+          These are the required parameters to include in your authorization requests.
+        </HelperText>
+      </Header>
+      <CodeBlock
+        code={`
+redirect('${ process.env.BASE_URL }/${ project.id }/authorize'
+  + '?redirect_uri=' + '${ domain.redirect_url }'
+)
+          `}
+      />
+
+    </Section>
 
 
   </Page>

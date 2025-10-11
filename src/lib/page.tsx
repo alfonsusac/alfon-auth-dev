@@ -106,6 +106,7 @@ export function Page(props: {
   children?: ReactNode,
   toasts?: Record<string, ReactNode>,
   back?: [label: string, href: `/${ string }`]
+  className?: string,
 }) {
   return <>
     <SuccessCallout messages={props.toasts ?? {}} />
@@ -113,7 +114,7 @@ export function Page(props: {
       <NavigationBar back={props.back} />
       <Spacer />
     </>}
-    <div className={cn("flex flex-col gap-12")}>
+    <div className={cn("flex flex-col gap-12 max-w-120 text-sm grow", props.className)}>
       {props.children}
     </div>
   </>

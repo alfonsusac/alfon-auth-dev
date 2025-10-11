@@ -1,23 +1,26 @@
 import { pageData } from "@/app/data"
+import authorizePage from "@/routes/authorize-page"
 import { getAllProjectDomainsOfProject, getProject } from "@/services/projects"
 
-export default async function ProjectAuthorizationPage(
-  props: PageProps<'/[projectid]/authorize'>
-) {
-  const res = await validateAuthorizationParameters(props)
-  if (typeof res === 'string') return <>
-    <div className="fixed inset-0 bg-red-500 flex items-center justify-center">
-      <h1 className="text-white text-2xl">{res}</h1>
-    </div>
-  </>
+export default authorizePage.Page
 
-  return (
-    <div className="fixed inset-0 bg-red-500">
-      <h1>Hello</h1>
-    </div>
-  )
+// export default async function ProjectAuthorizationPage(
+//   props: PageProps<'/[projectid]/authorize'>
+// ) {
+//   const res = await validateAuthorizationParameters(props)
+//   if (typeof res === 'string') return <>
+//     <div className="fixed inset-0 bg-red-500 flex items-center justify-center">
+//       <h1 className="text-white text-2xl">{res}</h1>
+//     </div>
+//   </>
 
-}
+//   return (
+//     <div className="fixed inset-0 bg-red-500">
+//       <h1>Hello</h1>
+//     </div>
+//   )
+
+// }
 
 async function validateAuthorizationParameters(props: PageProps<'/[projectid]/authorize'>) {
   const { projectid, searchParams } = await pageData.resolve(props)

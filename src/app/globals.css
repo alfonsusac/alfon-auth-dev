@@ -28,6 +28,7 @@
   
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-mono-2: var(--font-jetbrains-mono);
 
   
   --breakpoint-xs: 480px;
@@ -139,7 +140,7 @@ body:has(.modal-opened) {
     text-sm 
     inline-flex gap-1 justify-center
   
-    self-start
+    /* self-start */
   
     font-medium
     text-foreground-body
