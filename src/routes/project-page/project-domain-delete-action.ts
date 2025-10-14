@@ -1,9 +1,9 @@
 "use server"
 
-import { actionAdminOnly } from "@/lib/auth"
 import { deleteDomain } from "@/services/projects"
+import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export async function deleteDomainAction(domainid: string) {
-  await actionAdminOnly()
+  await adminOnlyAction()
   return await deleteDomain(domainid)
 }

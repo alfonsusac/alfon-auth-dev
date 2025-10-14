@@ -41,3 +41,8 @@ export function Title(props: ComponentProps<'h1'>) {
 export function Row(props: ComponentProps<'div'>) {
   return <div {...props} className={cn("flex flex-row gap-2 flex-wrap", props.className)} />
 }
+
+export function ErrorMessageHint(props: ComponentProps<'div'>) {
+  return <div {...props} className={cn("text-foreground-body text-xxs font-mono", props.className)} />
+
+}

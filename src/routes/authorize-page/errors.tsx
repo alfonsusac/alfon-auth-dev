@@ -1,4 +1,4 @@
-import { Section, Title } from "@/lib/primitives"
+import { ErrorMessageHint, Section, Title } from "@/lib/primitives"
 import type { ParsedURLError } from "@/lib/url/url"
 
 
@@ -13,9 +13,9 @@ function ErrorUI(
       <div>
         {description}
       </div>
-      {errorMessage && <div className="text-foreground-body text-xxs font-mono mt-4">
+      {errorMessage && <ErrorMessageHint className="mt-4">
         {errorMessage}
-      </div>}
+      </ErrorMessageHint>}
     </Section>
   </>
 }

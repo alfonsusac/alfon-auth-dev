@@ -1,7 +1,6 @@
-import { actionAdminOnly } from "@/lib/auth"
 import { createForm } from "@/lib/formv2/form"
 import { updateProject, type Project } from "@/services/projects"
-import { route } from "../routes"
+import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export function editProjectForm(project: Project) {
   return createForm({
@@ -25,7 +24,7 @@ export function editProjectForm(project: Project) {
     },
     action: async inputs => {
       "use server"
-      await actionAdminOnly(route.projectPage(project.id))
+      await adminOnlyAction()
       return await updateProject(inputs, project.id)
     }
   })({

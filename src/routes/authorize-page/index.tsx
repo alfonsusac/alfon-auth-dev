@@ -1,4 +1,4 @@
-import { isQuerySingle, Page, page } from "@/lib/page"
+import { Page, page } from "@/lib/page"
 import { getAllProjectDomainsOfProject, getProject } from "@/services/projects"
 import { AuthorizePageInvalidParameter, AuthorizeProjectNotFoundContent } from "./errors"
 import { Header } from "@/lib/primitives"
@@ -39,7 +39,7 @@ export default page('/[projectid]/authorize', async page => {
   if (projectNotFound) return <AuthorizeProjectNotFoundContent projectid={projectid} />
   if (invalidParameter) return <AuthorizePageInvalidParameter message={invalidParameter} />
 
-  // if (!page.user) return <AuthorizeProjectNotAuthenticated project={project} redirect_uri={redirect_uri || ''} />
+  if (!page.user) return <AuthorizeProjectNotAuthenticated project={project} />
 
   // return <AuthorizePageContent />
 

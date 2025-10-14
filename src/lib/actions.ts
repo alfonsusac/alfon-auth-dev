@@ -1,11 +1,16 @@
+import { getCurrentUser } from "@/shared/auth/auth"
+import { headers } from "next/headers"
+import { parseURL } from "./url/url"
+import { secureRedirectString } from "./auth/redirect"
 
-export async function wrapper(cb: () => string) {
-  return cb()
-}
-
-export function test() {
-  return async () => {
-    "use server"
-    return "hello"
+export async function getActionContext() {
+  const header = await headers()
+  const user = await getCurrentUser()
+  const referer = header.get('referer') || ''
+  const url = parseURL(referer)
+  return {
+    user,
+    from: secureRedirectString(url.path + (url.query ? '?' + url.query : '')) as `/${ string }`,
+    header,
   }
 }

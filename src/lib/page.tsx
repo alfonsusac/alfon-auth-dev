@@ -1,5 +1,4 @@
 import type { ReactNode } from "react"
-import { getCurrentUser, type User } from "./auth"
 import type { AppRoutes } from "../../.next/types/routes"
 import { SuccessCallout } from "./toast/search-param-toast.client"
 import { NavigationBar } from "./NavigationBar"
@@ -10,6 +9,7 @@ import { UnauthorizedLayout } from "./NotFound"
 import { resolveCustomRedirectError } from "./resolveAction"
 import { redirect, RedirectType } from "next/navigation"
 import { cn } from "lazy-cn"
+import { getCurrentUser, type User } from "@/shared/auth/auth"
 
 export async function resolvePageProps<
   P extends PageProps<any>
@@ -82,9 +82,7 @@ export async function currentPath() {
   const header = await headers()
   return (header as any).__page_context?.path ?? "/"
 }
-export function isQuerySingle(value: string | string[] | undefined): value is string {
-  return typeof value === "string"
-}
+
 
 
 

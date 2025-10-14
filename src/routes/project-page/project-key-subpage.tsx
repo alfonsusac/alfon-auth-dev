@@ -1,4 +1,3 @@
-import { actionAdminOnly } from "@/lib/auth"
 import { CopyButton } from "@/lib/CopyButton"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { actionResolveError } from "@/lib/redirects"
@@ -12,6 +11,7 @@ import { route } from "../routes"
 import { Page, searchParams } from "@/lib/page"
 import { Header, Row, Title } from "@/lib/primitives"
 import { EditFormDialog } from "@/shared/dialog-edit"
+import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export async function ProjectKeySubpage({ project, projectKey, context }:
   & ProjectProp
@@ -39,7 +39,7 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
           className="small"
           action={async () => {
             "use server"
-            await actionAdminOnly(`/${ project.id }`)
+            await adminOnlyAction()
             const res = await regenerateProjectKeySecret(key.id)
             actionResolveError(res, context)
             navigate.replace(route.projectPage(project.id), { success: 'updated' }, context)
@@ -69,7 +69,7 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
           alertDescription="This action cannot be undone. Any applications using this key will no longer be able to access the project."
           action={async () => {
             "use server"
-            await actionAdminOnly()
+            await adminOnlyAction()
             const res = await deleteProjectKey(key.id)
             actionResolveError(res, context)
             navigate.replace(route.projectPage(project.id), { success: 'domain_deleted' }, context)

@@ -1,18 +1,16 @@
-import { logout, signIn, signInAdminLocalhost } from "@/lib/auth"
-import { AUTH } from "@/lib/auth_ui"
-import { actionNavigate } from "@/lib/resolveAction"
 import { SuccessCallout } from "@/lib/toast/search-param-toast.client"
 import { meta } from "@/meta"
 import Link from "next/link"
-import { pageData } from "./data"
-import { headers } from "next/headers"
-import { List, Title } from "@/lib/primitives"
-import { ActionButton } from "@/lib/formv2/form-component"
+import { List } from "@/lib/primitives"
 import { LogInDevelopmentButton, LogInViaGoogleButton, LogOutButton } from "@/shared/auth/login-button"
+import { AdminOnly } from "@/shared/auth/admin-only"
+import { getCurrentUser } from "@/shared/auth/auth"
+import { getAllProjects } from "@/services/projects"
 
 export default async function Home() {
 
-  const { user, projects } = await pageData.homePage()
+  const user = await getCurrentUser()
+  const projects = await getAllProjects()
 
   return (
     <main className="font-sans flex flex-col gap-16">
@@ -72,11 +70,11 @@ export default async function Home() {
           }}
         </List>
 
-        <AUTH.AdminOnly>
+        <AdminOnly>
           <Link className="button primary small" href="/create-project">
             Create Project
           </Link>
-        </AUTH.AdminOnly>
+        </AdminOnly>
       </section>
 
     </main>

@@ -1,14 +1,14 @@
-import { logout, signIn, signInAdminLocalhost } from "@/lib/auth"
 import { ActionButton } from "@/lib/formv2/form-component"
 import { actionNavigate } from "@/lib/resolveAction"
 import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
+import { signIn, signOut } from "./auth"
 
 export function LogOutButton() {
   return <ActionButton
     action={async () => {
       "use server"
-      await logout()
+      await signOut()
       actionNavigate('/?success=logged_out')
     }}
     loading="Logging out..."
@@ -25,7 +25,7 @@ export function LogInViaGoogleButton(props: {
   className?: string,
 }) {
   return <ActionButton
-    action={async () => { "use server"; await signIn(props.redirectTo) }}
+    action={async () => { "use server"; await signIn(props.redirectTo).google() }}
     className={cn(
       "button primary",
       props.fullWidth && "w-full",
@@ -49,10 +49,12 @@ export function LogosGoogleIcon(props: SVGProps<SVGSVGElement>) {
 
 
 
-export function LogInDevelopmentButton() {
+export function LogInDevelopmentButton(props: {
+  redirectTo?: `/${ string }`,
+}) {
   return <>
     {process.env.NODE_ENV === 'development' && <>
-      <ActionButton action={async () => { "use server"; await signInAdminLocalhost() }}
+      <ActionButton action={async () => { "use server"; await signIn(props.redirectTo).localhost() }}
         className="primary"
         loading="Redirecting..."
       >

@@ -1,9 +1,9 @@
-import { actionAdminOnly } from "@/lib/auth"
 import { datacache } from "@/lib/cache"
 import prisma, { serializeDate } from "@/lib/db"
 import { generateSecret } from "@/lib/token"
 import { validateSecureURLwithLocalhost } from "@/lib/url/url"
 import { validation } from "@/lib/validation"
+import { adminOnlyService } from "@/shared/auth/admin-only"
 import { revalidateTag } from "next/cache"
 
 // Types
@@ -44,6 +44,7 @@ const validateProjectInput = validation(async (input: ProjectInput) => {
 })
 
 export async function createProject(input: ProjectInput, user_id: string) {
+  await adminOnlyService()
   const { error, data } = await validateProjectInput(input)
   if (error) return error
   if (await getProject(data.id)) return "id_exists"
@@ -58,6 +59,7 @@ export async function createProject(input: ProjectInput, user_id: string) {
 }
 
 export async function updateProject(input: ProjectInput, id: string) {
+  await adminOnlyService()
   const { error, data } = await validateProjectInput(input)
   if (error) return error
   if (!await getProject(id)) return "not_found"
@@ -68,6 +70,7 @@ export async function updateProject(input: ProjectInput, id: string) {
 }
 
 export async function deleteProject(id: string) {
+  await adminOnlyService()
   if (!await getProject(id)) return "not_found"
   await prisma.project.delete({ where: { id } })
   revalidateProjects()
@@ -112,7 +115,7 @@ const validateProjectKeyInput = validation(async (input: ProjectKeyInput) => {
 })
 
 export async function createProjectKey(input: ProjectKeyInput) {
-  await actionAdminOnly()
+  await adminOnlyService()
   const { error, data } = await validateProjectKeyInput(input)
   if (error) return error
   const res = await prisma.projectKey.create({ data: { ...data, client_secret: generateSecret() } })
@@ -121,7 +124,7 @@ export async function createProjectKey(input: ProjectKeyInput) {
 }
 
 export async function updateProjectKey(input: ProjectKeyInput, id: string) {
-  await actionAdminOnly()
+  await adminOnlyService()
   const { error, data } = await validateProjectKeyInput(input)
   if (error) return error
   if (!await getProjectKey(id)) return "not_found"
@@ -131,7 +134,7 @@ export async function updateProjectKey(input: ProjectKeyInput, id: string) {
 }
 
 export async function regenerateProjectKeySecret(id: string) {
-  await actionAdminOnly()
+  await adminOnlyService()
   if (!await getProjectKey(id)) return "not_found"
   const res = await prisma.projectKey.update({ where: { id }, data: { client_secret: generateSecret() } })
   revalidateProjectProjectKeys(res.project_id)
@@ -139,7 +142,7 @@ export async function regenerateProjectKeySecret(id: string) {
 }
 
 export async function deleteProjectKey(id: string) {
-  await actionAdminOnly()
+  await adminOnlyService()
   if (!await getProjectKey(id)) return "not_found"
   const res = await prisma.projectKey.delete({ where: { id } })
   revalidateProjectProjectKeys(res.project_id)
@@ -207,7 +210,7 @@ const validateProjectDomainInput = validation(async (input: DomainInput) => {
 })
 
 export async function createDomain(input: DomainInput) {
-  await actionAdminOnly()
+  await adminOnlyService()
   const { error, data } = await validateProjectDomainInput(input)
   if (error) return error
   if (!await getProject(data.project_id)) return "project_not_found"
@@ -218,7 +221,7 @@ export async function createDomain(input: DomainInput) {
 }
 
 export async function updateDomain(input: DomainInput, id: string) {
-  await actionAdminOnly()
+  await adminOnlyService()
   const { error, data } = await validateProjectDomainInput(input)
   if (error) return error
   const res = await prisma.domain.update({ where: { id }, data })
@@ -229,7 +232,7 @@ export async function updateDomain(input: DomainInput, id: string) {
 }
 
 export async function deleteDomain(id: string) {
-  await actionAdminOnly()
+  await adminOnlyService()
   if (!await getProjectDomainByID(id)) return "not_found"
   const res = await prisma.domain.delete({ where: { id } })
   revalidateProjectDomainsOfProject(res.project_id)

@@ -4,7 +4,6 @@ import { Page, page } from "@/lib/page"
 import { Header, HelperText, Section, SectionTitle, Title } from "@/lib/primitives"
 import { getProject } from "@/services/projects"
 import { projectNotFound } from "./not-found"
-import { auth } from "@/lib/auth_ui"
 import { ModalButton } from "@/lib/dialogsv2/modal.client"
 import { IconAdd, IconSettings } from "@/shared/icons"
 import { ProjectDomainsList } from "./project-domains-list"
@@ -12,6 +11,7 @@ import { ProjectDomainAddModalDialog } from "./project-domain-add-dialog"
 import { ProjectKeysList } from "./project-keys-list"
 import { ProjectKeyCreateModalDialog } from "./project-key-create-dialog"
 import { ProjectSettingsModal } from "./project-settings-dialog"
+import { AdminOnly } from "@/shared/auth/admin-only"
 
 export default page('/[projectid]', async page => {
 
@@ -39,7 +39,7 @@ export default page('/[projectid]', async page => {
         }} />
       </Header>
 
-      <auth.AdminOnly>
+      <AdminOnly>
         <Section>
           <Header>
             <SectionTitle>redirect urls</SectionTitle>
@@ -53,9 +53,9 @@ export default page('/[projectid]', async page => {
             </ModalButton>
           </ProjectDomainAddModalDialog>
         </Section>
-      </auth.AdminOnly >
+      </AdminOnly >
 
-      <auth.AdminOnly>
+      <AdminOnly>
         <Section>
           <Header>
             <SectionTitle>secret keys</SectionTitle>
@@ -69,16 +69,16 @@ export default page('/[projectid]', async page => {
             </ModalButton>
           </ProjectKeyCreateModalDialog>
         </Section>
-      </auth.AdminOnly>
+      </AdminOnly>
 
-      <auth.AdminOnly>
+      <AdminOnly>
         <ProjectSettingsModal project={project} >
           <ModalButton className="button small ghost">
             <IconSettings className="icon icon-start" />
             Settings
           </ModalButton>
         </ProjectSettingsModal>
-      </auth.AdminOnly>
+      </AdminOnly>
     </Page>
   </>
 })

@@ -1,12 +1,12 @@
-import { actionAdminOnly } from "@/lib/auth"
 import { createForm } from "@/lib/formv2/form"
 import { createDomain, type Project } from "@/services/projects"
+import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export function addProjectDomainForm(project: Project) {
   return createForm({
     action: async inputs => {
       "use server"
-      await actionAdminOnly(`/${ project.id }`)
+      await adminOnlyAction()
       const res = await createDomain({
         project_id: inputs.project_id,
         origin: inputs.origin,

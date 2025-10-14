@@ -1,4 +1,3 @@
-import { actionAdminOnly } from "@/lib/auth"
 import { DialogCloseButton, DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { Props, searchParams } from "@/lib/page"
@@ -11,6 +10,7 @@ import { ProjectProp } from "../types"
 import { Form } from "@/lib/formv2/form-component"
 import { editProjectForm } from "./project-edit-form"
 import { route } from "../routes"
+import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export async function ProjectSettingsModal({ project, children }:
   & ProjectProp
@@ -46,7 +46,7 @@ export async function ProjectSettingsModal({ project, children }:
               alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
               action={async () => {
                 "use server"
-                await actionAdminOnly()
+                await adminOnlyAction()
                 const res = await deleteProject(project.id)
                 actionResolveError(res, { delete: '' })
                 revalidatePath('/', 'layout')

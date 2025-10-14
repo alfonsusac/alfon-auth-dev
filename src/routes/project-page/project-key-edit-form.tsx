@@ -1,6 +1,6 @@
-import { actionAdminOnly } from "@/lib/auth"
 import { createForm } from "@/lib/formv2/form"
 import { updateProjectKey, type Project, type ProjectKey } from "@/services/projects"
+import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export function editProjectKeyForm(project: Project, key: ProjectKey) {
   return createForm({
@@ -19,7 +19,7 @@ export function editProjectKeyForm(project: Project, key: ProjectKey) {
     },
     action: async inputs => {
       "use server"
-      await actionAdminOnly(`/${ project.id }`)
+      await adminOnlyAction()
       const res = await updateProjectKey(inputs, key.id)
     }
   })({

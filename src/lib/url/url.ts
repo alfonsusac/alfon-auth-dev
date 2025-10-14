@@ -170,7 +170,7 @@ const dnsHost = `${ ipLiteral }|${ ipV4Address }|${ domainNameRelaxed }`
 //
 // Parsing
 
-function parseURL(url: string) {
+export function parseURL(url: string) {
 
   // https://user:pass@sub.example.com:8080/folder/page?x=1#frag
   const [nohash, hash] = url.includes('#') ? url.split('#', 2) : [url, null]

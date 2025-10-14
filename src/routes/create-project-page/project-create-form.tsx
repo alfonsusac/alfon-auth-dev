@@ -1,12 +1,12 @@
-import { actionAdminOnly } from "@/lib/auth"
 import { createForm } from "@/lib/formv2/form"
 import { createProject } from "@/services/projects"
+import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export const createProjectForm =
   createForm({
     action: async input => {
       "use server"
-      const user = await actionAdminOnly()
+      const user = await adminOnlyAction()
       return await createProject(input, user.id)
     },
     fields: {

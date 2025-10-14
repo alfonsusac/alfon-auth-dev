@@ -8,6 +8,9 @@ const routeNamesMap = {
   "/[projectid]": "projectPage",
   "/[projectid]/authorize": "authorizePage",
   "/create-project": "createProjectPage",
+  "/register": "registerPage",
+  "/unauthorized": "unauthorizedPage",
+  "/session-expired": "sessionExpiredPage",
 } as const satisfies { [key in AppRoutes]: string }
 
 export const route = {
@@ -15,6 +18,9 @@ export const route = {
   projectPage: id => `/${ id }` as const,
   authorizePage: id => `/${ id }/authorize` as const,
   createProjectPage: '/create-project' as const,
+  registerPage: '/register' as const,
+  unauthorizedPage: '/unauthorized' as const,
+  sessionExpiredPage: '/session-expired' as const,
 } satisfies { [key in RouteNames]: string | ((...args: string[]) => string) }
 
 
