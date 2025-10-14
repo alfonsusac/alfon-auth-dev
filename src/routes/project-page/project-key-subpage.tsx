@@ -8,10 +8,11 @@ import type { ProjectKeyProp, ProjectProp } from "../types"
 import { ActionButton, Form } from "@/lib/formv2/form-component"
 import { editProjectKeyForm } from "./project-key-edit-form"
 import { route } from "../routes"
-import { Page, searchParams } from "@/lib/page"
+import { searchParams } from "@/lib/page"
 import { Header, Row, Title } from "@/lib/primitives"
 import { EditFormDialog } from "@/shared/dialog-edit"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
+import { DetailPage } from "@/lib/page-templates"
 
 export async function ProjectKeySubpage({ project, projectKey, context }:
   & ProjectProp
@@ -20,7 +21,7 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
 ) {
   const key = projectKey
   const sp = await searchParams()
-  return <Page toasts={{
+  return <DetailPage toasts={{
     "created": "key created successfully!",
     "updated": "key updated!"
   }}>
@@ -78,6 +79,6 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
       </Row>
     </Header>
 
-  </Page>
+  </DetailPage>
 
 } 

@@ -1,4 +1,4 @@
-import { Page, page } from "@/lib/page"
+import { page } from "@/lib/page"
 import { getAllProjectDomainsOfProject, getProject } from "@/services/projects"
 import { AuthorizePageInvalidParameter, AuthorizeProjectNotFoundContent } from "./errors"
 import { Header } from "@/lib/primitives"
@@ -6,6 +6,7 @@ import { Logo } from "@/shared/logot"
 import { AuthorizeProjectNotAuthenticated } from "./not-authenticated"
 import { parseUrl } from "next/dist/shared/lib/router/utils/parse-url"
 import { matchRedirectURI } from "@/lib/url/url-oauth"
+import { AuthPage, DetailPage } from "@/lib/page-templates"
 
 export default page('/[projectid]/authorize', async page => {
 
@@ -54,12 +55,9 @@ export default page('/[projectid]/authorize', async page => {
   </>
 },
   children => <>
-    <Page className="justify-center self-center mb-20 items-center text-center">
-      <Header className="items-center">
-        <Logo />
-      </Header>
+    <AuthPage>
       {children}
-    </Page>
+    </AuthPage>
   </>
 )
 

@@ -8,10 +8,10 @@ import { deleteDomainAction } from "./project-domain-delete-action"
 import { Form } from "@/lib/formv2/form-component"
 import { editProjectDomainForm } from "./project-domain-edit-form"
 import { route } from "../routes"
-import { Page } from "@/lib/page"
 import { EditFormDialog } from "@/shared/dialog-edit"
 import { Link } from "@/lib/link/link"
 import { CodeBlock } from "@/lib/code-block/code-blocks"
+import { DetailPage } from "@/lib/page-templates"
 
 
 export async function ProjectDomainSubpage({ project, domain, context }:
@@ -20,7 +20,7 @@ export async function ProjectDomainSubpage({ project, domain, context }:
   & PageContextProp
 ) {
 
-  return <Page className="max-w-none" toasts={{
+  return <DetailPage className="max-w-none" toasts={{
     'domain_deleted': "domain deleted successfully!",
     'updated': "domain updated!"
   }}>
@@ -97,6 +97,6 @@ redirect('${ process.env.BASE_URL }/${ project.id }/authorize'
     </Section>
 
 
-  </Page>
+  </DetailPage>
 
 }

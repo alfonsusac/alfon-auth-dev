@@ -1,10 +1,8 @@
-import { secureRedirectString } from "@/lib/auth/redirect"
 import { Link } from "@/lib/link/link"
-import { Page, page } from "@/lib/page"
-import { getSingleQuery } from "@/lib/page-search-params"
-import { Header, Section, Title } from "@/lib/primitives"
-import { Logo } from "@/shared/logot"
+import { page } from "@/lib/page"
+import { Section, Title } from "@/lib/primitives"
 import { route } from "../routes"
+import { AuthPage } from "@/lib/page-templates"
 
 export default page('/unauthorized', async page => {
   return <>
@@ -18,13 +16,7 @@ export default page('/unauthorized', async page => {
       <Link className="button primary" href={route.home}>Back to Home</Link>
     </Section>
   </>
-}, children => <>
-  <Page className="justify-center self-center mb-20 items-center text-center">
-    <Header className="items-center">
-      <Logo />
-    </Header>
-    {children}
-  </Page>
-</>)
+}, children => <AuthPage>{children}</AuthPage>
+)
 
 // TODO: Add a button to go back to the previous page or to the home page

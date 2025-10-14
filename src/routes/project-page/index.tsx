@@ -1,6 +1,6 @@
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { DateTime } from "@/lib/date.ui"
-import { Page, page } from "@/lib/page"
+import { page } from "@/lib/page"
 import { Header, HelperText, Section, SectionTitle, Title } from "@/lib/primitives"
 import { getProject } from "@/services/projects"
 import { projectNotFound } from "./not-found"
@@ -12,6 +12,7 @@ import { ProjectKeysList } from "./project-keys-list"
 import { ProjectKeyCreateModalDialog } from "./project-key-create-dialog"
 import { ProjectSettingsModal } from "./project-settings-dialog"
 import { AdminOnly } from "@/shared/auth/admin-only"
+import { DetailPage } from "@/lib/page-templates"
 
 export default page('/[projectid]', async page => {
 
@@ -27,7 +28,7 @@ export default page('/[projectid]', async page => {
   }
 
   return <>
-    <Page toasts={toasts} back={['Home', '/']}>
+    <DetailPage toasts={toasts} back={['Home', '/']}>
 
       <Header>
         <Title>{project.name}</Title>
@@ -79,6 +80,6 @@ export default page('/[projectid]', async page => {
           </ModalButton>
         </ProjectSettingsModal>
       </AdminOnly>
-    </Page>
+    </DetailPage>
   </>
 })

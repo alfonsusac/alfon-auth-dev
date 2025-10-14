@@ -1,9 +1,10 @@
-import { Page, page, unauthorized } from "@/lib/page"
+import { page, unauthorized } from "@/lib/page"
 import { Title, Section } from "@/lib/primitives"
 import { navigate } from "@/lib/resolveAction"
 import { createProjectForm } from "./project-create-form"
 import { Form } from "@/lib/formv2/form-component"
 import { route } from "../routes"
+import { DetailPage } from "@/lib/page-templates"
 
 export default page('/create-project', async page => {
 
@@ -11,7 +12,7 @@ export default page('/create-project', async page => {
     return unauthorized('Back to Home', '/')
 
   return <>
-    <Page back={['Home', '/']}>
+    <DetailPage back={['Home', '/']}>
 
       <Title>Create Project</Title>
 
@@ -25,6 +26,6 @@ export default page('/create-project', async page => {
         />
       </Section>
 
-    </Page>
+    </DetailPage>
   </>
 })

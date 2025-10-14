@@ -109,25 +109,7 @@ export function unauthorized(backLabel: string, backHref: `/${ string }`): never
 
 
 
-// Base Page Template
 
-export function Page(props: {
-  children?: ReactNode,
-  toasts?: Record<string, ReactNode>,
-  back?: [label: string, href: `/${ string }`]
-  className?: string,
-}) {
-  return <>
-    <SuccessCallout messages={props.toasts ?? {}} />
-    {props.back && <>
-      <NavigationBar back={props.back} />
-      <Spacer />
-    </>}
-    <div className={cn("flex flex-col gap-12 max-w-120 text-sm grow", props.className)}>
-      {props.children}
-    </div>
-  </>
-}
 
 export namespace Props {
   export type SearchParams = { searchParams: PageSearchParams }
