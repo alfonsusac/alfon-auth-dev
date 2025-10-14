@@ -24,6 +24,8 @@ model Project {
 
   keys    ProjectKey[]
   domains Domain[]
+
+  users User[] // user that has used this project
 }
 
 model ProjectKey {
@@ -48,4 +50,28 @@ model Domain {
   project_id String
 
   @@unique([project_id, origin])
+}
+
+model User {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[] // this user's joined projects
+
+  providers UserProvider[]
+}
+
+model UserProvider {
+  id               String   @id @default(uuid())
+  provider         String
+  provider_user_id String
+  expires_at       Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+    
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_user_id])
 }

@@ -24,6 +24,10 @@ export async function signIn(redirectTo?: string) {
 }
 
 export async function signInAdminLocalhost() {
+  if (process.env.NODE_ENV !== 'development') {
+    throw new Error("Not allowed")
+  }
+
   const now = Math.floor(Date.now() / 1000)
   const iat = now
   const exp = now + 60 * 60 // 1 hour
@@ -101,7 +105,7 @@ export async function signInHandleCallback(code?: string, received_state?: strin
 
     await setSecureCookie('auth_token', new_jwt, 60 * 60 * 24 * 1) // 1 days
 
-    return redirectTo || '/'
+    return secureRedirect(redirectTo || '/')
 
   } catch (e) {
     if (e instanceof arctic.OAuth2RequestError) {
@@ -121,6 +125,22 @@ export async function signInHandleCallback(code?: string, received_state?: strin
     // Parse error
 
     throw e
+  }
+}
+
+function secureRedirect(to: string) {
+  if (!to) return '/'
+  // console.log('to:    ', to)
+  if (to.startsWith('/')) return to
+
+  try {
+    const url = new URL(to, process.env.BASE_URL)
+    if (url.origin !== process.env.BASE_URL) {
+      return '/'
+    }
+    return url.pathname + url.search + url.hash
+  } catch (error) {
+    return '/'
   }
 }
 

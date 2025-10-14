@@ -35,6 +35,7 @@ export type AppPageContext<R extends PageRoutes> = PageParams<R> & {
 export function page<R extends PageRoutes>(
   route: R,
   render: (context: AppPageContext<R>) => ReactNode,
+  layout?: (children?: ReactNode) => ReactNode,
 ) {
   const Page = async function PageWrapper(props: PageProps<R>) {
     const context = await resolvePageProps(props)
@@ -44,6 +45,9 @@ export function page<R extends PageRoutes>(
     Object.assign(header, { __page_context: { searchParams: context.searchParams, path } })
 
     try {
+      if (layout) {
+        return layout(await render({ ...context, path }))
+      }
       return await render({ ...context, path })
     } catch (error) {
       const redirection = resolveCustomRedirectError(error)
@@ -67,6 +71,9 @@ export function page<R extends PageRoutes>(
   return { Page, Route }
 }
 
+
+// Helper Types and Functions
+
 export async function searchParams() {
   const header = await headers()
   return (header as any).__page_context?.searchParams ?? {}
@@ -75,11 +82,15 @@ export async function currentPath() {
   const header = await headers()
   return (header as any).__page_context?.path ?? "/"
 }
+export function isQuerySingle(value: string | string[] | undefined): value is string {
+  return typeof value === "string"
+}
 
 
 
 
 // Improved Error System
+
 export class IntentionalPageError extends Error {
   constructor(readonly render: ReactNode) {
     super()

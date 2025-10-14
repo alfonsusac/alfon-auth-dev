@@ -11,10 +11,10 @@ const routeNamesMap = {
 } as const satisfies { [key in AppRoutes]: string }
 
 export const route = {
-  home: '/',
-  projectPage: id => `/${ id }`,
-  authorizePage: id => `/${ id }/authorize`,
-  createProjectPage: '/create-project',
+  home: '/' as const,
+  projectPage: id => `/${ id }` as const,
+  authorizePage: id => `/${ id }/authorize` as const,
+  createProjectPage: '/create-project' as const,
 } satisfies { [key in RouteNames]: string | ((...args: string[]) => string) }
 
 

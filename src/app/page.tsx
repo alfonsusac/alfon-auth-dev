@@ -8,6 +8,7 @@ import { pageData } from "./data"
 import { headers } from "next/headers"
 import { List, Title } from "@/lib/primitives"
 import { ActionButton } from "@/lib/formv2/form-component"
+import { LogInDevelopmentButton, LogInViaGoogleButton, LogOutButton } from "@/shared/auth/login-button"
 
 export default async function Home() {
 
@@ -39,37 +40,12 @@ export default async function Home() {
               <Link href="#" className="button primary px-12!">
                 My Account
               </Link>
-
-              <ActionButton
-                action={async () => {
-                  "use server"
-                  await logout()
-                  actionNavigate('/?success=logged_out')
-                }}
-                loading="Logging out..."
-              >
-                Log Out
-              </ActionButton>
+              <LogOutButton />
             </div>
             :
             <div className="flex gap-2 flex-wrap">
-              <ActionButton
-                action={async () => { "use server"; await signIn() }}
-                className="button primary"
-                loading="Redirecting..."
-              >
-                Login via Google
-              </ActionButton>
-
-              {process.env.NODE_ENV === 'development' && <>
-                <ActionButton action={async () => { "use server"; await signInAdminLocalhost() }}
-                  className="primary"
-                  loading="Redirecting..."
-                >
-                  Login as Admin Localhost
-                </ActionButton>
-              </>
-              }
+              <LogInViaGoogleButton />
+              <LogInDevelopmentButton />
             </div>
         }
       </div>

@@ -2,7 +2,7 @@ import { actionAdminOnly } from "@/lib/auth"
 import { datacache } from "@/lib/cache"
 import prisma, { serializeDate } from "@/lib/db"
 import { generateSecret } from "@/lib/token"
-import { validateSecureURLwithLocalhost } from "@/lib/url"
+import { validateSecureURLwithLocalhost } from "@/lib/url/url"
 import { validation } from "@/lib/validation"
 import { revalidateTag } from "next/cache"
 
@@ -186,11 +186,9 @@ const validateProjectDomainInput = validation(async (input: DomainInput) => {
 
   // Check that origin and redirect_url are valid URLs and secure (https or localhost)
   const origin = validateSecureURLwithLocalhost(input.origin)
+  if (typeof origin === 'string') return `invalid_origin_${ origin }` as const
   const redirectURL = validateSecureURLwithLocalhost(input.redirect_url)
-  if (input.origin.startsWith('http://') && !input.origin.includes('localhost')) return "insecure_origin"
-  if (input.redirect_url.startsWith('http://') && !input.redirect_url.includes('localhost')) return "insecure_redirect_url"
-  if (!origin) return "invalid_redirect_url"
-  if (!redirectURL) return "invalid_origin"
+  if (typeof redirectURL === 'string') return `invalid_redirect_url_${ redirectURL }` as const
   if (redirectURL.host !== origin.host) return "mismatched_domains"
 
   // Check if the domain already exists
