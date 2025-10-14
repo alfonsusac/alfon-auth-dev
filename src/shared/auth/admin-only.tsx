@@ -1,7 +1,7 @@
 import { navigate } from "@/lib/resolveAction"
 import { getCurrentUser } from "./auth"
-import { sessionExpired } from "@/routes/session-expired-page/interface"
 import { getActionContext } from "@/lib/actions"
+import { sessionExpired } from "@/routes/(auth-layout)/session-expired-page/interface"
 
 export async function AdminOnly(props: {
   children?: React.ReactNode

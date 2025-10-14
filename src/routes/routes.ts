@@ -11,6 +11,7 @@ const routeNamesMap = {
   "/register": "registerPage",
   "/unauthorized": "unauthorizedPage",
   "/session-expired": "sessionExpiredPage",
+  "/not-registered" : "notRegisteredPage",
 } as const satisfies { [key in AppRoutes]: string }
 
 export const route = {
@@ -21,6 +22,7 @@ export const route = {
   registerPage: '/register' as const,
   unauthorizedPage: '/unauthorized' as const,
   sessionExpiredPage: '/session-expired' as const,
+  notRegisteredPage: '/not-registered' as const,
 } satisfies { [key in RouteNames]: string | ((...args: string[]) => string) }
 
 

@@ -4,6 +4,9 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+// On Every Prisma Schema Update run `pnpm generate` to generate the Prisma Client.
+// Then "Restart TS Server" in VSCode for types to be available.
+
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -60,16 +63,33 @@ model User {
   projects Project[] // this user's joined projects
 
   providers UserProvider[]
+
+  UserProfile UserProfile[]
+}
+
+model UserProfile {
+  user_id   String   @id @default(uuid())
+  email     String   @unique
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+enum Provider {
+  google
 }
 
 model UserProvider {
   id               String   @id @default(uuid())
-  provider         String
-  provider_user_id String
+  provider         Provider
+  provider_user_id String // the id given by the provider
   expires_at       Int?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
-    
+
   user_id String
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 

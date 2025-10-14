@@ -22,7 +22,7 @@ export async function resolvePageProps<
 
 
 
-type PageRoutes = AppRoutes
+export type PageRoutes = AppRoutes
 type PageSearchParams = Awaited<PageProps<any>['searchParams']>
 type PageParams<AppRoute extends AppRoutes> = Awaited<PageProps<AppRoute>['params']>
 export type AppPageContext<R extends PageRoutes> = PageParams<R> & {

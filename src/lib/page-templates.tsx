@@ -37,16 +37,3 @@ export function SimpleCenterPage(props: {
   </>
 }
 
-export function AuthPage(props: {
-  children?: ReactNode,
-  className?: string
-}) {
-  return <>
-    <SimpleCenterPage>
-      <Header className="items-center">
-        <Logo />
-      </Header>
-      {props.children}
-    </SimpleCenterPage>
-  </>
-}

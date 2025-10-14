@@ -1,3 +1,3 @@
-import authorizePage from "@/routes/authorize-page"
+import authorizePage from "@/routes/(auth-layout)/authorize-page"
 
 export default authorizePage.Page

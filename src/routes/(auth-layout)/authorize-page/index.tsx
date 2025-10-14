@@ -1,14 +1,11 @@
-import { page } from "@/lib/page"
 import { getAllProjectDomainsOfProject, getProject } from "@/services/projects"
 import { AuthorizePageInvalidParameter, AuthorizeProjectNotFoundContent } from "./errors"
-import { Header } from "@/lib/primitives"
-import { Logo } from "@/shared/logot"
 import { AuthorizeProjectNotAuthenticated } from "./not-authenticated"
 import { parseUrl } from "next/dist/shared/lib/router/utils/parse-url"
 import { matchRedirectURI } from "@/lib/url/url-oauth"
-import { AuthPage, DetailPage } from "@/lib/page-templates"
+import { authPage, AuthPage } from "../layout"
 
-export default page('/[projectid]/authorize', async page => {
+export default authPage('/[projectid]/authorize', async page => {
 
   const { projectid } = page
   const {
@@ -53,11 +50,5 @@ export default page('/[projectid]/authorize', async page => {
     {/* <></> */}
     {/* } */}
   </>
-},
-  children => <>
-    <AuthPage>
-      {children}
-    </AuthPage>
-  </>
-)
+})
 

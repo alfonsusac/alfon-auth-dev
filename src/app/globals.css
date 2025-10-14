@@ -102,7 +102,7 @@ body:has(.modal-opened) {
 
 
 /* - Tailwind Tips - */
-/* Putting it in layer components makes it possible */
+/* Putting it in @layer components makes it possible */
 /* to override in classNames */
 @layer components {
 

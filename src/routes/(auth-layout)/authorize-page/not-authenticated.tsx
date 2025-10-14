@@ -1,8 +1,8 @@
 import { Header, Section, Title } from "@/lib/primitives"
 import { Spacer } from "@/lib/spacer"
+import { route } from "@/routes/routes"
+import type { ProjectProp } from "@/routes/types"
 import { LogInViaGoogleButton } from "@/shared/auth/login-button"
-import type { ProjectProp } from "../types"
-import { route } from "../routes"
 import type { SVGProps } from "react"
 
 export function AuthorizeProjectNotAuthenticated(props: ProjectProp) {
