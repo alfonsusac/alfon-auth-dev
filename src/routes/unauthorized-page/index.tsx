@@ -16,7 +16,6 @@ export default page('/unauthorized', async page => {
       <Link className="button primary" href={route.home}>Back to Home</Link>
     </Section>
   </>
-}, children => <AuthPage>{children}</AuthPage>
-)
-
-// TODO: Add a button to go back to the previous page or to the home page
+}, children => <>
+  <AuthPage>{children}</AuthPage>
+</>)

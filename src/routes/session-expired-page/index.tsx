@@ -1,7 +1,7 @@
 import { secureRedirectString } from "@/lib/auth/redirect"
 import { page } from "@/lib/page"
 import { getSingleQuery } from "@/lib/page-search-params"
-import { DetailPage } from "@/lib/page-templates"
+import { AuthPage, DetailPage } from "@/lib/page-templates"
 import { ErrorMessageHint, Header, Section, Title } from "@/lib/primitives"
 import { LogInDevelopmentButton, LogInViaGoogleButton } from "@/shared/auth/login-button"
 import { Logo } from "@/shared/logot"
@@ -27,12 +27,7 @@ export default page('/session-expired', async page => {
     </Section>
   </>
 }, children => <>
-  <DetailPage className="justify-center self-center mb-20 items-center text-center">
-    <Header className="items-center">
-      <Logo />
-    </Header>
-    {children}
-  </DetailPage>
+  <AuthPage>{children}</AuthPage>
 </>)
 
 // Example page:
