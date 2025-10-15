@@ -29,3 +29,17 @@ export async function adminOnlyAction(context?: PageContext, unauthenticated_pat
     return navigate.replace(unauthenticated_path, context, { unauthorized: '' })
   return user
 }
+
+
+
+export async function notAuthenticated() {
+  const user = await getCurrentUser()
+  if (!user)
+    throw new Error("Not authenticated. Please do preliminary auth check control to use this function.")
+  return user
+}
+export async function requireUesr(unauthenticated_path: string = '.',) {
+  const { user, from } = await getActionContext()
+  if (!user) sessionExpired(from)
+  return user
+}
