@@ -4,7 +4,7 @@ import { generateSecret } from "@/lib/token"
 import { validateSecureURLwithLocalhost } from "@/lib/url/url"
 import { validation } from "@/lib/validation"
 import { adminOnlyService } from "@/shared/auth/admin-only"
-import { revalidateTag } from "next/cache"
+import { updateTag } from "next/cache"
 
 // Types
 
@@ -18,7 +18,7 @@ export type ProjectKey = NonNullable<Awaited<ReturnType<typeof getProjectKey>>>
 // Project > fetchers (status: over-fetching)
 
 export const getAllProjects = datacache(getAllUncachedProjects, 'projects')
-const revalidateProjects = () => revalidateTag('projects')
+const revalidateProjects = () => updateTag('projects')
 
 async function getAllUncachedProjects() {
   return prisma.project.findMany({ orderBy: { createdAt: 'desc' } }).then(serializeDate)
@@ -85,7 +85,7 @@ export async function deleteProject(id: string) {
 // Project Keys > fetchers
 
 export const getAllProjectKeysByProjectID = datacache(getAllUncachedProjectKeysByProjectID, projectid => `project_${ projectid }_keys`)
-const revalidateProjectProjectKeys = (projectid: string) => revalidateTag(`project_${ projectid }_keys`)
+const revalidateProjectProjectKeys = (projectid: string) => updateTag(`project_${ projectid }_keys`)
 
 async function getAllUncachedProjectKeysByProjectID(project_id: string) {
   return prisma.projectKey.findMany({ where: { project_id }, orderBy: { createdAt: 'desc' } }).then(serializeDate)
@@ -93,7 +93,7 @@ async function getAllUncachedProjectKeysByProjectID(project_id: string) {
 
 
 export const getProjectKey = datacache(getUncachedProjectKey, id => `project_key_${ id }`)
-const revalidateProjectKey = (id: string) => revalidateTag(`project_key_${ id }`)
+const revalidateProjectKey = (id: string) => updateTag(`project_key_${ id }`)
 
 async function getUncachedProjectKey(id: string) {
   return prisma.projectKey.findFirst({ where: { id } }).then(serializeDate)
@@ -156,7 +156,7 @@ export async function deleteProjectKey(id: string) {
 // Project Domains
 
 export const getAllProjectDomainsOfProject = datacache(getAllUncachedProjectDomainsOfProject, projectid => `project_${ projectid }_domains`)
-const revalidateProjectDomainsOfProject = (projectid: string) => revalidateTag(`project_${ projectid }_domains`)
+const revalidateProjectDomainsOfProject = (projectid: string) => updateTag(`project_${ projectid }_domains`)
 
 async function getAllUncachedProjectDomainsOfProject(project_id: string) {
   return prisma.domain.findMany({ where: { project_id }, orderBy: { createdAt: 'desc' } }).then(serializeDate)
@@ -164,7 +164,7 @@ async function getAllUncachedProjectDomainsOfProject(project_id: string) {
 
 
 export const getProjectDomainByID = datacache(getUncachedProjectDomainByID, id => `project_domain_${ id }`)
-const revalidateProjectDomainByID = (id: string) => revalidateTag(`project_domain_${ id }`)
+const revalidateProjectDomainByID = (id: string) => updateTag(`project_domain_${ id }`)
 
 async function getUncachedProjectDomainByID(id: string) {
   return prisma.domain.findFirst({ where: { id } }).then(serializeDate)
@@ -172,7 +172,7 @@ async function getUncachedProjectDomainByID(id: string) {
 
 
 export const getProjectDomainByOrigin = datacache(getUncachedProjectDomainByOrigin, origin => `project_domain_origin_${ origin }`)
-const revalidateProjectDomainByOrigin = (origin: string) => revalidateTag(`project_domain_origin_${ origin }`)
+const revalidateProjectDomainByOrigin = (origin: string) => updateTag(`project_domain_origin_${ origin }`)
 
 async function getUncachedProjectDomainByOrigin(origin: string) {
   return prisma.domain.findFirst({ where: { origin } }).then(serializeDate)
