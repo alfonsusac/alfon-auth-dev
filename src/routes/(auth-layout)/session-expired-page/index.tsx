@@ -1,13 +1,11 @@
-import { secureRedirectString } from "@/lib/auth/redirect"
-import { page } from "@/lib/page"
-import { getSingleQuery } from "@/lib/page-search-params"
-import { ErrorMessageHint, Header, Section, Title } from "@/lib/primitives"
+import { CodeMessageHint, Header, Section, Title } from "@/lib/primitives"
 import { LogInDevelopmentButton, LogInViaGoogleButton } from "@/shared/auth/login-button"
 import { authPage } from "../layout"
+import { getFromPath } from "./interface"
 
 export default authPage('/session-expired', async page => {
 
-  const from = secureRedirectString(decodeURIComponent(getSingleQuery(page.searchParams.from)))
+  const { from } = getFromPath(page.searchParams)
 
   return <>
     <Header>
@@ -16,7 +14,7 @@ export default authPage('/session-expired', async page => {
         Log in back to continue your work 👀
       </div>
     </Header>
-    
+
     <Section>
       <LogInViaGoogleButton withLogo redirectTo={from} />
       <LogInDevelopmentButton redirectTo={from} />
@@ -24,7 +22,7 @@ export default authPage('/session-expired', async page => {
 
     <Section>
       <div>You will be redirected back after logging in.</div>
-      <ErrorMessageHint>path: {from || '/'}</ErrorMessageHint>
+      <CodeMessageHint>path: {from || '/'}</CodeMessageHint>
     </Section>
   </>
 })

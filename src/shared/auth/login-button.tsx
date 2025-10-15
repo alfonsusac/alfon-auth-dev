@@ -51,11 +51,12 @@ export function LogosGoogleIcon(props: SVGProps<SVGSVGElement>) {
 
 export function LogInDevelopmentButton(props: {
   redirectTo?: `/${ string }`,
+  fullWidth?: boolean,
 }) {
   return <>
     {process.env.NODE_ENV === 'development' && <>
       <ActionButton action={async () => { "use server"; await signIn(props.redirectTo).localhost() }}
-        className="primary"
+        className={cn("primary", props.fullWidth && "w-full")}
         loading="Redirecting..."
       >
         Login as Admin Localhost

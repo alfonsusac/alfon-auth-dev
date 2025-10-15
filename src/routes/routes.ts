@@ -1,5 +1,6 @@
 import { interpolatePath } from "@/lib/interpolatePath"
 import type { AppRoutes, ParamMap } from "../../.next/types/routes"
+import { toNativeSearchParams } from "@/lib/searchParams"
 
 // All route names should be defined here
 // routes are defined by Next.js file system routing and inferred in .next/types/routes
@@ -11,7 +12,7 @@ const routeNamesMap = {
   "/register": "registerPage",
   "/unauthorized": "unauthorizedPage",
   "/session-expired": "sessionExpiredPage",
-  "/not-registered" : "notRegisteredPage",
+  "/not-registered": "notRegisteredPage",
 } as const satisfies { [key in AppRoutes]: string }
 
 export const route = {
@@ -28,6 +29,13 @@ export const route = {
 
 type RouteNameMap = typeof routeNamesMap
 type RouteNames = RouteNameMap[keyof RouteNameMap]
+
+export function withContext(route: `/${ string }`, context: { [key: string]: string | undefined }) {
+  if (!context) return route
+  if (Object.keys(context).length === 0) return route
+  const sp = toNativeSearchParams(context)
+  return (route + (sp.toString() ? '?' + sp.toString() : '')) as `/${ string }`
+}
 
 // type GetRoutePath<N extends RouteNames> = {
 //   [K in keyof RouteNameMap]: RouteNameMap[K] extends N ? K : never

@@ -1,4 +1,4 @@
-import { ErrorMessageHint, Section, Title } from "@/lib/primitives"
+import { CodeMessageHint, Section, Title } from "@/lib/primitives"
 import type { ParsedURLError } from "@/lib/url/url"
 
 
@@ -13,9 +13,9 @@ function ErrorUI(
       <div>
         {description}
       </div>
-      {errorMessage && <ErrorMessageHint className="mt-4">
+      {errorMessage && <CodeMessageHint className="mt-4">
         {errorMessage}
-      </ErrorMessageHint>}
+      </CodeMessageHint>}
     </Section>
   </>
 }
@@ -36,7 +36,10 @@ export function AuthorizePageInvalidParameter(props: { urlerror?: ParsedURLError
   return ErrorUI(
     "The developer of that website set up something wrong!",
     "Try contacting the developer of that website for more information.",
-    [props.urlerror && parsedUrlErrorErrorMessages[props.urlerror], props.message].join(', ')
+    [
+      props.urlerror ? parsedUrlErrorErrorMessages[props.urlerror] : undefined,
+      props.message
+    ].filter(Boolean).join(', ')
   )
 }
 

@@ -2,10 +2,14 @@ import { Header, Section, Title } from "@/lib/primitives"
 import { Spacer } from "@/lib/spacer"
 import { route } from "@/routes/routes"
 import type { ProjectProp } from "@/routes/types"
-import { LogInViaGoogleButton } from "@/shared/auth/login-button"
+import { LogInDevelopmentButton, LogInViaGoogleButton } from "@/shared/auth/login-button"
 import type { SVGProps } from "react"
 
-export function AuthorizeProjectNotAuthenticated(props: ProjectProp) {
+export function AuthorizeProjectNotAuthenticated(props:
+  & ProjectProp
+  & PageContextProp
+  & { redirectTo: `/${ string }` }
+) {
   return (
     <>
       <Section className="p-8 rounded-2xl bg-foreground-muted/10 max-w-80 gap-0">
@@ -37,11 +41,16 @@ export function AuthorizeProjectNotAuthenticated(props: ProjectProp) {
         <LogInViaGoogleButton
           withLogo
           fullWidth
-          redirectTo={route.authorizePage(props.project.id)}
-          className="flex-2"
+          redirectTo={props.redirectTo}
         >
           Continue via Google
         </LogInViaGoogleButton>
+        <Spacer sixth />
+        <LogInDevelopmentButton
+          fullWidth
+          redirectTo={props.redirectTo}
+        />
+
 
         <Spacer half />
 

@@ -40,8 +40,8 @@ export function page<R extends PageRoutes>(
   const Page = async function PageWrapper(props: PageProps<R>) {
     const context = await resolvePageProps(props)
     const path = interpolatePath<R>(route, context as PageParams<R>)
-    const header = await headers()
     // Assign current context to header localasyncstorage
+    const header = await headers()
     Object.assign(header, { __page_context: { searchParams: context.searchParams, path } })
 
     try {

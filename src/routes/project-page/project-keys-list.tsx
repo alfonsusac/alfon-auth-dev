@@ -12,7 +12,6 @@ export async function ProjectKeysList({ project }:
   & ProjectProp
 ) {
   const project_keys = await getAllProjectKeysByProjectID(project.id)
-  const sp = await searchParams()
 
   return (
     <List val={project_keys} fallback="No API keys present">

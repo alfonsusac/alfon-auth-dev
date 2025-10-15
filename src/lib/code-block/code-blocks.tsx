@@ -15,7 +15,6 @@ export async function CodeBlock(props: {
   const lang = props.language as any || 'tsx'
 
   let code: ReactNode = rawcode
-  let background: string = ''
   try {
     const highlighter = await createHighlighter({
       themes: [monospaceLightTheme as any],
@@ -29,7 +28,6 @@ export async function CodeBlock(props: {
       {line.map((token, j) => <span key={j} style={{ color: token.color }}>{token.content}</span>)}
       {i < tokens.tokens.length - 1 ? <br /> : null}
     </Fragment>)
-    background = tokens.bg || ''
     highlighter.dispose()
   } catch (error) {
     console.log("CodeBlock error:", error)

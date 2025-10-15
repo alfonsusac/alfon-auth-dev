@@ -72,6 +72,11 @@ export async function ProjectDomainSubpage({ project, domain, context }:
       </Header>
       <Link
         href={route.authorizePage(project.id)}
+        context={{
+          redirect_uri: domain.redirect_url,
+          code: "S256_example_code_challenge",
+          next: route.projectPage(project.id)
+        }}
         className="button small primary"
         target="_blank"
       >
@@ -89,7 +94,9 @@ export async function ProjectDomainSubpage({ project, domain, context }:
       <CodeBlock
         code={`
 redirect('${ process.env.BASE_URL }/${ project.id }/authorize'
-  + '?redirect_uri=' + '${ domain.redirect_url }'
+  + '?redirect_uri=${ domain.redirect_url }'
+  + \`&code=\${ code_challenge }\`
+  + \`&next=\${ next_path }\`
 )
           `}
       />

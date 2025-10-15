@@ -26,7 +26,9 @@ export function signIn(nextPath: string = '/') {
 
       const { jwt, duration } = await createAppToken({
         payload: {
-          id: process.env.ADMIN_USER_ID
+          id: process.env.ADMIN_USER_ID,
+          picture: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=a',
+          name: 'Development Admin',
         }, sub: process.env.ADMIN_USER_ID
       })
       await setSecureCookie('auth_token', jwt, duration)
@@ -91,6 +93,7 @@ export const getCurrentUser = cache(async () => {
     if (error) return null
     return {
       id: payload.id,
+      name: payload.name,
       email: payload.email ,
       picture: payload.picture,
       isAdmin: payload.id === process.env.ADMIN_USER_ID

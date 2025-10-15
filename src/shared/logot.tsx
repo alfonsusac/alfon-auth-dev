@@ -1,10 +1,18 @@
+import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
+
+export function LogoIcon(props: SVGProps<SVGSVGElement>) {
+  return <MaterialSymbolsShieldLockRounded
+    {...props}
+    className={cn("text-blue-700/75 text-xl", props.className)}
+  />
+}
 
 export function Logo() {
   return <>
     <div className="p-3 px-5 pr-6 rounded-full bg-foreground/5 flex items-center gap-1.5 text-base font-medium tracking-tight text-foreground">
-      <div className="flex"> 
-        <MaterialSymbolsShieldLockRounded className="text-blue-700/75 text-xl" />
+      <div className="flex">
+        <LogoIcon />
       </div>
       <span>
         auth.alfon.dev
