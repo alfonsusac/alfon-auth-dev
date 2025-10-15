@@ -4,14 +4,17 @@ import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
 import { signIn, signOut } from "./auth"
 
-export function LogOutButton() {
+export function LogOutButton(props: {
+  className?: string
+}) {
   return <ActionButton
     action={async () => {
       "use server"
       await signOut()
-      actionNavigate('/?success=logged_out')
+      // actionNavigate('/?success=logged_out')
     }}
     loading="Logging out..."
+    className={cn(props.className)}
   >
     Log Out
   </ActionButton>
@@ -27,7 +30,7 @@ export function LogInViaGoogleButton(props: {
   return <ActionButton
     action={async () => { "use server"; await signIn(props.redirectTo).google() }}
     className={cn(
-      "button primary",
+      "primary",
       props.fullWidth && "w-full",
       props.className
     )}

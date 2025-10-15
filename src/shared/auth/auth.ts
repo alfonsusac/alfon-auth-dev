@@ -77,7 +77,7 @@ export async function handleCallback(props: {
 
 export async function signOut(nextPath: string = '/') {
   await deleteCookie('auth_token')
-  redirect(nextPath)
+  // redirect(nextPath)
 }
 
 
