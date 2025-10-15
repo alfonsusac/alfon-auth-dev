@@ -1,7 +1,7 @@
 import { page, type AppPageContext, type PageRoutes } from "@/lib/page"
 import { SimpleCenterPage } from "@/lib/page-templates"
 import { Header } from "@/lib/primitives"
-import { Logo } from "@/shared/logot"
+import { Logo } from "@/shared/logo"
 import { ReactNode } from "react"
 
 export function AuthPage(props: {

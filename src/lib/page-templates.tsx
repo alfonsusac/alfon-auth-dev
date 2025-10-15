@@ -1,6 +1,6 @@
 // Base Page Template
 
-import { Logo } from "@/shared/logot"
+import { Logo } from "@/shared/logo"
 import { cn } from "lazy-cn"
 import { ReactNode } from "react"
 import { NavigationBar } from "./NavigationBar"

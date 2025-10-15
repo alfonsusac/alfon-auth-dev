@@ -18,7 +18,7 @@ export function ActionButton(props: ComponentProps<typeof FormButton> & {
   loading: string,
 }) {
   const { action, loading, ...rest } = props
-  return <FormWithProgressiveRedirect action={action}>
+  return <FormWithProgressiveRedirect action={action} className={props.className}>
     <FormButton {...rest}
       className={cn("button", props.className)}
       loading={props.loading} />

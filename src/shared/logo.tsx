@@ -1,3 +1,4 @@
+import { parseURL } from "@/lib/url/url"
 import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
 
@@ -15,7 +16,7 @@ export function Logo() {
         <LogoIcon />
       </div>
       <span>
-        auth.alfon.dev
+        {parseURL(process.env.BASE_URL).hostname}
       </span>
     </div>
   </>

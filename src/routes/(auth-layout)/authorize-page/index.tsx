@@ -9,7 +9,7 @@ import { Header, Row, Section, Title } from "@/lib/primitives"
 import { Spacer } from "@/lib/spacer"
 import { Link } from "@/lib/link/link"
 import { ActionButton } from "@/lib/formv2/form-component"
-import { LogoIcon } from "@/shared/logot"
+import { LogoIcon } from "@/shared/logo"
 import { IconRight } from "@/shared/icons"
 
 export default authPage('/[projectid]/authorize', async page => {
@@ -102,14 +102,14 @@ export default authPage('/[projectid]/authorize', async page => {
         <ActionButton
           action={async () => { "use server" }}
           loading={"Denying..."}
-          className="small flex-1"
+          className="small flex-1 w-full"
         >
           Deny
         </ActionButton>
         <ActionButton
           action={async () => { "use server" }}
           loading={"Authorizing..."}
-          className="small flex-1 primary"
+          className="small flex-1 w-full primary"
         >
           Authorize
         </ActionButton>
