@@ -1,7 +1,7 @@
 import type { ComponentProps } from "react"
 import { FormButton } from "../FormButton"
 import { actionResolveError } from "../redirects"
-import { actionNavigate } from "../resolveAction"
+import { actionNavigate } from "../navigate"
 import { toNativeSearchParams } from "../searchParams"
 import { ErrorCallout } from "../toast/search-param-toast.client"
 import { type FormType } from "./form"

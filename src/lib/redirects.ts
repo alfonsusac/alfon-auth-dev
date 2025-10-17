@@ -1,5 +1,5 @@
 import { RedirectType } from "next/navigation"
-import { actionNavigate } from "./resolveAction"
+import { actionNavigate } from "./navigate"
 
 // export function resolveError<T>(path: string, res: T, inputs?: object) {
 //   if (typeof res === "string")

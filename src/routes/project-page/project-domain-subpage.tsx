@@ -1,7 +1,7 @@
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { Header, HelperText, Row, Section, SectionTitle, Title } from "@/lib/primitives"
 import { actionResolveError } from "@/lib/redirects"
-import { navigate } from "@/lib/resolveAction"
+import { navigate } from "@/lib/navigate"
 import { DomainProp, ProjectProp } from "@/routes/types"
 import { DeleteButton } from "@/shared/dialog-delete"
 import { deleteDomainAction } from "./project-domain-delete-action"

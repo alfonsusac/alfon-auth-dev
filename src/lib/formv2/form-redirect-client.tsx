@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { startTransition, type ComponentProps } from "react"
-import { resolveCustomRedirectError } from "../resolveAction"
+import { resolveCustomRedirectError } from "../navigate"
 
 export function FormWithClientRedirect(props: ComponentProps<"form"> & {
   clientAction?: (form: FormData) => Promise<void>

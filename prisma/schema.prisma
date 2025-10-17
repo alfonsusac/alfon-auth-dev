@@ -67,7 +67,8 @@ model User {
 
   providers UserProvider[]
 
-  user_profile UserProfile?
+  user_profile        UserProfile @relation(fields: [user_profileuser_id], references: [user_id])
+  user_profileuser_id String      @unique
 
   auth_codes AuthCode[] // auth codes issued to this user. needed to temporarily store user_id in auth code flow.
 }
@@ -77,10 +78,8 @@ model UserProfile {
   email     String   @unique
   name      String?
   avatarUrl String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user User?
 }
 
 enum Provider {
@@ -107,7 +106,7 @@ model AuthCode {
   id         String   @id @default(uuid())
   code       String   @unique
   // scope        String // No scope for now
-  expires_at Int      // epoch seconds
+  expires_at Int // epoch seconds
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

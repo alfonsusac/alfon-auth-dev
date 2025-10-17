@@ -1,6 +1,6 @@
 import { ActionButton } from "@/lib/formv2/form-component"
 import { page } from "@/lib/page"
-import { navigate } from "@/lib/resolveAction"
+import { navigate } from "@/lib/navigate"
 import { refresh } from "next/cache"
 import { notFound } from "next/navigation"
 
@@ -8,7 +8,6 @@ import { notFound } from "next/navigation"
 
 export default page('/test-navigate', async page => {
   if (process.env.NODE_ENV === 'production') notFound()
-
   const rng = Math.random()
   return (
     <div>

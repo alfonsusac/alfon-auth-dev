@@ -7,7 +7,7 @@ import { validateAuthorizeCode, validateRedirectUri } from "@/services/auth/vali
 import { isError } from "@/lib/error"
 import { getAllProjectDomainsOfProject, getProject, getProjectDomainByOrigin } from "@/services/projects"
 import { AuthorizeProjectUI } from "./authorize-project-ui"
-import { navigate } from "@/lib/resolveAction"
+import { navigate } from "@/lib/navigate"
 import { allowProjectAuthorization, denyProjectAuthorization } from "@/services/auth/logic"
 import { getCurrentUser } from "@/shared/auth/auth"
 

@@ -1,4 +1,4 @@
-import { navigate } from "@/lib/resolveAction"
+import { navigate } from "@/lib/navigate"
 import { getCurrentUser } from "./auth"
 import { getActionContext } from "@/lib/actions"
 import { sessionExpired } from "@/routes/(auth-layout)/session-expired-page/interface"

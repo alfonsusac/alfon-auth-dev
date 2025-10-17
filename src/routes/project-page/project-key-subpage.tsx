@@ -1,7 +1,7 @@
 import { CopyButton } from "@/lib/CopyButton"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { actionResolveError } from "@/lib/redirects"
-import { navigate } from "@/lib/resolveAction"
+import { navigate } from "@/lib/navigate"
 import { regenerateProjectKeySecret, deleteProjectKey } from "@/services/projects"
 import { DeleteButton } from "@/shared/dialog-delete"
 import type { ProjectKeyProp, ProjectProp } from "../types"

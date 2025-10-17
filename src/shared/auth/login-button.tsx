@@ -1,5 +1,5 @@
 import { ActionButton } from "@/lib/formv2/form-component"
-import { actionNavigate } from "@/lib/resolveAction"
+import { actionNavigate } from "@/lib/navigate"
 import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
 import { signIn, signOut } from "./auth"

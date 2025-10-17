@@ -1,5 +1,5 @@
 import { refresh } from "next/cache"
-import { redirect, RedirectType } from "next/navigation"
+import { notFound, redirect, RedirectType } from "next/navigation"
 import { fromPageSearchParamsToString } from "./searchParams"
 
 export function actionNavigate(path: string, mode: "push" | "replace" = "push", context?: { [key: string]: string }): never {
@@ -11,7 +11,7 @@ export function actionNavigate(path: string, mode: "push" | "replace" = "push", 
   } else {
     newpath = path + (hasContext ? '?' + fromPageSearchParamsToString(context) : '')
   }
-  console.log("Navigating to:", newpath, "with context:", context, "using mode:", mode, "original path:", path)
+  // console.log("Navigating to:", newpath, "with context:", context, "using mode:", mode, "original path:", path)
 
   if (mode === "push")
     redirect('/___resolve___?url=' + newpath, RedirectType.push)
@@ -34,6 +34,7 @@ export function resolveCustomRedirectError(
     && error.message === "NEXT_REDIRECT"
   ) {
     const digest = (error as any).digest as string
+    console.log(digest)
     // NEXT_REDIRECT;replace;/project2/key/e9d859c8-3816-40d5-8729-421dd7d268fa?error=callbackURI_must_match_domain;307;
     const [_, mode, path, __] = digest.split(";")
     const actualPath = path.startsWith('/___resolve___?url=') ? path.split('/___resolve___?url=')[1] : path

@@ -2,7 +2,7 @@
 import { deleteCookie, getSecureCookie } from "../cookie"
 import { decodeJwt, SignJWT } from "jose"
 import { cache } from "react"
-import { actionNavigate } from "../resolveAction"
+import { actionNavigate } from "../navigate"
 
 // ------
 

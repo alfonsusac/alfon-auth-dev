@@ -1,6 +1,6 @@
 import type { ComponentProps } from "react"
 import { FormWithClientRedirect } from "./form-redirect-client"
-import { resolveCustomRedirectError } from "../resolveAction"
+import { resolveCustomRedirectError } from "../navigate"
 import { redirect, RedirectType } from "next/navigation"
 
 export function FormWithProgressiveRedirect(props: Omit<ComponentProps<"form">, "action"> & {

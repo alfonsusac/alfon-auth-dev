@@ -189,7 +189,6 @@ export function parseURL(url: string) {
   const [unnormalised_protocol, noprotocolwithpath] = nohashquery.includes('://') ? splitOnce(nohashquery, '://') : [null, nohashquery]
   // user:pass@sub.example.com:8080/folder/page
   const [hostnamewithport, absolutePathWithoutLeadingSlash] = noprotocolwithpath.includes('/') ? splitOnce(noprotocolwithpath, '/') : [noprotocolwithpath, null]
-  console.log('C', noprotocolwithpath)
   // user:pass@sub.example.com:8080
   const [userinfo, hostnameport] = hostnamewithport.includes('@') ? splitOnce(hostnamewithport, '@') : [null, hostnamewithport]
   // sub.example.com:8080

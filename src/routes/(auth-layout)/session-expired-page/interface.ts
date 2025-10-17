@@ -1,6 +1,6 @@
 import { secureRedirectString } from "@/lib/auth/redirect"
 import { getSingleQuery } from "@/lib/page-search-params"
-import { navigate } from "@/lib/resolveAction"
+import { navigate } from "@/lib/navigate"
 import { route } from "@/routes/routes"
 
 export function sessionExpired(from_path: string): never {
