@@ -44,10 +44,11 @@ export function AuthorizePageInvalidParameter(props: { urlerror?: ParsedURLError
 }
 
 const parsedUrlErrorErrorMessages: Record<ParsedURLError, string> = {
-  "new_url()_requires_a_protocol": "new URL() requires a protocol",
+  missing_protocol: "new URL() requires a protocol",
   invalid_protocol: "invalid protocol",
   invalid_host: "invalid host",
   invalid_port: "invalid port",
   invalid_path: "invalid path",
   invalid_query: "invalid query",
+  invalid_fragment: "invalid fragment",
 }

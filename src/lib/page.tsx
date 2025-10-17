@@ -1,15 +1,12 @@
 import type { ReactNode } from "react"
-import type { AppRoutes } from "../../.next/types/routes"
-import { SuccessCallout } from "./toast/search-param-toast.client"
-import { NavigationBar } from "./NavigationBar"
 import { interpolatePath, type InterpolatePath } from "./interpolatePath"
 import { headers } from "next/headers"
-import { Spacer } from "./spacer"
 import { UnauthorizedLayout } from "./NotFound"
 import { resolveCustomRedirectError } from "./resolveAction"
 import { redirect, RedirectType } from "next/navigation"
-import { cn } from "lazy-cn"
 import { getCurrentUser, type User } from "@/shared/auth/auth"
+import { fromPageSearchParamsToString, toNativeSearchParams } from "./searchParams"
+import type { AppRoutes } from "../../.next/dev/types/routes"
 
 export async function resolvePageProps<
   P extends PageProps<any>
@@ -30,6 +27,7 @@ export type AppPageContext<R extends PageRoutes> = PageParams<R> & {
   searchParams: PageSearchParams,
 } & {
   path: InterpolatePath<R>
+  pathQuery: string
 }
 
 export function page<R extends PageRoutes>(
@@ -38,17 +36,19 @@ export function page<R extends PageRoutes>(
   layout?: (children?: ReactNode) => ReactNode,
 ) {
   const Page = async function PageWrapper(props: PageProps<R>) {
-    const context = await resolvePageProps(props)
-    const path = interpolatePath<R>(route, context as PageParams<R>)
+    const pageProps = await resolvePageProps(props)
+    const path = interpolatePath<R>(route, pageProps as PageParams<R>)
+    const pathQuery = path + fromPageSearchParamsToString(pageProps.searchParams)
+    const context = { ...pageProps, path, pathQuery  }
     // Assign current context to header localasyncstorage
     const header = await headers()
-    Object.assign(header, { __page_context: { searchParams: context.searchParams, path } })
+    Object.assign(header, { __page_context: { searchParams: pageProps.searchParams, path } })
 
     try {
       if (layout) {
-        return layout(await render({ ...context, path }))
+        return layout(await render(context))
       }
-      return await render({ ...context, path })
+      return await render(context)
     } catch (error) {
       const redirection = resolveCustomRedirectError(error)
       if (redirection) {
@@ -68,7 +68,11 @@ export function page<R extends PageRoutes>(
     return path
   }
 
-  return { Page, Route }
+  return {
+    Page,
+    Route,
+    $context: null as unknown as AppPageContext<R>
+  }
 }
 
 
@@ -115,3 +119,4 @@ export namespace Props {
   export type SearchParams = { searchParams: PageSearchParams }
   export type Children = { children?: ReactNode }
 }
+

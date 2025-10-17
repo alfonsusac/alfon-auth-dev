@@ -31,6 +31,7 @@ function resolveFragmentlessHrefWithMergedSearchParams(nofragmenthref: string | 
 declare global {
   type PageContext = { [key: string]: string }
   type PageContextProp = { context?: PageContext }
+  type PageSearchParam = PageSearchParams[string]
   type PageSearchParams = Awaited<PageProps<'/'>['searchParams']>
 }
 

@@ -1,3 +1,5 @@
+import { splitOnce } from "../split-once"
+
 export function validateSecureURLwithLocalhost(url?: string | null | { set?: string | null | undefined }) {
   if (typeof url === 'object' && url !== null) {
     url = url.set
@@ -10,16 +12,18 @@ export function validateSecureURLwithLocalhost(url?: string | null | { set?: str
   if (parsedUrl.protocol === null) parsedUrl.protocol = 'https'
   parsedUrl.hash = null // ignore fragment for validation purposes
 
+  const validatedURL = parsedUrl.validate()
+  if (validatedURL.error) return validatedURL.error // return the error string if invalid
   // validation phase
-  if (!isValidProtocol(parsedUrl.protocol)) return 'invalid_protocol'
-  if (!isValidHost(parsedUrl.hostname)) return 'invalid_host'
-  if (!isValidPort(parsedUrl.port)) return 'invalid_port'
-  if (!isValidPaths(parsedUrl.pathnames)) return 'invalid_path'
-  if (!isValidQuery(parsedUrl.query)) return 'invalid_query'
+  // if (!isValidProtocol(parsedUrl.protocol)) return 'invalid_protocol'
+  // if (!isValidHost(parsedUrl.hostname)) return 'invalid_host'
+  // if (!isValidPort(parsedUrl.port)) return 'invalid_port'
+  // if (!isValidPaths(parsedUrl.pathnames)) return 'invalid_path'
+  // if (!isValidQuery(parsedUrl.query)) return 'invalid_query'
 
   if (parsedUrl.protocol === 'http' && parsedUrl.hostname !== 'localhost') return 'insecure_protocol'
 
-  return parsedUrl.toURL()
+  return validatedURL.toURL()
 }
 
 
@@ -47,17 +51,21 @@ function isValidPort(port: string | null) {
 function isValidPaths(paths: string[] | null) {
   if (paths === null) return true
   for (const path of paths) {
-    if (!new RegExp(`^${ segment }$`).test(path)) return false
+    if (!new RegExp(`^(${ pchar }$)+`).test(path)) return false
   }
   return true
 }
-function isValidQuery(query: string | null) {
-  if (query === null) return true
-  return new RegExp(`^${ query }$`).test(query)
+function isValidPath(path_str: string) {
+  if (path_str === null) return true
+  return new RegExp(`^${ path }$`).test(path_str)
 }
-function isValidFragment(fragment: string | null) {
-  if (fragment === null) return true
-  return new RegExp(`^${ fragment }$`).test(fragment)
+function isValidQuery(query_str: string | null) {
+  if (query_str === null) return true
+  return new RegExp(`^${ query }$`).test(query_str)
+}
+function isValidFragment(fragment_str: string | null) {
+  if (fragment_str === null) return true
+  return new RegExp(`^${ fragment }$`).test(fragment_str)
 }
 
 
@@ -89,10 +97,11 @@ const segment = `(${ pchar })*` // can_be_empty_warning
 const segmentNz = `(${ pchar })+`
 const segmentNzNc = `(${ unreserved }|${ pctEncoded }|${ subDelims }|[@])+`
 
-const pathAbempty = `(\/|${ segment })*` // can_be_empty_warning
-const pathAbsolute = `\/(${ segmentNz } (/${ segment })*)?`
+const pathAbempty = `(\/${ segment })*` // can_be_empty_warning
+const pathAbsolute = `\/(${ segmentNz }(/${ segment })*)?`
 const pathNoScheme = `${ segmentNzNc }(/${ segment })*`
 const pathRootless = `${ segmentNz }(/${ segment })*`
+const path = `${ pathAbempty }|${ pathAbsolute }|${ pathNoScheme }|${ pathRootless }`
 
 const port = `(${ digit })*` // can_be_empty_warning
 
@@ -173,37 +182,36 @@ const dnsHost = `${ ipLiteral }|${ ipV4Address }|${ domainNameRelaxed }`
 export function parseURL(url: string) {
 
   // https://user:pass@sub.example.com:8080/folder/page?x=1#frag
-  const [nohash, hash] = url.includes('#') ? url.split('#', 2) : [url, null]
+  const [nohash, hash] = url.includes('#') ? splitOnce(url, '#') : [url, null]
   // https://user:pass@sub.example.com:8080/folder/page?x=1
-  const [nohashquery, query] = nohash.includes('?') ? nohash.split('?', 2) : [nohash, null]
+  const [nohashquery, query] = nohash.includes('?') ? splitOnce(nohash, '?') : [nohash, null]
   // https://user:pass@sub.example.com:8080/folder/page
-  const [protocol, noprotocolwithpath] = nohashquery.includes('://') ? nohashquery.split('://', 2) : [null, nohashquery]
+  const [unnormalised_protocol, noprotocolwithpath] = nohashquery.includes('://') ? splitOnce(nohashquery, '://') : [null, nohashquery]
   // user:pass@sub.example.com:8080/folder/page
-  const [hostnamewithport, absolutePathWithoutLeadingSlash] = noprotocolwithpath.includes('/') ? noprotocolwithpath.split('/', 2) : [noprotocolwithpath, null]
+  const [hostnamewithport, absolutePathWithoutLeadingSlash] = noprotocolwithpath.includes('/') ? splitOnce(noprotocolwithpath, '/') : [noprotocolwithpath, null]
+  console.log('C', noprotocolwithpath)
   // user:pass@sub.example.com:8080
-  const [userinfo, hostnameport] = hostnamewithport.includes('@') ? hostnamewithport.split('@', 2) : [null, hostnamewithport]
+  const [userinfo, hostnameport] = hostnamewithport.includes('@') ? splitOnce(hostnamewithport, '@') : [null, hostnamewithport]
   // sub.example.com:8080
-  const [hostname, port] = hostnameport.includes(':') ? hostnameport.split(':', 2) : [hostnameport, null]
+  const [unnormalised_hostname, port] = hostnameport.includes(':') ? splitOnce(hostnameport, ':') : [hostnameport, null]
 
   const path = '/' + (absolutePathWithoutLeadingSlash ?? '')
-  const pathnames = absolutePathWithoutLeadingSlash?.split('/') ?? null
-  const normalisedProtocol = protocol?.toLowerCase() ?? null
-  const normalisedHostname = hostname.toLowerCase()
+  // const pathnames = absolutePathWithoutLeadingSlash?.split('/') ?? null
+  const protocol = unnormalised_protocol?.toLowerCase() ?? null
+  const hostname = unnormalised_hostname.toLowerCase()
   const normalisedPort = port?.replace(/^0*/, '') ?? null
 
   return {
     /** full original url */
     original: url,
     /** https */
-    protocol: normalisedProtocol,
-    /** sub.example.com */
-    hostname: normalisedHostname,
+    protocol: protocol,
+    /** sub.example.com (no protocol, no port) */
+    hostname: hostname,
     /** :8000 */
     port: normalisedPort,
     /** /folder/page */
     path,
-    /** ['folder', 'page'] */
-    pathnames,
     /** ?key=value&key2=value2 */
     query,
     /** #headings */
@@ -220,19 +228,127 @@ export function parseURL(url: string) {
       return result
     },
 
-    toURL() {
-      // should be valid by the time this is called (validate externally)
-      if (this.protocol === null) return 'new_url()_requires_a_protocol'
-      if (!isValidProtocol(this.protocol)) return 'invalid_protocol'
-      if (!isValidHost(this.hostname)) return 'invalid_host'
-      if (!isValidPort(this.port)) return 'invalid_port'
-      if (!isValidPaths(this.pathnames)) return 'invalid_path'
-      if (!isValidQuery(this.query)) return 'invalid_query'
+    /** https://sub.example.com:8000 (protocol + hostname + port) */
+    origin() {
+      if (this.protocol === null) throw new ParseURLError('Cannot get origin of URL without protocol')
+      return this.protocol + '://' + this.hostname + (this.port ? ':' + this.port : '') as `${ string }://${ string }`
+    },
 
-      return new URL(this.toString())
-    }
+    validate() {
+      if (this.protocol === null) return { error: 'missing_protocol' as const }
+      if (!isValidProtocol(this.protocol)) return { error: 'invalid_protocol' as const }
+      if (!isValidHost(this.hostname)) return { error: 'invalid_host' as const }
+      if (!isValidPort(this.port)) return { error: 'invalid_port' as const }
+      if (!isValidPath(this.path)) return { error: 'invalid_path' as const }
+      if (!isValidQuery(this.query)) return { error: 'invalid_query' as const }
+      if (!isValidFragment(this.hash)) return { error: 'invalid_fragment' as const }
+      const searchParams = new URLSearchParams(this.query ?? undefined)
+      const pathnames = absolutePathWithoutLeadingSlash?.split('/') ?? null
+      return {
+        protocol: this.protocol,
+        hostname: this.hostname,
+        port: this.port,
+        path() { return this.pathnames ? '/' + this.pathnames.join('/') : '' },
+        pathnames: pathnames,
+        query() { return searchParams.toString() || null },
+        searchParams: searchParams,
+        fragment: this.hash,
+        toURL() { return new URL(this.toString()) },
+        origin() { return this.protocol + '://' + this.hostname + (this.port ? ':' + this.port : '') },
+        toString() { return url },
+        format<T extends URLFormatterParameter>(format: T) {
+          let result: string = format
+          if (format.includes('scheme://')) result = result.replace('scheme://', this.protocol + '://')
+          if (format.includes('hostname.com')) result = result.replace('hostname.com', this.hostname)
+          if (format.includes(':port')) result = result.replace(':port', this.port !== null ? `:${ this.port }` : '')
+          if (format.includes('/path')) result = result.replace('/path', this.path() !== '/' ? this.path() : '')
+          if (format.includes('?query')) result = result.replace('?query', this.query !== null ? `?${ this.query }` : '')
+          if (format.includes('#fragment')) result = result.replace('#fragment', this.fragment !== null ? `#${ this.fragment }` : '')
+          return result as URLFormatterResult<T>
+        }
+      }
+    },
+
+    //   toURL() {
+    //     // should be valid by the time this is called (validate externally)
+    //     if (this.protocol === null) throw new ParseURLError('Cannot convert to URL without protocol')
+    //     if (!isValidProtocol(this.protocol)) throw new ParseURLError('Cannot convert to URL with invalid protocol')
+    //     if (!isValidHost(this.hostname)) throw new ParseURLError('Cannot convert to URL with invalid host')
+    //     if (!isValidPort(this.port)) throw new ParseURLError('Cannot convert to URL with invalid port')
+    //     if (!isValidPaths(this.pathnames)) throw new ParseURLError('Cannot convert to URL with invalid path')
+    //     if (!isValidQuery(this.query)) throw new ParseURLError('Cannot convert to URL with invalid query')
+    //     return new URL(this.toString())
+    //   },
+
+    //   format<T extends URLFormatterParameter>(format: T) {
+    //     let result: string = format
+    //     if (format.includes('scheme://')) {
+    //       if (!this.protocol) throw new ParseURLError('Cannot format URL with scheme:// without protocol')
+    //       if (!isValidProtocol(this.protocol)) throw new ParseURLError('Cannot format URL with invalid protocol')
+    //       result = result.replace('scheme://', this.protocol + '://')
+    //     }
+    //     if (format.includes('hostname.com')) {
+    //       if (!isValidHost(this.hostname)) throw new ParseURLError('Cannot format URL with invalid hostname')
+    //       result = result.replace('hostname.com', this.hostname)
+    //     }
+    //     if (format.includes(':port')) {
+    //       if (this.port !== null) {
+    //         if (!isValidPort(this.port)) throw new ParseURLError('Cannot format URL with invalid port')
+    //         result = result.replace(':port', ':' + this.port)
+    //       } else {
+    //         result = result.replace(':port', '')
+    //       }
+    //     }
+    //     if (format.includes('/path')) {
+    //       if (this.path !== '/') {
+    //         if (!isValidPaths(this.pathnames)) throw new ParseURLError('Cannot format URL with invalid path')
+    //         result = result.replace('/path', this.path)
+    //       } else {
+    //         result = result.replace('/path', '')
+    //       }
+    //     }
+    //     if (format.includes('?query')) {
+    //       if (this.query !== null) {
+    //         if (!isValidQuery(this.query)) throw new ParseURLError('Cannot format URL with invalid query')
+    //         result = result.replace('?query', '?' + this.query)
+    //       } else {
+    //         result = result.replace('?query', '')
+    //       }
+    //     }
+    //     if (format.includes('#fragment')) {
+    //       if (this.hash !== null) {
+    //         if (!isValidFragment(this.hash)) throw new ParseURLError('Cannot format URL with invalid fragment')
+    //         result = result.replace('#fragment', '#' + this.hash)
+    //       } else {
+    //         result = result.replace('#fragment', '')
+    //       }
+    //     }
+    //     return result as URLFormatterResult<T>
+    //   }
   }
 }
 
 export type ParsedURL = ReturnType<typeof parseURL>
-export type ParsedURLError = ReturnType<ParsedURL['toURL']> extends infer A ? A extends string ? A : never : never
+export type ParsedURLError = ReturnType<ParsedURL['validate']> extends infer A ? A extends { error: string } ? A['error'] : never : never
+export type ValidatedURL = ReturnType<ParsedURL['validate']> extends infer A ? A extends { error: string } ? never : A : never
+
+type URLFormatterParameter<
+  Scheme extends `scheme://` | `` = `scheme://` | ``,
+  Port extends `:port` | `` = `:port` | ``,
+  Path extends `/path` | `` = `/path` | ``,
+  Query extends `?query` | `` = `?query` | ``,
+  Fragment extends `#fragment` | `` = `#fragment` | ``,
+> = `${ Scheme }hostname.com${ Port }${ Path }${ Query }${ Fragment }`
+
+type URLFormatterResult<T extends URLFormatterParameter> =
+  T extends `${ infer Scheme }hostname.com${ infer A }`
+  ? (
+    `${ (Scheme extends `scheme://` ? `${ string }://` : '') }${ string }${ A extends `:port${ string }` ? `:${ string }` : `` }${ A extends `${ string }/path${ string }` ? `/${ string }` : `` }${ A extends `${ string }?query${ string }` ? `?${ string }` : `` }${ A extends `${ string }#fragment` ? `#${ string }` : `` }`
+  ) : never
+
+class ParseURLError extends Error {
+  constructor(message: string) {
+    super(message)
+    this.name = "ParseURLError"
+  }
+}

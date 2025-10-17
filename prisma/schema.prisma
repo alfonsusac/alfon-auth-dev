@@ -29,6 +29,8 @@ model Project {
   domains Domain[]
 
   users User[] // user that has used this project
+
+  auth_codes AuthCode[] // auth codes issued for this project
 }
 
 model ProjectKey {
@@ -49,8 +51,9 @@ model Domain {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  Project    Project @relation(fields: [project_id], references: [id])
+  Project    Project    @relation(fields: [project_id], references: [id])
   project_id String
+  auth_codes AuthCode[] // auth codes issued from this domain to make sure redirect_uri is valid and compliant
 
   @@unique([project_id, origin])
 }
@@ -64,7 +67,9 @@ model User {
 
   providers UserProvider[]
 
-  UserProfile UserProfile[]
+  user_profile UserProfile?
+
+  auth_codes AuthCode[] // auth codes issued to this user. needed to temporarily store user_id in auth code flow.
 }
 
 model UserProfile {
@@ -94,4 +99,24 @@ model UserProvider {
   user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
 
   @@unique([provider, provider_user_id])
+}
+
+// OAuth
+
+model AuthCode {
+  id         String   @id @default(uuid())
+  code       String   @unique
+  // scope        String // No scope for now
+  expires_at Int      // epoch seconds
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user_id String
+  user    User   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  project_id String // the project that issued this auth code (to get client_id and then client_secret)
+  project    Project @relation(fields: [project_id], references: [id], onDelete: Cascade)
+
+  project_domain_id String // the domain used in the auth code request (to get redirect_uri)
+  project_domain    Domain @relation(fields: [project_domain_id], references: [id], onDelete: Cascade)
 }

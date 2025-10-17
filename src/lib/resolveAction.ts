@@ -1,13 +1,17 @@
+import { refresh } from "next/cache"
 import { redirect, RedirectType } from "next/navigation"
+import { fromPageSearchParamsToString } from "./searchParams"
 
 export function actionNavigate(path: string, mode: "push" | "replace" = "push", context?: { [key: string]: string }): never {
 
+  const hasContext = context && Object.keys(context).length > 0
   let newpath
   if (path.includes('?')) {
-    newpath = path + '&' + new URLSearchParams(context).toString()
+    newpath = path + (hasContext ? '&' + fromPageSearchParamsToString(context) : '')
   } else {
-    newpath = path + '?' + new URLSearchParams(context).toString()
+    newpath = path + (hasContext ? '?' + fromPageSearchParamsToString(context) : '')
   }
+  console.log("Navigating to:", newpath, "with context:", context, "using mode:", mode, "original path:", path)
 
   if (mode === "push")
     redirect('/___resolve___?url=' + newpath, RedirectType.push)
@@ -16,8 +20,9 @@ export function actionNavigate(path: string, mode: "push" | "replace" = "push", 
 }
 
 export const navigate = {
-  push: (path: string, ...contexts: (PageContext | undefined)[]) => actionNavigate(path, "push", contexts.reduce((a, b) => ({ ...a, ...b }), {})),
-  replace: (path: string, ...contexts: (PageContext | undefined)[]) => actionNavigate(path, "replace", contexts.reduce((a, b) => ({ ...a, ...b }), {})),
+  push: (path: string, ...contexts: (PageContext | undefined)[]): never => actionNavigate(path, "push", contexts.reduce((a, b) => ({ ...a, ...b }), {})),
+  replace: (path: string, ...contexts: (PageContext | undefined)[]): never => actionNavigate(path, "replace", contexts.reduce((a, b) => ({ ...a, ...b }), {})),
+  refresh: (): never => { refresh(), navigate.replace('') }
 }
 
 

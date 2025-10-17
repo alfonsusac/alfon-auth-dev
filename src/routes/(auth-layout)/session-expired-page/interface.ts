@@ -3,8 +3,8 @@ import { getSingleQuery } from "@/lib/page-search-params"
 import { navigate } from "@/lib/resolveAction"
 import { route } from "@/routes/routes"
 
-export function sessionExpired(from_path: string) {
-  navigate.replace(route.sessionExpiredPage, { from: from_path })
+export function sessionExpired(from_path: string): never {
+  return navigate.replace(route.sessionExpiredPage, { from: from_path })
 }
 
 export function getNextPath(searchParams: PageSearchParams) {
