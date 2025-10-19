@@ -75,7 +75,7 @@ model User {
 
 model UserProfile {
   user_id   String   @id @default(uuid())
-  email     String   @unique
+  email     String?  @unique
   name      String?
   avatarUrl String?
 
