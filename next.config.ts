@@ -38,24 +38,25 @@ export type EnvVars = (typeof EnvVars)[number]
 
 // Make sure all required env vars are set
 
+const errors: string[] = []
+
 for (const key of EnvVars) {
   const value = process.env[key]
-
-  try {
-    if (!value)
-      throw new Error(`Missing env var: ${ key }`)
-    if (key === "JWT_SECRET" && value.length < 32)
-      throw new Error(`JWT_SECRET must be at least 32 characters`)
-    if (key === "BASE_URL") {
-      if (!value.startsWith("http://") && !value.startsWith("https://"))
-        throw new Error(`BASE_URL must start with http:// or https://`)
-      if (value.endsWith("/"))
-        throw new Error(`BASE_URL must not end with a trailing slash`)
-    }
-  } catch (error) {
-    if (!(error instanceof Error)) throw error
-    console.log('⚠️ [next.config.ts]', error.message)
-    error.message = `[next.config.ts] ${ error.message }`
-    throw error
+  if (!value)
+    errors.push(`Missing env var: ${ key }`)
+  else if (key === "JWT_SECRET" && value.length < 32)
+    errors.push(`JWT_SECRET must be at least 32 characters`)
+  else if (key === "BASE_URL") {
+    if (!value.startsWith("http://") && !value.startsWith("https://"))
+      errors.push(`BASE_URL must start with http:// or https://`)
+    else if (value.endsWith("/"))
+      errors.push(`BASE_URL must not end with a trailing slash`)
   }
+}
+
+if (errors.length > 0) {
+  errors.forEach(err => {
+    console.error('⚠️  [next.config.ts]', err)
+  })
+  throw 0
 }
