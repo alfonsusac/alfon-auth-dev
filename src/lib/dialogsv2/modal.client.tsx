@@ -1,7 +1,7 @@
 "use client"
 
 import { createContext, use, type ComponentProps, type ReactNode } from "react"
-import { Link } from "../link/Linkss"
+import { Link } from "../link/link"
 import { cn } from "lazy-cn"
 
 // Scope & Assumptions:

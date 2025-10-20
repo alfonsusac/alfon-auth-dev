@@ -1,4 +1,4 @@
-import { Link } from "./link/Linkss"
+import { Link } from "./link/link"
 
 export default function BackButton(props: {
   href: string,
