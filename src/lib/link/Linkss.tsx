@@ -1,5 +1,5 @@
 import type { ComponentProps } from "react"
-import { LinkClient } from "./link.client"
+import { LinkClient } from "./Linkss.client"
 
 
 

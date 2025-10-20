@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import { DangerSymbol } from "./DangerSymbol"
-import { Link } from "./link/link"
+import { Link } from "./link/Linkss"
 import { FormButton } from "./FormButton"
 import { ActionButton } from "./formv2/form-component"
 

@@ -1,4 +1,4 @@
-import { Link } from "@/lib/link/link"
+import { Link } from "@/lib/link/Linkss"
 import { Header, Title } from "@/lib/primitives"
 import { route } from "../../routes"
 import { authPage } from "../layout"

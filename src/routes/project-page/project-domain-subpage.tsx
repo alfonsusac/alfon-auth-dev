@@ -9,7 +9,7 @@ import { Form } from "@/lib/formv2/form-component"
 import { editProjectDomainForm } from "./project-domain-edit-form"
 import { route } from "../routes"
 import { EditFormDialog } from "@/shared/dialog-edit"
-import { Link } from "@/lib/link/link"
+import { Link } from "@/lib/link/Linkss"
 import { CodeBlock } from "@/lib/code-block/code-blocks"
 import { DetailPage } from "@/lib/page-templates"
 
