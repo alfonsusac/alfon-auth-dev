@@ -2,8 +2,11 @@ import { handleSignInCallback, signInViaGoogle } from "@/lib/auth/authv2"
 import { secureRedirectString } from "@/lib/auth/redirect"
 import { createAppToken, decodeAppToken } from "@/lib/auth/token"
 import { deleteCookie, getSecureCookie, setSecureCookie } from "@/lib/cookie"
+import { getUserByProvider } from "@/services/user/logic"
 import { redirect } from "next/navigation"
 import { cache } from "react"
+import { validateProvider } from "./auth-providers"
+import { unstable_rethrow } from "next/dist/client/components/unstable-rethrow.server"
 
 
 
@@ -29,6 +32,7 @@ export function signIn(nextPath: string = '/') {
           id: process.env.ADMIN_USER_ID,
           picture: 'https://api.dicebear.com/9.x/bottts-neutral/svg?seed=a',
           name: 'Development Admin',
+          provider: 'google',
         }, sub: process.env.ADMIN_USER_ID
       })
       await setSecureCookie('auth_token', jwt, duration)
@@ -84,23 +88,43 @@ export async function signOut(nextPath: string = '/') {
 // ---
 
 
-export const getCurrentUser = cache(async () => {
-  const token = await getSecureCookie('auth_token')
-  if (!token) return null
-
+export const getCurrentUserSessionProvider = cache(async () => {
   try {
+    const token = await getSecureCookie('auth_token')
+    if (!token) throw new Error("No token found in cookies")
+
     const { payload, error } = await decodeAppToken(token)
-    if (error) return null
+    if (error) throw new Error(`Token decode error: ${ error }`)
+
+    const payloadValidated = validateProvider(payload.provider)
+    if (payloadValidated === "Invalid provider") throw new Error("Invalid provider in token payload")
+
     return {
-      id: payload.id,
-      name: payload.name,
-      email: payload.email ,
-      picture: payload.picture,
-      isAdmin: payload.id === process.env.ADMIN_USER_ID
+      user_id: payload.id,
+      isAdmin: process.env.ADMIN_USER_ID === payload.id,
+      provider: payloadValidated.val,
+      providerInfo: {
+        name: payload.name,
+        email: payload.email,
+        picture: payload.picture,
+      }
     }
   } catch (error) {
-    console.error(error)
+    unstable_rethrow(error)
+    console.log(`auth error - ${ error }`)
     return null
   }
 })
-export type User = NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>
+export type Session = NonNullable<Awaited<ReturnType<typeof getCurrentUserSessionProvider>>>
+
+
+export const getUser = cache(async () => {
+  const session = await getCurrentUserSessionProvider()
+  if (!session) return null
+  const user = await getUserByProvider(session.provider, session.user_id)
+  if (!user) return null
+  const { user_id, ...restSession } = session
+  const userSession = { ...user, ...restSession }
+  return userSession
+})
+export type User = NonNullable<Awaited<ReturnType<typeof getUser>>>

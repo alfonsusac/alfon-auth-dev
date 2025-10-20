@@ -8,6 +8,7 @@ type AppTokenPayload = {
   name?: string
   email?: string
   picture?: string
+  provider: string
 }
 
 

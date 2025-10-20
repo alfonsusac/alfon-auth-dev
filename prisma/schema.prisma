@@ -67,20 +67,14 @@ model User {
 
   providers UserProvider[]
 
-  user_profile        UserProfile @relation(fields: [user_profileuser_id], references: [user_id])
-  user_profileuser_id String      @unique
-
   auth_codes AuthCode[] // auth codes issued to this user. needed to temporarily store user_id in auth code flow.
-}
 
-model UserProfile {
-  user_id   String   @id @default(uuid())
-  email     String?  @unique
+  // profile
+  email     String? @unique
   name      String?
   avatarUrl String?
-
-  user User?
 }
+
 
 enum Provider {
   google

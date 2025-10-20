@@ -4,12 +4,12 @@ import Link from "next/link"
 import { List } from "@/lib/primitives"
 import { LogInDevelopmentButton, LogInViaGoogleButton, LogOutButton } from "@/shared/auth/login-button"
 import { AdminOnly } from "@/shared/auth/admin-only"
-import { getCurrentUser } from "@/shared/auth/auth"
+import { getUser } from "@/shared/auth/auth"
 import { getAllProjects } from "@/services/projects"
 
 export default async function Home() {
 
-  const user = await getCurrentUser()
+  const user = await getUser()
   const projects = await getAllProjects()
 
   return (

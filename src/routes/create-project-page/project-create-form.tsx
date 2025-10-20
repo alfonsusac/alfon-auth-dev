@@ -7,7 +7,7 @@ export const createProjectForm =
     action: async input => {
       "use server"
       const user = await adminOnlyAction()
-      return await createProject(input, user.id)
+      return await createProject(input, user.user_id)
     },
     fields: {
       name: {

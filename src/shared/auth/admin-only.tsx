@@ -1,5 +1,5 @@
 import { navigate } from "@/lib/navigate"
-import { getCurrentUser } from "./auth"
+import { getCurrentUserSessionProvider } from "./auth"
 import { getActionContext } from "@/lib/actions"
 import { sessionExpired } from "@/routes/(auth-layout)/session-expired-page/interface"
 
@@ -7,7 +7,7 @@ export async function AdminOnly(props: {
   children?: React.ReactNode
   fallback?: React.ReactNode
 }) {
-  const user = await getCurrentUser()
+  const user = await getCurrentUserSessionProvider()
   if (!user?.isAdmin) {
     return props.fallback ?? null
   }
@@ -16,7 +16,7 @@ export async function AdminOnly(props: {
 
 
 export async function adminOnlyService() {
-  const user = await getCurrentUser()
+  const user = await getCurrentUserSessionProvider()
   if (!user?.isAdmin)
     throw new Error("Unauthorized. Please do preliminary auth check control to use this function.")
   return user
@@ -33,7 +33,7 @@ export async function adminOnlyAction(context?: PageContext, unauthenticated_pat
 
 
 export async function notAuthenticated() {
-  const user = await getCurrentUser()
+  const user = await getCurrentUserSessionProvider()
   if (!user)
     throw new Error("Not authenticated. Please do preliminary auth check control to use this function.")
   return user

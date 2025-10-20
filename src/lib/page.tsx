@@ -4,14 +4,14 @@ import { headers } from "next/headers"
 import { UnauthorizedLayout } from "./NotFound"
 import { resolveCustomRedirectError } from "./navigate"
 import { redirect, RedirectType } from "next/navigation"
-import { getCurrentUser, type User } from "@/shared/auth/auth"
-import { fromPageSearchParamsToString, toNativeSearchParams } from "./searchParams"
+import { getUser, type User } from "@/shared/auth/auth"
+import { fromPageSearchParamsToString } from "./searchParams"
 import type { AppRoutes } from "../../.next/dev/types/routes"
 
 export async function resolvePageProps<
   P extends PageProps<any>
 >(props: P) {
-  const user = await getCurrentUser()
+  const user = await getUser()
   const params = await props.params as Awaited<P['params']>
   const searchParams = await props.searchParams as Awaited<P['searchParams']>
   return { user, searchParams, ...params }
@@ -39,7 +39,8 @@ export function page<R extends PageRoutes>(
     const pageProps = await resolvePageProps(props)
     const path = interpolatePath<R>(route, pageProps as PageParams<R>)
     const pathQuery = path + fromPageSearchParamsToString(pageProps.searchParams)
-    const context = { ...pageProps, path, pathQuery  }
+    const context = { ...pageProps, path, pathQuery }
+    
     // Assign current context to header localasyncstorage
     const header = await headers()
     Object.assign(header, { __page_context: { searchParams: pageProps.searchParams, path } })

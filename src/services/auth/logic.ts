@@ -1,6 +1,6 @@
 // auth as provider
 
-import { getCurrentUser, type User } from "@/shared/auth/auth"
+import { getCurrentUserSessionProvider, type Session } from "@/shared/auth/auth"
 import { getProject, getProjectDomainByOrigin, type Project, type ProjectDomain } from "../projects"
 import { type ValidatedURL } from "@/lib/url/url"
 import { generateSecret } from "@/lib/token"
@@ -8,7 +8,7 @@ import prisma from "@/lib/db"
 
 
 export async function allowProjectAuthorization({ user, project, domain, redirect_uri, code, next }: {
-  user: User,
+  user: Session,
   project: Project
   domain: ProjectDomain
   redirect_uri: ValidatedURL,
@@ -28,7 +28,7 @@ export async function allowProjectAuthorization({ user, project, domain, redirec
   await prisma.authCode.create({
     data: {
       code,
-      user_id: user.id,
+      user_id: user.user_id,
       project_id: project.id,
       project_domain_id: domain.id,
       expires_at: expiresAtEpochSeconds,
