@@ -1,6 +1,4 @@
 export function secureRedirectString(to: string) {
-  console.log("securing redirect string:", to)
-
   if (!to) return '/'
   if (to.startsWith('/')) return to as `/${string}`
 

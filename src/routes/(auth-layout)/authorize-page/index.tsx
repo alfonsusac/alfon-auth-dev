@@ -9,7 +9,7 @@ import { getAllProjectDomainsOfProject, getProject, getProjectDomainByOrigin } f
 import { AuthorizeProjectUI } from "./authorize-project-ui"
 import { navigate } from "@/lib/navigate"
 import { allowProjectAuthorization, denyProjectAuthorization } from "@/services/auth/logic"
-import { getCurrentUserSessionProvider } from "@/shared/auth/auth"
+import {  getUser } from "@/shared/auth/auth"
 
 // server receives: projectid, redirect_uri, code, next
 
@@ -47,11 +47,10 @@ const authorizePage = authPage('/[projectid]/authorize', async page => {
         const domain = await getProjectDomainByOrigin(redirect_uri.origin())
         const code = validateAuthorizeCode(page.searchParams.code)
         const next = validateAuthorizeCode(page.searchParams.next)
-        const user = await getCurrentUserSessionProvider()
+        const user = await getUser()
         if (!user || !domain || isError(code) || isError(next)) return navigate.refresh()
 
         const res = await allowProjectAuthorization({ user, domain, project, redirect_uri, code: code.val, next: next.val })
-        console.error(res)
         if (isError(res)) {
           return navigate.refresh()
         }

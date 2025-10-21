@@ -8,7 +8,6 @@ export async function AdminOnly(props: {
   fallback?: React.ReactNode
 }) {
   const user = await getUser()
-  console.log(user?.isAdmin)
   if (!user?.isAdmin) {
     return props.fallback ?? null
   }

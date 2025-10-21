@@ -1,6 +1,6 @@
 // auth as provider
 
-import { getCurrentUserSessionProvider, type Session } from "@/shared/auth/auth"
+import { getCurrentUserSessionProvider, type Session, type User } from "@/shared/auth/auth"
 import { getProject, getProjectDomainByOrigin, type Project, type ProjectDomain } from "../projects"
 import { type ValidatedURL } from "@/lib/url/url"
 import { generateSecret } from "@/lib/token"
@@ -8,16 +8,14 @@ import prisma from "@/lib/db"
 
 
 export async function allowProjectAuthorization({ user, project, domain, redirect_uri, code, next }: {
-  user: Session,
+  user: User,
   project: Project
   domain: ProjectDomain
   redirect_uri: ValidatedURL,
   code: string,
   next: string,
 }) {
-  console.log(redirect_uri)
   const redirect_uri_no_query = redirect_uri.format('scheme://hostname.com/path')
-  console.log("Comparing redirect URIs:", { expected: domain.redirect_url, provided: redirect_uri_no_query }) // remove after testing
   if (domain.redirect_url !== redirect_uri_no_query)
     return "domain_mismatch"
 
@@ -28,7 +26,7 @@ export async function allowProjectAuthorization({ user, project, domain, redirec
   await prisma.authCode.create({
     data: {
       code,
-      user_id: user.user_id,
+      user_id: user.id,
       project_id: project.id,
       project_domain_id: domain.id,
       expires_at: expiresAtEpochSeconds,
@@ -37,8 +35,6 @@ export async function allowProjectAuthorization({ user, project, domain, redirec
 
   redirect_uri.searchParams.set('code', code)
   redirect_uri.searchParams.set('state', auth_code)
-
-  console.log("[allowProjectAuthorization] redirecting to", redirect_uri.format('scheme://hostname.com/path?query')) // remove after testing
 
   return {
     nextStepUrl: redirect_uri.toString(),

@@ -35,19 +35,13 @@ function isValidProtocol(protocol: string) {
   return protocol === 'http' || protocol === 'https' //valid protocols (can be parameterized if needed)
 }
 function isValidHost(hostname: string) {
-  console.log("checking host", hostname)
   const hostRegex = new RegExp(`^${ host }$`) // RFC 3986
   const hostMatch = hostRegex.exec(hostname)
-  console.log("A")
   if (!hostMatch) return false
-  console.log("B")
   const regName = hostMatch.groups?.regName
   if (!regName) return true // it's an IP address or IP literal, which is valid if it matched the regex
-  console.log("C")
   if (!new RegExp(`^${ domainNameRelaxed }$`).test(regName)) return false // RFC 1123, the less strict check
-  console.log("D", domain)
   if (!new RegExp(`^${ domain }$`).test(regName)) return false // RFC 1035, the more strict check
-  console.log("E")
   return true
 }
 function isValidPort(port: string | null) {
