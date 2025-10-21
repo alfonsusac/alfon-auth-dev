@@ -19,7 +19,7 @@ export default page('/create-project', async page => {
       <Section>
         <Form
           form={createProjectForm}
-          onSubmit={async ({ inputs }) => {
+          onSubmit={async ({ inputs, result }) => {
             "use server"
             navigate.push(route.projectPage(inputs.id), { success: 'created' })
           }}

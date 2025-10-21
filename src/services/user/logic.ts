@@ -19,12 +19,15 @@ async function getUncachedUserByProvider(provider: Provider, provider_user_id: s
 
 export type DBUser = NonNullable<Awaited<ReturnType<typeof getUserById>>>
 
-export async function createUserFromSession(session: Session) {
+export async function createUserFromSession(session: Session, input: {
+  name: UserName,
+  avatarUrl: AvatarUrl,
+}) {
   const res = await prisma.user.create({
     data: {
-      name: session.providerInfo.name,
+      name: input.name.val,
       email: session.providerInfo.email,
-      avatarUrl: session.providerInfo.picture,
+      avatarUrl: input.avatarUrl.val,
       providers: {
         create: {
           provider: Provider.google,

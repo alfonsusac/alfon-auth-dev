@@ -43,11 +43,22 @@ export function Title(props: ComponentProps<'h1'>) {
   return <h1 {...props} className={cn('page-h1', props.className)} />
 }
 
-export function Row(props: ComponentProps<'div'>) {
-  return <div {...props} className={cn("flex flex-row gap-2 flex-wrap", props.className)} />
+export function Row(props: ComponentProps<'div'> & {
+  center?: boolean
+}) {
+  const { center, ...rest } = props
+  return <div {...rest} className={cn(
+    "flex flex-row gap-2 flex-wrap",
+    center && "items-center",
+    props.className)
+  } />
 }
 
 export function CodeMessageHint(props: ComponentProps<'div'>) {
   return <div {...props} className={cn("text-foreground-body text-xxs font-mono", props.className)} />
 
+}
+
+export function Semibold(props: ComponentProps<'span'>) {
+  return <span {...props} className={cn("font-semibold", props.className)} />
 }

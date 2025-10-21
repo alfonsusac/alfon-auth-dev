@@ -1,17 +1,21 @@
 import { ActionButton } from "@/lib/formv2/form-component"
-import { actionNavigate } from "@/lib/navigate"
+import { actionNavigate, navigate } from "@/lib/navigate"
 import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
 import { signIn, signOut } from "./auth"
 
 export function LogOutButton(props: {
-  className?: string
+  className?: string,
+  redirectTo?: `/${ string }`,
 }) {
   return <ActionButton
     action={async () => {
       "use server"
       await signOut()
-      // actionNavigate('/?success=logged_out')
+      if (props.redirectTo)
+        navigate.push(props.redirectTo)
+      else 
+        navigate.refresh()
     }}
     loading="Logging out..."
     className={cn(props.className)}
@@ -22,13 +26,18 @@ export function LogOutButton(props: {
 
 export function LogInViaGoogleButton(props: {
   redirectTo?: `/${ string }`,
+  redirectToIfUnregistered?: `/register`,
   children?: React.ReactNode,
   withLogo?: boolean,
   fullWidth?: boolean,
   className?: string,
 }) {
   return <ActionButton
-    action={async () => { "use server"; await signIn(props.redirectTo).google() }}
+    action={async () => {
+      "use server"; await signIn({
+        nextPath: props.redirectTo
+      }).google()
+    }}
     className={cn(
       "primary",
       props.fullWidth && "w-full",
@@ -58,7 +67,11 @@ export function LogInDevelopmentButton(props: {
 }) {
   return <>
     {process.env.NODE_ENV === 'development' && <>
-      <ActionButton action={async () => { "use server"; await signIn(props.redirectTo).localhost() }}
+      <ActionButton action={async () => {
+        "use server"; await signIn({
+          nextPath: props.redirectTo
+        }).localhost()
+      }}
         className={cn("primary", props.fullWidth && "w-full")}
         loading="Redirecting..."
       >

@@ -12,6 +12,21 @@ export function AuthorizeProjectUI(props:
   & { onDeny: () => Promise<void> }
 ) {
   return <>
+    <Row className="text-xs items-center text-start ">
+      {/* Avatar */}
+      <div className="size-6 bg-blue-500/50 rounded-full relative">
+        <img src={props.user.picture} alt={props.user.name} className="absolute inset-0 rounded-full" />
+      </div>
+      <div className="flex flex-col">
+        <span className="leading-tight">
+          signed in as
+        </span>
+        <div className="flex gap-1 items-center">
+          <div className="font-semibold">{props.user.name}</div>
+        </div>
+      </div>
+      <LogOutButton className="small" />
+    </Row>
     <div className="p-8 rounded-2xl bg-foreground-muted/10 max-w-80 gap-0">
       <Header>
         <div className="self-center flex gap-3 items-center">
@@ -69,22 +84,8 @@ export function AuthorizeProjectUI(props:
       </Row>
     </div>
 
-    <Section className="p-4 pr-7 rounded-xl bg-foreground-muted/10 -mt-6 gap-4 max-w-80 w-full">
-      <Row className="text-xs items-center text-start ">
-        {/* Avatar */}
-        <div className="size-6 bg-blue-500/50 rounded-full relative">
-          <img src={props.user.picture} alt={props.user.name} className="absolute inset-0 rounded-full" />
-        </div>
-        <div className="flex flex-col">
-          <span className="leading-tight">
-            signed in as
-          </span>
-          <div className="flex gap-1 items-center">
-            <div className="font-semibold">{props.user.name}</div>
-          </div>
-        </div>
-      </Row>
-      <LogOutButton className="small w-full" />
+    <Section className="p-4 pr-7 rounded-xl -mt-6 gap-4 max-w-80 w-full">
+
     </Section>
 
 

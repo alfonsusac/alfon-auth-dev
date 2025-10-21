@@ -31,6 +31,6 @@ export type AvatarUrl = PseudoClass<{ val: string }, 'AvatarUrl'>
 
 export function validateAvatarUrl(avatarUrl: string) {
   const parsed = parseURL(avatarUrl).validate()
-  if (parsed.error) return 'Invalid URL format'
+  if (parsed.error) return `avatar_${parsed.error}` as const
   return { val: avatarUrl } as AvatarUrl
 }

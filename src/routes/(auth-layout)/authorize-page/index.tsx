@@ -31,7 +31,6 @@ const authorizePage = authPage('/[projectid]/authorize', async page => {
   if (!page.user) return <AuthorizeProjectNotAuthenticated project={project} redirectTo={withContext(route.authorizePage(project.id), { redirect_uri: redirect_uri.toString(), code: code.val, next: next.val })} />
 
   return <>
-    pathquery: {page.pathQuery}
     <AuthorizeProjectUI
       project={project}
       user={{

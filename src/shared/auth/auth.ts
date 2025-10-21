@@ -8,6 +8,17 @@ import { cache } from "react"
 import { validateProvider } from "./auth-providers"
 import { unstable_rethrow } from "next/dist/client/components/unstable-rethrow.server"
 
+type StatePayload = {
+  nextPath: string
+  nextPathOnUnregistered?: string
+}
+function encodeStatePayload(payload: StatePayload): string {
+  return Buffer.from(JSON.stringify(payload)).toString('base64url')
+}
+function decodeStatePayload(encoded: string): StatePayload {
+  const decoded = Buffer.from(encoded, 'base64url').toString('utf-8')
+  return JSON.parse(decoded) as StatePayload
+}
 
 
 
@@ -15,10 +26,17 @@ import { unstable_rethrow } from "next/dist/client/components/unstable-rethrow.s
 // ---
 
 
-export function signIn(nextPath: string = '/') {
+export function signIn(opts: {
+  nextPath?: string,
+  nextPathOnUnregistered?: string
+}) {
+  const {
+    nextPath = '/',
+    nextPathOnUnregistered = '/register'
+  } = opts
   return {
     google: async () => {
-      const { cookies, url } = await signInViaGoogle(nextPath)
+      const { cookies, url } = await signInViaGoogle(encodeStatePayload({ nextPath, nextPathOnUnregistered }))
       await setSecureCookie('oauth_state', cookies.state)
       await setSecureCookie('oauth_code_verifier', cookies.codeVerifier)
       redirect(url.toString())
@@ -36,7 +54,11 @@ export function signIn(nextPath: string = '/') {
         }, sub: process.env.ADMIN_USER_ID
       })
       await setSecureCookie('auth_token', jwt, duration)
-      redirect(secureRedirectString(decodeURIComponent(nextPath || '/')))
+      const user = await getUserByProvider('google', process.env.ADMIN_USER_ID!)
+      if (!user)
+        redirect(secureRedirectString(decodeURIComponent(nextPathOnUnregistered)))
+      else
+        redirect(secureRedirectString(decodeURIComponent(nextPath)))
     }
   }
 }
@@ -55,7 +77,7 @@ export async function handleCallback(props: {
 
   const received_state = props.raw_received_state
 
-  const { payload, inputError, serverError, meta: nextPath } = await handleSignInCallback({
+  const { payload, inputError, serverError, meta } = await handleSignInCallback({
     code: props.code,
     received_state: received_state,
     stored_state,
@@ -72,7 +94,19 @@ export async function handleCallback(props: {
 
   await setSecureCookie('auth_token', jwt, duration)
 
-  return { securedNextPath: secureRedirectString(decodeURIComponent(nextPath || '/')) } as const
+  if (!meta) console.log("No meta information in sign-in callback")
+  const { nextPath, nextPathOnUnregistered } = decodeStatePayload(meta ?? "")
+
+  try {
+    const payloadValidated = validateProvider(payload.provider)
+    if (payloadValidated === "Invalid provider") throw new Error("Invalid provider in token payload")
+    const user = await getUserByProvider(payloadValidated.val, payload.id)
+    return { securedNextPath: secureRedirectString(decodeURIComponent(user ? nextPath : nextPathOnUnregistered || '/')) } as const
+  
+  } catch (error) {
+    console.log(`auth callback error - ${ error }`)
+    return { securedNextPath: secureRedirectString(decodeURIComponent(nextPath || '/')) } as const
+  }
 }
 
 
