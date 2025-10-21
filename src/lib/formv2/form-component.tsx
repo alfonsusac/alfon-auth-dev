@@ -31,16 +31,17 @@ export function ActionButton(props: ComponentProps<typeof FormButton> & {
 
 export type DefaultValues<F extends FieldMap> = Partial<Record<keyof F, any>>
 export type Values<F extends FieldMap> = Partial<Record<keyof F, any>>
-export type ResultHandler<F extends FieldMap, R> = (data: {
-  result: Exclude<F['$result'], string>,
-  inputs: ActionParameter<F>,
+export type ResultHandler<F extends FormType, R> = (data: {
+  result: F['$result'],
+  inputs: ActionParameter<F['fields']>,
 }) => Promise<R>
+
 
 export type FormProps<F extends FormType> = {
   form: F,
   searchParams?: PageSearchParams
-  navigateOnSubmit?: ResultHandler<F['fields'], string>,
-  onSubmit: ResultHandler<F['fields'], void>,
+  navigateOnSubmit?: ResultHandler<F, string>,
+  onSubmit: ResultHandler<F, void>,
 }
 export function Form<F extends FormType>(props: FormProps<F>) {
   return <FormWithProgressiveRedirect
