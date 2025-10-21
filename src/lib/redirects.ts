@@ -1,5 +1,6 @@
 import { RedirectType } from "next/navigation"
-import { actionNavigate } from "./navigate"
+import { navigate } from "./navigate"
+// import { actionNavigate } from "./navigate"
 
 // export function resolveError<T>(path: string, res: T, inputs?: object) {
 //   if (typeof res === "string")
@@ -9,6 +10,6 @@ import { actionNavigate } from "./navigate"
 
 export function actionResolveError<T>(res: T, ...extraParams: (Record<string, string> | undefined)[]) {
   if (typeof res === "string")
-    actionNavigate(`?error=${ res }${ extraParams ? '&' + new URLSearchParams(...extraParams).toString() : '' }`, RedirectType.replace)
+    navigate.replace(`?error=${ res }${ extraParams ? '&' + new URLSearchParams(...extraParams).toString() : '' }`)
   else return res as Exclude<T, string>
 }

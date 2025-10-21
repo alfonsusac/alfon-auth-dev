@@ -64,23 +64,6 @@ export function datacache<
 
 
   return cachedFn
-
-
-  // const revalidateFn = (...i: I) => {
-  //   const tempTag: string | string[] = typeof tag === "function" ? tag(...i) : tag
-  //   const resolvedTags = Array.isArray(tempTag) ? tempTag : [tempTag]
-  //   const joinedTag = resolvedTags.join("-") + fn.name
-  //   revalidateTag(joinedTag)
-  // }
-
-
 }
-
-async function add2(val: number) {
-  return val + 2
-}
-
-// const [a, b] = datacache(add2, (val) => `add2`)
-
 
 type JSONables = string | number | boolean | null | { [key: string]: JSONables } | JSONables[]

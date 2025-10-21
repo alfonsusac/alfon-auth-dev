@@ -20,24 +20,7 @@ let prisma: PrismaClient
 
 const connectionString = `${ process.env.DATABASE_URL }`
 const adapter = new PrismaNeon({ connectionString })
-prisma = (global as any).prisma || new PrismaClient({ adapter }).$extends({
-  result: {
-    $allModels: {
-      createdAt: {
-        needs: { createdAt: true } as any,
-        compute(data: { createdAt: Date }) {
-          return data.createdAt.toISOString()
-        },
-      },
-      updatedAt: {
-        needs: { updatedAt: true } as any,
-        compute(data: { updatedAt: Date }) {
-          return data.updatedAt.toISOString()
-        },
-      },
-    },
-  },
-})
+prisma = (global as any).prisma || new PrismaClient({ adapter })
 if (process.env.NODE_ENV === 'development') (global as any).prisma = prisma
 
 export default prisma

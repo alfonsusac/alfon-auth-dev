@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto"
-import { actionNavigate } from "../navigate"
+import { navigate } from "../navigate"
 
 export function triggerSuccessBanner(code: string) {
-  actionNavigate(`?success=${ code }+${ randomBytes(3).toString('hex') }`, "replace")
+  navigate.replace(`?success=${ code }+${ randomBytes(3).toString('hex') }`)
 }

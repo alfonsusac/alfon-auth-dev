@@ -1,31 +1,25 @@
 import { splitOnce } from "../split-once"
 
 export function validateSecureURLwithLocalhost(url?: string | null | { set?: string | null | undefined }) {
-  if (typeof url === 'object' && url !== null) {
-    url = url.set
-  }
-  if (!url) return 'empty_url'
+  if (typeof url === 'object' && url !== null) url = url.set
+  if (!url)
+    return 'empty_url'
 
   const parsedUrl = parseURL(url)
 
   // infer phase
   if (parsedUrl.protocol === null) parsedUrl.protocol = 'https'
-  parsedUrl.hash = null // ignore fragment for validation purposes
+  parsedUrl.hash = null 
 
   const validatedURL = parsedUrl.validate()
-  if (validatedURL.error) return validatedURL.error // return the error string if invalid
-  // validation phase
-  // if (!isValidProtocol(parsedUrl.protocol)) return 'invalid_protocol'
-  // if (!isValidHost(parsedUrl.hostname)) return 'invalid_host'
-  // if (!isValidPort(parsedUrl.port)) return 'invalid_port'
-  // if (!isValidPaths(parsedUrl.pathnames)) return 'invalid_path'
-  // if (!isValidQuery(parsedUrl.query)) return 'invalid_query'
+  if (validatedURL.error)
+    return validatedURL.error
 
-  if (parsedUrl.protocol === 'http' && parsedUrl.hostname !== 'localhost') return 'insecure_protocol'
+  if (parsedUrl.protocol === 'http' && parsedUrl.hostname !== 'localhost')
+    return 'insecure_protocol'
 
   return validatedURL.toURL()
 }
-
 
 //
 //
@@ -267,63 +261,6 @@ export function parseURL(url: string) {
         }
       }
     },
-
-    //   toURL() {
-    //     // should be valid by the time this is called (validate externally)
-    //     if (this.protocol === null) throw new ParseURLError('Cannot convert to URL without protocol')
-    //     if (!isValidProtocol(this.protocol)) throw new ParseURLError('Cannot convert to URL with invalid protocol')
-    //     if (!isValidHost(this.hostname)) throw new ParseURLError('Cannot convert to URL with invalid host')
-    //     if (!isValidPort(this.port)) throw new ParseURLError('Cannot convert to URL with invalid port')
-    //     if (!isValidPaths(this.pathnames)) throw new ParseURLError('Cannot convert to URL with invalid path')
-    //     if (!isValidQuery(this.query)) throw new ParseURLError('Cannot convert to URL with invalid query')
-    //     return new URL(this.toString())
-    //   },
-
-    //   format<T extends URLFormatterParameter>(format: T) {
-    //     let result: string = format
-    //     if (format.includes('scheme://')) {
-    //       if (!this.protocol) throw new ParseURLError('Cannot format URL with scheme:// without protocol')
-    //       if (!isValidProtocol(this.protocol)) throw new ParseURLError('Cannot format URL with invalid protocol')
-    //       result = result.replace('scheme://', this.protocol + '://')
-    //     }
-    //     if (format.includes('hostname.com')) {
-    //       if (!isValidHost(this.hostname)) throw new ParseURLError('Cannot format URL with invalid hostname')
-    //       result = result.replace('hostname.com', this.hostname)
-    //     }
-    //     if (format.includes(':port')) {
-    //       if (this.port !== null) {
-    //         if (!isValidPort(this.port)) throw new ParseURLError('Cannot format URL with invalid port')
-    //         result = result.replace(':port', ':' + this.port)
-    //       } else {
-    //         result = result.replace(':port', '')
-    //       }
-    //     }
-    //     if (format.includes('/path')) {
-    //       if (this.path !== '/') {
-    //         if (!isValidPaths(this.pathnames)) throw new ParseURLError('Cannot format URL with invalid path')
-    //         result = result.replace('/path', this.path)
-    //       } else {
-    //         result = result.replace('/path', '')
-    //       }
-    //     }
-    //     if (format.includes('?query')) {
-    //       if (this.query !== null) {
-    //         if (!isValidQuery(this.query)) throw new ParseURLError('Cannot format URL with invalid query')
-    //         result = result.replace('?query', '?' + this.query)
-    //       } else {
-    //         result = result.replace('?query', '')
-    //       }
-    //     }
-    //     if (format.includes('#fragment')) {
-    //       if (this.hash !== null) {
-    //         if (!isValidFragment(this.hash)) throw new ParseURLError('Cannot format URL with invalid fragment')
-    //         result = result.replace('#fragment', '#' + this.hash)
-    //       } else {
-    //         result = result.replace('#fragment', '')
-    //       }
-    //     }
-    //     return result as URLFormatterResult<T>
-    //   }
   }
 }
 

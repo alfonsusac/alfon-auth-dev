@@ -2,7 +2,7 @@ import { DialogCloseButton, DialogSurface } from "@/lib/dialogsv2/dialog.primiti
 import { Modal } from "@/lib/dialogsv2/modal"
 import { Props, searchParams } from "@/lib/page"
 import { actionResolveError } from "@/lib/redirects"
-import { actionNavigate, navigate } from "@/lib/navigate"
+import { navigate } from "@/lib/navigate"
 import { deleteProject } from "@/services/projects"
 import { DeleteButton } from "@/shared/dialog-delete"
 import { revalidatePath } from "next/cache"
@@ -50,7 +50,7 @@ export async function ProjectSettingsModal({ project, children }:
                 const res = await deleteProject(project.id)
                 actionResolveError(res, { delete: '' })
                 revalidatePath('/', 'layout')
-                actionNavigate('/?success=deleted')
+                navigate.push('/?success=deleted')
               }}
             />
           </section>

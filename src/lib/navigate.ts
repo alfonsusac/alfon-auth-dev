@@ -1,8 +1,8 @@
 import { refresh } from "next/cache"
-import { notFound, redirect, RedirectType } from "next/navigation"
+import { redirect, RedirectType } from "next/navigation"
 import { fromPageSearchParamsToString } from "./searchParams"
 
-export function actionNavigate(path: string, mode: "push" | "replace" = "push", context?: { [key: string]: string }): never {
+function actionNavigate(path: string, mode: "push" | "replace" = "push", context?: { [key: string]: string }): never {
 
   const hasContext = context && Object.keys(context).length > 0
   let newpath

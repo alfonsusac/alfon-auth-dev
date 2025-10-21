@@ -1,6 +1,5 @@
 import { cn } from "lazy-cn"
 import { Fragment } from "react"
-import { formatDate } from "./date"
 import { DateTime } from "./date.ui"
 
 export function DataGridDisplay<
