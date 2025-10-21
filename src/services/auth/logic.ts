@@ -25,7 +25,7 @@ export async function allowProjectAuthorization({ user, project, domain, redirec
 
   await prisma.authCode.create({
     data: {
-      code,
+      code: auth_code,
       user_id: user.id,
       project_id: project.id,
       project_domain_id: domain.id,

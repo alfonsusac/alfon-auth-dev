@@ -5,6 +5,7 @@ import { createProjectForm } from "./project-create-form"
 import { Form } from "@/lib/formv2/form-component"
 import { route } from "../routes"
 import { DetailPage } from "@/lib/page-templates"
+import { Spacer } from "@/lib/spacer"
 
 export default page('/create-project', async page => {
 
@@ -12,19 +13,18 @@ export default page('/create-project', async page => {
     return unauthorized('Back to Home', '/')
 
   return <>
-    <DetailPage back={['Home', '/']}>
+    <DetailPage back={['Home', '/']} className="gap-0"> 
 
       <Title>Create Project</Title>
+      <Spacer />
 
-      <Section>
-        <Form
-          form={createProjectForm}
-          onSubmit={async ({ inputs, result }) => {
-            "use server"
-            navigate.push(route.projectPage(inputs.id), { success: 'created' })
-          }}
-        />
-      </Section>
+      <Form
+        form={createProjectForm}
+        onSubmit={async ({ inputs }) => {
+          "use server"
+          navigate.push(route.projectPage(inputs.id), { success: 'created' })
+        }}
+      />
 
     </DetailPage>
   </>

@@ -254,14 +254,14 @@ export function parseURL(url: string) {
         fragment: this.hash,
         toURL() { return new URL(this.toString()) },
         origin() { return this.protocol + '://' + this.hostname + (this.port ? ':' + this.port : '') },
-        toString() { return url },
+        toString() { return this.format('scheme://hostname.com:port/path?query#fragment') },
         format<T extends URLFormatterParameter>(format: T) {
           let result: string = format
           if (format.includes('scheme://')) result = result.replace('scheme://', this.protocol + '://')
           if (format.includes('hostname.com')) result = result.replace('hostname.com', this.hostname)
           if (format.includes(':port')) result = result.replace(':port', this.port !== null ? `:${ this.port }` : '')
           if (format.includes('/path')) result = result.replace('/path', this.path() !== '/' ? this.path() : '')
-          if (format.includes('?query')) result = result.replace('?query', this.query !== null ? `?${ this.query }` : '')
+          if (format.includes('?query')) result = result.replace('?query', this.query() !== null ? `?${ this.query() }` : '')
           if (format.includes('#fragment')) result = result.replace('#fragment', this.fragment !== null ? `#${ this.fragment }` : '')
           return result as URLFormatterResult<T>
         }

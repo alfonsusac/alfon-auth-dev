@@ -51,6 +51,7 @@ const authorizePage = authPage('/[projectid]/authorize', async page => {
         if (!user || !domain || isError(code) || isError(next)) return navigate.refresh()
 
         const res = await allowProjectAuthorization({ user, domain, project, redirect_uri, code: code.val, next: next.val })
+        console.log('onauthorize result', res)
         if (isError(res)) {
           return navigate.refresh()
         }
