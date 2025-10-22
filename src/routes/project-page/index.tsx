@@ -1,6 +1,6 @@
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { DateTime } from "@/lib/date.ui"
-import { page } from "@/lib/page"
+import { page } from "@/lib/page/page"
 import { Header, HelperText, Section, SectionTitle, Title } from "@/lib/primitives"
 import { getProject } from "@/services/projects"
 import { projectNotFound } from "./not-found"

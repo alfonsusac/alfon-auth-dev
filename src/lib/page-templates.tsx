@@ -1,10 +1,8 @@
 // Base Page Template
 
-import { Logo } from "@/shared/logo"
 import { cn } from "lazy-cn"
 import { ReactNode } from "react"
 import { NavigationBar } from "./NavigationBar"
-import { Header } from "./primitives"
 import { Spacer } from "./spacer"
 import { SuccessCallout } from "./toast/search-param-toast.client"
 

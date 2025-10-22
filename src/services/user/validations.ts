@@ -1,4 +1,4 @@
-import type { PseudoClass } from "@/lib/pseudo-class"
+import type { PseudoClass } from "@/lib/core/pseudo-class"
 import { parseURL } from "@/lib/url/url"
 
 

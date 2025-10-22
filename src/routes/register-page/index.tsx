@@ -1,5 +1,5 @@
 import { Form } from "@/lib/formv2/form-component"
-import { page } from "@/lib/page"
+import { page } from "@/lib/page/page"
 import { DetailPage } from "@/lib/page-templates"
 import { Header, Row, Section, Semibold, Title } from "@/lib/primitives"
 import { registerUserForm } from "./user-register-form"

@@ -1,6 +1,5 @@
 import { ArcticFetchError, generateCodeVerifier, generateState, Google, OAuth2RequestError } from "arctic"
 import { CookieValue } from "../cookie"
-import { SignJWT } from "jose"
 
 function encodeState(state: string, extra?: string) {
   return state + (extra ? ('|||' + extra) : '')
@@ -64,10 +63,7 @@ export async function handleSignInCallback(props: {
     const verified_email = google_user_json.verified_email
     const picture = google_user_json.picture
 
-    const payload = {
-      id, email, picture, provider: "google",
-    }
-
+    const payload = { id, email, picture, provider: "google" }
     return { payload, meta } as const
 
   } catch (e) {

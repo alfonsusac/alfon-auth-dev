@@ -1,5 +1,5 @@
 import { ActionButton } from "@/lib/formv2/form-component"
-import { page } from "@/lib/page"
+import { page } from "@/lib/page/page"
 import { navigate } from "@/lib/navigate"
 import { refresh } from "next/cache"
 import { notFound } from "next/navigation"

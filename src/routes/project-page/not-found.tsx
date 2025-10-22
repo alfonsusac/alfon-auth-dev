@@ -1,5 +1,5 @@
 import { NotFoundLayout } from "@/lib/NotFound"
-import { notFound } from "@/lib/page"
+import { notFound } from "@/lib/page/page"
 
 export function projectNotFound(projectid: string): never {
   notFound(<NotFoundLayout

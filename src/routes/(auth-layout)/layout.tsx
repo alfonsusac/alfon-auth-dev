@@ -1,5 +1,5 @@
-import { page, type AppPageContext, type PageRoutes } from "@/lib/page"
 import { SimpleCenterPage } from "@/lib/page-templates"
+import { page, type PageRouteContext, type PageRoutes } from "@/lib/page/page"
 import { Header } from "@/lib/primitives"
 import { Logo } from "@/shared/logo"
 import { ReactNode } from "react"
@@ -20,7 +20,7 @@ export function AuthPage(props: {
 
 export function authPage<R extends PageRoutes>(
   route: R,
-  render: (context: AppPageContext<R>) => ReactNode,
+  render: (context: PageRouteContext<R>) => ReactNode,
   layout?: (children?: ReactNode) => ReactNode,
 ) {
   return page(route, render, children => <AuthPage>

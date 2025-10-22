@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { timeAgo } from "./time-ago"
+import { timeAgo } from "./core/time-ago"
 
 
 export function DateTime(props: { date: Date | string }) {

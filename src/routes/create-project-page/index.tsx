@@ -1,4 +1,4 @@
-import { page, unauthorized } from "@/lib/page"
+import { page, unauthorized } from "@/lib/page/page"
 import { Title, Section } from "@/lib/primitives"
 import { navigate } from "@/lib/navigate"
 import { createProjectForm } from "./project-create-form"

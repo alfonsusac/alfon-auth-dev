@@ -1,6 +1,6 @@
 import { DialogSurface, DialogTitle } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
-import { Props, searchParams } from "@/lib/page"
+import { Props, searchParams } from "@/lib/page/page"
 import { navigate } from "@/lib/navigate"
 import { ProjectProp } from "../types"
 import { Form } from "@/lib/formv2/form-component"

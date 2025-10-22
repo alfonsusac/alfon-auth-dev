@@ -19,10 +19,10 @@
 export function interpolatePath<
   P extends string,
 >(
-  path: string,
+  path: P,
   params: { [key: string]: string | string[] } // not yet support slug array
 ) {
-  let resolvedPath = path
+  let resolvedPath: string = path
 
   // For each entry in params, replace "[key]" in path with <value> of <key>
   // First check if <value> is array. if its array then find "[...key]"
@@ -40,6 +40,11 @@ export function interpolatePath<
 }
 
 export type InterpolatePath<P extends string> =
-  P extends `${ infer _Start }[${ infer Param }]${ infer Rest }`
-  ? `${ _Start }${ string }${ InterpolatePath<Rest> }`
+  P extends `${ infer Start }[${ infer Param }]${ infer Rest }`
+  ? `${ Start }${ string }${ InterpolatePath<Rest> }`
   : P
+
+// // Examples:
+// type T1 = InterpolatePath<'/[projectid]'> // '/${string}'
+// type T2 = InterpolatePath<'/[projectid]/[keyid]'> // '/${string}/${string}'
+// type T3 = InterpolatePath<'/projects/[projectid]/keys/[keyid]'> // '/projects/${string}/keys/${string}'

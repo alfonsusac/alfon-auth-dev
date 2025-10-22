@@ -32,7 +32,7 @@ import { cn } from "lazy-cn"
 
 // #1
 import { useSearchParams } from "next/navigation"
-import { reactContext } from "../react-context"
+import { reactContext } from "../react/react-context"
 
 export type ModalContext = { name: string, show: boolean }
 export type ModalContentContext = { context: { [key: string]: string } }

@@ -1,6 +1,6 @@
 import { DialogCloseButton, DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
-import { Props, searchParams } from "@/lib/page"
+import { Props, searchParams } from "@/lib/page/page"
 import { actionResolveError } from "@/lib/redirects"
 import { navigate } from "@/lib/navigate"
 import { deleteProject } from "@/services/projects"

@@ -1,4 +1,4 @@
-import { page } from "@/lib/page"
+import { page } from "@/lib/page/page"
 import { notFound, unauthorized } from "next/navigation"
 import { Suspense } from "react"
 

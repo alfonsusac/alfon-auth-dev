@@ -1,7 +1,6 @@
 import { isError } from "@/lib/error"
 import { createForm } from "@/lib/formv2/form"
 import { navigate } from "@/lib/navigate"
-import { unauthorized } from "@/lib/page"
 import { createUserFromSession } from "@/services/user/logic"
 import { validateAvatarUrl, validateUserName } from "@/services/user/validations"
 import { getCurrentUserSessionProvider, type Session } from "@/shared/auth/auth"

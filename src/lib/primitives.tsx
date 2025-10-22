@@ -62,3 +62,9 @@ export function CodeMessageHint(props: ComponentProps<'div'>) {
 export function Semibold(props: ComponentProps<'span'>) {
   return <span {...props} className={cn("font-semibold", props.className)} />
 }
+
+export function ListItem(props: ComponentProps<"li">) {
+  return (
+    <li {...props} className={cn("relative group")} />
+  )
+}
