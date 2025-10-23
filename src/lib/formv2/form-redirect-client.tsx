@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { startTransition, type ComponentProps } from "react"
-import { resolveCustomRedirectError } from "../navigate"
+import { redirectIfNextBetterRedirectErrorAtClient, resolveNextBetterRedirectError } from "../next/next-better-redirects"
 
 export function FormWithClientRedirect(props: ComponentProps<"form"> & {
   clientAction?: (form: FormData) => Promise<void>
@@ -21,18 +21,18 @@ export function FormWithClientRedirect(props: ComponentProps<"form"> & {
       e.preventDefault()
       startTransition(async () => {
         try {
+          
           if (!clientAction) return
           const formData = new FormData(e.target as HTMLFormElement)
           await clientAction(formData)
+
         } catch (error) {
-          const redirection = resolveCustomRedirectError(error)
-          if (redirection) {
-            if (redirection.mode === "replace")
-              return router.replace(redirection.path, { scroll: false })
-            if (redirection.mode === "push")
-              return router.push(redirection.path)
-          }
+
+          const redirection = redirectIfNextBetterRedirectErrorAtClient(error, router)
+          if (redirection) return redirection()
+          
           return console.error('unhandled client-side error:', error)
+
         }
       })
     }}

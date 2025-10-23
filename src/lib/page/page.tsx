@@ -2,15 +2,18 @@ import type { ReactNode } from "react"
 import { headers } from "next/headers"
 import { redirect, RedirectType } from "next/navigation"
 import { getUser } from "@/shared/auth/auth"
-import type { AppRoutes } from "../../../.next/dev/types/routes"
+import type { AppRoutes } from "@/../.next/dev/types/routes"
 import { interpolatePath } from "../interpolatePath"
-import { resolveCustomRedirectError } from "../navigate"
 import { UnauthorizedLayout } from "../NotFound"
 import { fromPageSearchParamsToString } from "../searchParams"
 import { resolveNextPageProps } from "../next/next-page-props"
+import { getCurrentPath, getSearchParams, setPageContext } from "../next/next-page-better-context"
+import { resolveNextBetterRedirectError, throwRedirectIfNextBetterRedirectErrorAtServer } from "../next/next-better-redirects"
 
 
 export type PageRoutes = AppRoutes
+
+
 
 async function getPageRouteContext<R extends PageRoutes>(props: PageProps<R>, route: R) {
   const pageProps = await resolveNextPageProps(props)
@@ -32,32 +35,23 @@ export function page<R extends PageRoutes>(
   const Page = async function PageWrapper(props: PageProps<R>) {
 
     const context = await getPageRouteContext(props, route) as PageRouteContext<R>
-
-    // Assign current context to header localasyncstorage
-    const header = await headers()
-    Object.assign(header, {
-      __page_context: {
-        searchParams: context.searchParams,
-        path: context.path
-      }
-    })
+    await setPageContext(context)
 
     try {
+
       if (layout) 
         return layout(await render(context))
       return await render(context)
+
     } catch (error) {
-      const redirection = resolveCustomRedirectError(error)
-      if (redirection) {
-        if (redirection.mode === "replace")
-          redirect(redirection.path, RedirectType.push)
-        if (redirection.mode === "push")
-          redirect(redirection.path, RedirectType.replace)
-      }
-      // Improved Error System
-      if (error instanceof IntentionalPageError)
+
+      if (error instanceof IntentionalPageError) // Improved Error System
         return error.render
+      
+      throwRedirectIfNextBetterRedirectErrorAtServer(error)
+
       throw error
+      
     }
   }
   return {
@@ -67,15 +61,11 @@ export function page<R extends PageRoutes>(
 }
 
 
-// Helper Types and Functions
-
 export async function searchParams() {
-  const header = await headers()
-  return (header as any).__page_context?.searchParams ?? {}
+  return getSearchParams()
 }
 export async function currentPath() {
-  const header = await headers()
-  return (header as any).__page_context?.path ?? "/"
+  return getCurrentPath()
 }
 
 
