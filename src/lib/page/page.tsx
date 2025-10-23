@@ -1,6 +1,4 @@
 import type { ReactNode } from "react"
-import { headers } from "next/headers"
-import { redirect, RedirectType } from "next/navigation"
 import { getUser } from "@/shared/auth/auth"
 import type { AppRoutes } from "@/../.next/dev/types/routes"
 import { interpolatePath } from "../interpolatePath"
@@ -8,7 +6,7 @@ import { UnauthorizedLayout } from "../NotFound"
 import { fromPageSearchParamsToString } from "../searchParams"
 import { resolveNextPageProps } from "../next/next-page-props"
 import { getCurrentPath, getSearchParams, setPageContext } from "../next/next-page-better-context"
-import { resolveNextBetterRedirectError, throwRedirectIfNextBetterRedirectErrorAtServer } from "../next/next-better-redirects"
+import { throwRedirectIfNextBetterRedirectErrorAtServer } from "../next/next-better-redirects"
 
 
 export type PageRoutes = AppRoutes
