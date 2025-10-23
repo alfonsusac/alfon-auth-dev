@@ -1,4 +1,4 @@
-import { SuccessCallout } from "@/lib/toast/search-param-toast.clients"
+import { SuccessCallout } from "@/lib/toast/search-param-toast.client"
 import { meta } from "@/meta"
 import Link from "next/link"
 import { List } from "@/lib/primitives"
