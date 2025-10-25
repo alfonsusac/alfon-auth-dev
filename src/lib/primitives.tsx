@@ -33,7 +33,8 @@ export function Section(props: ComponentProps<'section'>) {
 export function Header(props: ComponentProps<'header'> & {
   tight?: boolean
 }) {
-  return <header {...props} className={cn(
+  const { tight, ...rest } = props
+  return <header {...rest} className={cn(
     "flex flex-col gap-2",
     props.tight && "gap-1",
     props.className)} />
