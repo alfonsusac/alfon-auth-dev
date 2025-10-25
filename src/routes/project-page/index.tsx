@@ -13,6 +13,7 @@ import { ProjectKeyCreateModalDialog } from "./project-key-create-dialog"
 import { ProjectSettingsModal } from "./project-settings-dialog"
 import { AdminOnly } from "@/shared/auth/admin-only"
 import { DetailPage } from "@/lib/page-templates"
+import { Spacer } from "@/lib/spacer"
 
 export default page('/[projectid]', async page => {
 
@@ -30,7 +31,7 @@ export default page('/[projectid]', async page => {
   return <>
     <DetailPage toasts={toasts} back={['Home', '/']}>
 
-      <Header>
+      <header>
         <Title>{project.name}</Title>
         <DataGridDisplay data={{
           'project id': project.id,
@@ -38,11 +39,12 @@ export default page('/[projectid]', async page => {
           'updated at': <DateTime date={project.updatedAt} />,
           'created at': <DateTime date={project.createdAt} />
         }} />
-      </Header>
+      </header>
+
 
       <AdminOnly>
         <Section>
-          <Header>
+          <Header tight>
             <SectionTitle>redirect urls</SectionTitle>
             <HelperText>these urls are authorized to redirect to after
               authentication and also used to validate incoming requests.</HelperText>
@@ -56,9 +58,10 @@ export default page('/[projectid]', async page => {
         </Section>
       </AdminOnly >
 
+
       <AdminOnly>
         <Section>
-          <Header>
+          <Header tight>
             <SectionTitle>secret keys</SectionTitle>
             <HelperText>you can create multiple keys for different environments (e.g. development, staging, production).
               this will be used to validate requests to /token endpoints.</HelperText>
@@ -72,6 +75,7 @@ export default page('/[projectid]', async page => {
         </Section>
       </AdminOnly>
 
+
       <AdminOnly>
         <ProjectSettingsModal project={project} >
           <ModalButton className="button small ghost">
@@ -80,6 +84,7 @@ export default page('/[projectid]', async page => {
           </ModalButton>
         </ProjectSettingsModal>
       </AdminOnly>
+
     </DetailPage>
   </>
 })

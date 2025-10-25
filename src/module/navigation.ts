@@ -12,7 +12,4 @@ export const navigate = {
     (...contexts: (PageContext | undefined)[]): never => {
       refresh(), navigate.replace('', ...contexts)
     },
-  error: 
-    (error: string, ...contexts: (PageContext | undefined)[]): never =>
-      navigate.replace('', { error }, ...contexts),
 }

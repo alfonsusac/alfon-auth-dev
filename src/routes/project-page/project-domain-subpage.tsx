@@ -7,11 +7,11 @@ import { Form } from "@/lib/formv2/form-component"
 import { editProjectDomainForm } from "./project-domain-edit-form"
 import { route } from "../routes"
 import { EditFormDialog } from "@/shared/dialog-edit"
-import { Link } from "@/module/link"
 import { CodeBlock } from "@/lib/code-block/code-blocks"
 import { DetailPage } from "@/lib/page-templates"
 import { isError } from "@/module/action/error"
-import { navigate } from "@/module/navigation"
+import { action } from "@/module/action/action"
+import { Link } from "@/module/link"
 
 
 export async function ProjectDomainSubpage({ project, domain, context }:
@@ -41,7 +41,7 @@ export async function ProjectDomainSubpage({ project, domain, context }:
               form={editProjectDomainForm({ project, domain })}
               onSubmit={async () => {
                 "use server"
-                navigate.replace(route.projectPage(project.id), { success: 'updated' }, context)
+                action.success('replace', route.projectPage(project.id), 'updated', context)
               }}
             />
           </>}
@@ -55,9 +55,8 @@ export async function ProjectDomainSubpage({ project, domain, context }:
           action={async () => {
             "use server"
             const res = await deleteDomainAction(domain.id)
-            if (isError(res))
-              return navigate.error(res, context)
-            return navigate.replace(route.projectPage(project.id), { success: 'domain_deleted' })
+            if (isError(res)) action.error(res, context)
+            action.success('replace', route.projectPage(project.id), 'domain_deleted')
           }}
         />
       </Row>
@@ -72,14 +71,13 @@ export async function ProjectDomainSubpage({ project, domain, context }:
         </HelperText>
       </Header>
       <Link
-        href={route.authorizePage(project.id)}
+        href={route.authorizePage(project.id)} _blank
         context={{
           redirect_uri: domain.redirect_url,
           code: "S256_example_code_challenge",
           next: route.projectPage(project.id)
         }}
         className="button small primary"
-        target="_blank"
       >
         Go to Authorization Page
       </Link>

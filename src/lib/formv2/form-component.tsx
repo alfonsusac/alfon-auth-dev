@@ -41,7 +41,6 @@ export type FormProps<F extends FormType> = {
   form: F,
   searchParams?: PageSearchParams
   onSubmit: ResultHandler<F, void>,
-  successRoute?: [string, ...PageContext[]]
 }
 export function Form<F extends FormType>(props: FormProps<F>) {
   return <FormWithProgressiveRedirect

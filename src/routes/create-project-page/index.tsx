@@ -13,19 +13,14 @@ export default page('/create-project', async page => {
     return unauthorized('Back to Home', '/')
 
   return <>
-    <DetailPage back={['Home', '/']} className="gap-0"> 
-
+    <DetailPage back={['Home', '/']}> 
       <Title>Create Project</Title>
-      <Spacer />
-
-      <Form
-        form={createProjectForm}
+      <Form form={createProjectForm}
         onSubmit={async ({ inputs }) => {
           "use server"
           navigate.push(route.projectPage(inputs.id), { success: 'created' })
         }}
       />
-
     </DetailPage>
   </>
 })
