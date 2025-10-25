@@ -1,6 +1,6 @@
 import { CodeMessageHint, Header, Row, Section, Title } from "@/lib/primitives"
 import { authPage } from "../layout"
-import { Link } from "@/lib/link/link"
+import { Link } from "@/module/link"
 import { IconRight } from "@/shared/icons"
 import { getFromPath } from "../session-expired-page/interface"
 

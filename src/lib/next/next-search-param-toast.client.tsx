@@ -4,47 +4,35 @@ import { cn } from "lazy-cn"
 import { useSearchParams } from "next/navigation"
 import { IconCheckFilled } from "../../shared/icons"
 import type { ReactNode } from "react"
-
-export function ToastBanner(props: {
-  messages: Record<string, string>
-}) {
-  const sp = useSearchParams()
-  const value = sp.get('success')
-  const [code, id] = value?.split(' ') ?? []
-  if (typeof value === 'string') {
-    const message = props.messages?.[code] ?? code
-    return <div key={id} className="callout success animate-[fade-in_1s_cubic-bezier(0,_0,_0.2,_1)]">{message}</div>
-  }
-  return <></>
-}
+import { useSuccessToast } from "../page-context/page-context-next-search-params-toast"
 
 export function SuccessCallout(props: {
   messages: Record<string, ReactNode>
 }) {
 
-  const sp = useSearchParams()
-  const value = sp.get('success')
-  const [code, id] = value?.split(' ') ?? []
-  if (typeof value === 'string') {
-    const message = props.messages?.[code] ?? code
-    return <div
-      key={id}
-      className={cn(
-        "toast-container",
-        "pointer-events-none",
-      )}
-    >
-      <div className={cn(
-        "toast-item",
-        "animate-toast",
-        "pointer-events-auto"
-      )}>
-        <IconCheckFilled className="animate-toast-check h-[1lh] w-[1.5ch] shrink-0" />
-        <div>{message}</div>
-      </div>
+  const [message, id] = useSuccessToast({
+    messages: props.messages,
+    key: 'success'
+  })
+
+  if (!message) return <></>
+
+  return <div
+    key={id}
+    className={cn(
+      "toast-container",
+      "pointer-events-none",
+    )}
+  >
+    <div className={cn(
+      "toast-item",
+      "animate-toast",
+      "pointer-events-auto"
+    )}>
+      <IconCheckFilled className="animate-toast-check h-[1lh] w-[1.5ch] shrink-0" />
+      <div>{message}</div>
     </div>
-  }
-  return <></>
+  </div>
 }
 
 

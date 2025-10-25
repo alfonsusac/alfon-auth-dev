@@ -20,7 +20,7 @@ export function interpolatePath<
   P extends string,
 >(
   path: P,
-  params: { [key: string]: string | string[] } // not yet support slug array
+  params: { [key: string]: string | string[] }
 ) {
   let resolvedPath: string = path
 
@@ -28,19 +28,19 @@ export function interpolatePath<
   // First check if <value> is array. if its array then find "[...key]"
   // No need to encodeURIComponent params, because Next.js already it for us.
   for (const [key, value] of Object.entries(params)) {
-    if (Array.isArray(value)) {
+
+    if (Array.isArray(value)) 
       resolvedPath = resolvedPath.replace(`[...${ key }]`, value.join('/'))
-    }
-    if (!Array.isArray(value)) {
+    else
       resolvedPath = resolvedPath.replace(`[${ key }]`, value)
-    }
+    
   }
 
   return resolvedPath as InterpolatePath<P>
 }
 
 export type InterpolatePath<P extends string> =
-  P extends `${ infer Start }[${ infer Param }]${ infer Rest }`
+  P extends `${ infer Start }[${ string }]${ infer Rest }`
   ? `${ Start }${ string }${ InterpolatePath<Rest> }`
   : P
 

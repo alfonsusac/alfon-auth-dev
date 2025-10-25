@@ -1,18 +1,18 @@
 import { CopyButton } from "@/lib/CopyButton"
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { actionResolveError } from "@/lib/redirects"
-import { navigate } from "@/lib/navigate"
 import { regenerateProjectKeySecret, deleteProjectKey } from "@/services/projects"
 import { DeleteButton } from "@/shared/dialog-delete"
 import type { ProjectKeyProp, ProjectProp } from "../types"
 import { ActionButton, Form } from "@/lib/formv2/form-component"
 import { editProjectKeyForm } from "./project-key-edit-form"
 import { route } from "../routes"
-import { searchParams } from "@/lib/page/page"
+import { searchParams } from "@/lib/next/next-page"
 import { Header, Row, Title } from "@/lib/primitives"
 import { EditFormDialog } from "@/shared/dialog-edit"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 import { DetailPage } from "@/lib/page-templates"
+import { navigate } from "@/module/navigation"
 
 export async function ProjectKeySubpage({ project, projectKey, context }:
   & ProjectProp

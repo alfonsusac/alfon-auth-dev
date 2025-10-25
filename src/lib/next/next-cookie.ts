@@ -18,7 +18,6 @@ export class CookieValue {
   ) { }
 }
 
-
 export async function getSecureCookie(key: string) {
   return (await cookies()).get(key)?.value
 }

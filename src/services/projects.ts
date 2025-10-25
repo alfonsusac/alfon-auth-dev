@@ -1,8 +1,8 @@
-import { datacache } from "@/lib/cache"
+import { datacache } from "@/lib/next/next-cache"
 import prisma, { serializeDate } from "@/lib/db"
-import { generateSecret } from "@/lib/token"
-import { validateSecureURLwithLocalhost } from "@/lib/url/url"
-import { validation } from "@/lib/validation"
+import { generateSecret } from "@/module/generate-secret"
+import { validateSecureURLwithLocalhost } from "@/lib/core/url"
+import { validation } from "@/lib/core/validation"
 import { adminOnlyService } from "@/shared/auth/admin-only"
 import { updateTag } from "next/cache"
 

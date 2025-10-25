@@ -4,12 +4,12 @@ import { authPage } from "../layout"
 import { route, withContext } from "@/routes/routes"
 import { requireUesr } from "@/shared/auth/admin-only"
 import { validateAuthorizeCode, validateRedirectUri } from "@/services/auth/validations"
-import { isError } from "@/lib/error"
+import { isError } from "@/module/action/error"
 import { getAllProjectDomainsOfProject, getProject, getProjectDomainByOrigin } from "@/services/projects"
 import { AuthorizeProjectUI } from "./authorize-project-ui"
-import { navigate } from "@/lib/navigate"
 import { allowProjectAuthorization, denyProjectAuthorization } from "@/services/auth/logic"
 import {  getUser } from "@/shared/auth/auth"
+import { navigate } from "@/module/navigation"
 
 // server receives: projectid, redirect_uri, code, next
 

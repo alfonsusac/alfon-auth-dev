@@ -1,15 +1,15 @@
 import type { ComponentProps } from "react"
 import { FormButton } from "../FormButton"
 import { actionResolveError } from "../redirects"
-import { toNativeSearchParams } from "../searchParams"
-import { ErrorCallout } from "../toast/search-param-toast.client"
+import { toNativeSearchParams } from "../next/next-search-params"
+import { ErrorCallout } from "../next/next-search-param-toast.client"
 import { type FormType } from "./form"
 import type { ActionParameter } from "./form-action"
 import { FormWithProgressiveRedirect } from "./form-redirect"
 import { cn } from "lazy-cn"
 import { InputFields, type FieldMap } from "./input-fields/input-fields"
 import { formDataToTypedInput } from "./input-fields/input-fields-util"
-import { navigate } from "../navigate"
+import { navigate } from "@/module/navigation"
 
 // Just Server Buttons
 
@@ -40,8 +40,8 @@ export type ResultHandler<F extends FormType, R> = (data: {
 export type FormProps<F extends FormType> = {
   form: F,
   searchParams?: PageSearchParams
-  navigateOnSubmit?: ResultHandler<F, string>,
   onSubmit: ResultHandler<F, void>,
+  successRoute?: [string, ...PageContext[]]
 }
 export function Form<F extends FormType>(props: FormProps<F>) {
   return <FormWithProgressiveRedirect
@@ -52,7 +52,6 @@ export function Form<F extends FormType>(props: FormProps<F>) {
       const response = await props.form.action(inputs) as F['$result']
       const result = actionResolveError(response, inputs)
       await props.onSubmit?.({ result, inputs })
-      props.navigateOnSubmit && navigate.push(await props.navigateOnSubmit({ result, inputs }))
     }}
   >
     <InputFields // TODO : determine why this needs searchParams. It shouldn't. Also, move to form v2 folder

@@ -5,7 +5,7 @@ import type { ComponentProps } from "react"
 
 
 
-export function LinkClient({
+export function LinkClientWithShallow({
   shallow,
   replace,
   scroll,

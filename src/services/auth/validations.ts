@@ -1,4 +1,4 @@
-import { parseURL } from "@/lib/url/url"
+import { parseURL } from "@/lib/core/url"
 
 export function validateRedirectUri(redirect_uri: PageSearchParam) {
   if (!redirect_uri) return "redirect_uri_missing"

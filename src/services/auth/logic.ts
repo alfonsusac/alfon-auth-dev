@@ -2,8 +2,8 @@
 
 import { getCurrentUserSessionProvider, type Session, type User } from "@/shared/auth/auth"
 import { getProject, getProjectDomainByOrigin, type Project, type ProjectDomain } from "../projects"
-import { type ValidatedURL } from "@/lib/url/url"
-import { generateSecret } from "@/lib/token"
+import { type ValidatedURL } from "@/lib/core/url"
+import { generateSecret } from "@/module/generate-secret"
 import prisma from "@/lib/db"
 
 

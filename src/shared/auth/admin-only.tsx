@@ -1,6 +1,6 @@
-import { navigate } from "@/lib/navigate"
 import { getUser } from "./auth"
-import { getActionContext } from "@/lib/actions"
+import { getActionContext } from "@/lib/next/next-actions"
+import { navigate } from "@/module/navigation"
 import { sessionExpired } from "@/routes/(auth-layout)/session-expired-page/interface"
 
 export async function AdminOnly(props: {

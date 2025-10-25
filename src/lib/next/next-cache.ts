@@ -1,4 +1,4 @@
-import { revalidateTag, unstable_cache, updateTag } from "next/cache"
+import { unstable_cache, updateTag } from "next/cache"
 import { cache } from "react"
 
 export function taggeddatacache<

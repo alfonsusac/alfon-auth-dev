@@ -1,7 +1,5 @@
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { Header, HelperText, Row, Section, SectionTitle, Title } from "@/lib/primitives"
-import { actionResolveError } from "@/lib/redirects"
-import { navigate } from "@/lib/navigate"
 import { DomainProp, ProjectProp } from "@/routes/types"
 import { DeleteButton } from "@/shared/dialog-delete"
 import { deleteDomainAction } from "./project-domain-delete-action"
@@ -9,9 +7,11 @@ import { Form } from "@/lib/formv2/form-component"
 import { editProjectDomainForm } from "./project-domain-edit-form"
 import { route } from "../routes"
 import { EditFormDialog } from "@/shared/dialog-edit"
-import { Link } from "@/lib/link/link"
+import { Link } from "@/module/link"
 import { CodeBlock } from "@/lib/code-block/code-blocks"
 import { DetailPage } from "@/lib/page-templates"
+import { isError } from "@/module/action/error"
+import { navigate } from "@/module/navigation"
 
 
 export async function ProjectDomainSubpage({ project, domain, context }:
@@ -55,8 +55,9 @@ export async function ProjectDomainSubpage({ project, domain, context }:
           action={async () => {
             "use server"
             const res = await deleteDomainAction(domain.id)
-            actionResolveError(res, { delete: 'show' })
-            navigate.replace(route.projectPage(project.id), { success: 'domain_deleted' })
+            if (isError(res))
+              return navigate.error(res, context)
+            return navigate.replace(route.projectPage(project.id), { success: 'domain_deleted' })
           }}
         />
       </Row>

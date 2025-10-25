@@ -1,8 +1,8 @@
 import { ActionButton } from "@/lib/formv2/form-component"
-import { navigate } from "@/lib/navigate"
 import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
 import { signIn, signOut } from "./auth"
+import { navigate } from "@/module/navigation"
 
 export function LogOutButton(props: {
   className?: string,

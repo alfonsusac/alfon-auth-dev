@@ -1,5 +1,5 @@
 import { ArcticFetchError, generateCodeVerifier, generateState, Google, OAuth2RequestError } from "arctic"
-import { CookieValue } from "../cookie"
+import { CookieValue } from "../next/next-cookie"
 
 function encodeState(state: string, extra?: string) {
   return state + (extra ? ('|||' + extra) : '')

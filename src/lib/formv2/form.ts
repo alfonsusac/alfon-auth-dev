@@ -1,6 +1,6 @@
 import type { Action } from "./form-action"
 import type { ErrorMessages } from "./form-action-results"
-import type { ExtractErrorMessageMapFromRes } from "../toast/search-param-toast.client"
+import type { ExtractErrorMessageMapFromRes } from "../next/next-search-param-toast.client"
 import type { FieldMap } from "./input-fields/input-fields"
 
 

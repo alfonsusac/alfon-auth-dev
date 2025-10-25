@@ -1,3 +1,7 @@
+declare global {
+  type PageSearchParams = Awaited<PageProps<'/'>['searchParams']>
+}
+
 export function toNativeSearchParams(sp: PageSearchParams) {
   if (!sp) return new URLSearchParams()
 

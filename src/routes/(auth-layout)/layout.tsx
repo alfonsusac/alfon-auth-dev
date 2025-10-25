@@ -1,5 +1,5 @@
 import { SimpleCenterPage } from "@/lib/page-templates"
-import { page, type PageRouteContext, type PageRoutes } from "@/lib/page/page"
+import { page, type PageRouteContext, type PageRoutes } from "@/lib/next/next-page"
 import { Header } from "@/lib/primitives"
 import { Logo } from "@/shared/logo"
 import { ReactNode } from "react"

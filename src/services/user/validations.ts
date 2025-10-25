@@ -1,5 +1,5 @@
 import type { PseudoClass } from "@/lib/core/pseudo-class"
-import { parseURL } from "@/lib/url/url"
+import { parseURL } from "@/lib/core/url"
 
 
 

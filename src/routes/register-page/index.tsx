@@ -1,15 +1,15 @@
 import { Form } from "@/lib/formv2/form-component"
-import { page } from "@/lib/page/page"
+import { page } from "@/lib/next/next-page"
 import { DetailPage } from "@/lib/page-templates"
 import { Header, Row, Section, Semibold, Title } from "@/lib/primitives"
 import { registerUserForm } from "./user-register-form"
-import { navigate } from "@/lib/navigate"
 import { route } from "../routes"
 import { getCurrentUserSessionProvider } from "@/shared/auth/auth"
 import { LogOutButton } from "@/shared/auth/login-button"
 import { ProviderIcons } from "@/lib/auth/providers"
 import { Spacer } from "@/lib/spacer"
 import { obfuscateEmail } from "@/shared/obfuscated"
+import { navigate } from "@/module/navigation"
 
 export default page('/register', async page => {
 

@@ -1,4 +1,4 @@
-import { splitOnce } from "../core/split-once"
+import { splitOnce } from "./split-once"
 
 export function validateSecureURLwithLocalhost(url?: string | null | { set?: string | null | undefined }) {
   if (typeof url === 'object' && url !== null) url = url.set

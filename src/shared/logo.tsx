@@ -1,4 +1,4 @@
-import { parseURL } from "@/lib/url/url"
+import { parseURL } from "@/lib/core/url"
 import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
 

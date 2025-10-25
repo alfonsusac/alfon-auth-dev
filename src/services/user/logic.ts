@@ -1,4 +1,4 @@
-import { datacache, taggeddatacache } from "@/lib/cache"
+import { datacache, taggeddatacache } from "@/lib/next/next-cache"
 import prisma, { serializeDate } from "@/lib/db"
 import type { Session } from "@/shared/auth/auth"
 import { updateTag } from "next/cache"

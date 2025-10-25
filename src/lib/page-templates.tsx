@@ -4,7 +4,7 @@ import { cn } from "lazy-cn"
 import { ReactNode } from "react"
 import { NavigationBar } from "./NavigationBar"
 import { Spacer } from "./spacer"
-import { SuccessCallout } from "./toast/search-param-toast.client"
+import { SuccessCallout } from "./next/next-search-param-toast.client"
 
 export function DetailPage(props: {
   children?: ReactNode,

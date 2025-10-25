@@ -1,12 +1,12 @@
 import { DialogSurface, DialogTitle } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { ModalContent } from "@/lib/dialogsv2/modal.client"
-import { Props } from "@/lib/page/page"
-import { navigate } from "@/lib/navigate"
+import { Props } from "@/lib/next/next-page"
 import { ProjectProp } from "../types"
 import { Form } from "@/lib/formv2/form-component"
 import { addProjectDomainForm } from "./project-domain-add-form"
 import { route } from "../routes"
+import { navigate } from "@/module/navigation"
 
 export async function ProjectDomainAddModalDialog({ project, children }:
   & ProjectProp

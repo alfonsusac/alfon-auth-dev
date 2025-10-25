@@ -1,5 +1,5 @@
 import { CodeMessageHint, Section, Title } from "@/lib/primitives"
-import type { ParsedURLError } from "@/lib/url/url"
+import type { ParsedURLError } from "@/lib/core/url"
 
 
 function ErrorUI(

@@ -1,9 +1,9 @@
-import { isError } from "@/lib/error"
+import { isError } from "@/module/action/error"
 import { createForm } from "@/lib/formv2/form"
-import { navigate } from "@/lib/navigate"
 import { createUserFromSession } from "@/services/user/logic"
 import { validateAvatarUrl, validateUserName } from "@/services/user/validations"
 import { getCurrentUserSessionProvider, type Session } from "@/shared/auth/auth"
+import { navigate } from "@/module/navigation"
 
 export const registerUserForm = (session: Session) => {
   return createForm({

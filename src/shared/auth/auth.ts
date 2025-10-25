@@ -1,7 +1,7 @@
 import { handleSignInCallback, signInViaGoogle } from "@/lib/auth/authv2"
 import { secureRedirectString } from "@/lib/auth/redirect"
 import { createAppToken, decodeAppToken } from "@/lib/auth/token"
-import { deleteCookie, getSecureCookie, setSecureCookie } from "@/lib/cookie"
+import { deleteCookie, getSecureCookie, setSecureCookie } from "@/lib/next/next-cookie"
 import { getUserByProvider } from "@/services/user/logic"
 import { redirect } from "next/navigation"
 import { cache } from "react"

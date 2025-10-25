@@ -1,11 +1,11 @@
 import { DialogSurface, DialogTitle } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
-import { Props, searchParams } from "@/lib/page/page"
-import { navigate } from "@/lib/navigate"
+import { Props, searchParams } from "@/lib/next/next-page"
 import { ProjectProp } from "../types"
 import { Form } from "@/lib/formv2/form-component"
 import { createProjectKeyForm } from "./project-key-create-form"
 import { route } from "../routes"
+import { navigate } from "@/module/navigation"
 
 export async function ProjectKeyCreateModalDialog({ project, children }:
   & ProjectProp

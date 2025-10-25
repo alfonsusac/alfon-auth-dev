@@ -1,4 +1,4 @@
-import { toNativeSearchParams } from "@/lib/searchParams"
+import { toNativeSearchParams } from "@/lib/next/next-search-params"
 import type { AppRoutes } from "../../.next/dev/types/routes"
 
 // All route names should be defined here

@@ -1,4 +1,4 @@
-import { Link } from "./link/link"
+import { Link } from "../module/link"
 import { Spacer } from "./spacer"
 
 export function NotFoundLayout(props: {

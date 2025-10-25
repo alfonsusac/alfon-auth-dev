@@ -1,8 +1,7 @@
 import { DialogCloseButton, DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
-import { Props, searchParams } from "@/lib/page/page"
+import { Props, searchParams } from "@/lib/next/next-page"
 import { actionResolveError } from "@/lib/redirects"
-import { navigate } from "@/lib/navigate"
 import { deleteProject } from "@/services/projects"
 import { DeleteButton } from "@/shared/dialog-delete"
 import { revalidatePath } from "next/cache"
@@ -11,6 +10,7 @@ import { Form } from "@/lib/formv2/form-component"
 import { editProjectForm } from "./project-edit-form"
 import { route } from "../routes"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
+import { navigate } from "@/module/navigation"
 
 export async function ProjectSettingsModal({ project, children }:
   & ProjectProp

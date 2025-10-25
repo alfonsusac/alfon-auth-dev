@@ -1,4 +1,4 @@
-import { jwtVerify, SignJWT, type JWTPayload } from "jose"
+import { jwtVerify, SignJWT } from "jose"
 
 
 const JWT_SIGN_KEY = new Uint8Array(Buffer.from(process.env.JWT_SECRET))
@@ -23,7 +23,7 @@ export async function createAppToken(params: {
     .setProtectedHeader({ alg: 'HS256', typ: 'JWT' })
     .setIssuedAt()
     .setExpirationTime(expiryTime)
-    .setIssuer('https://auth.alfon.dev') // your app's issuer
+    .setIssuer(process.env.BASE_URL) // your app's issuer
     .setAudience(params.sub)
     .sign(JWT_SIGN_KEY)
   return { expiryTime, duration, jwt }
@@ -31,16 +31,17 @@ export async function createAppToken(params: {
 
 export async function decodeAppToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, JWT_SIGN_KEY, {
-      issuer: 'https://auth.alfon.dev',
-    })
+    const { payload } = await jwtVerify(token, JWT_SIGN_KEY, { issuer: process.env.BASE_URL })
     const { iat, aud, exp, iss, jti, nbf, sub, ...rest } = payload
 
     if (typeof rest.id !== 'string') throw new Error('Invalid token payload: missing id')
 
     return { payload: rest as AppTokenPayload } as const
+
   } catch (e) {
+
     console.error(e)
     return { error: 'Invalid token' } as const
+    
   }
 }
