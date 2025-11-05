@@ -15,9 +15,8 @@ export async function ProjectDomainAddModalDialog({ project, children }:
   return (
     <Modal
       name="add_url"
-      button={Button => children}
+      button={() => children}
       content={dialog => <>
-        {children}
         <ModalContent>
           <DialogSurface wide>
             <DialogTitle>Add Project URL</DialogTitle>

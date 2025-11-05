@@ -12,7 +12,7 @@ import { navigate } from "@/module/navigation"
 import { isError } from "@/module/action/error"
 import { action } from "@/module/action/action"
 import { ActionButton, Form } from "@/module/form"
-import { deleteProjectKey, regenerateProjectKeySecret } from "@/services/ project/db"
+import { deleteProjectKey, regenerateProjectKeySecret } from "@/services/project/db"
 import { projectPageRoute } from "../routes"
 
 export async function ProjectKeySubpage({ project, projectKey, context }:

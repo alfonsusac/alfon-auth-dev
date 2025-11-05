@@ -2,10 +2,12 @@ import { SubpageOverlay } from "@/lib/dialogsv2/dialog.templates"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { List } from "@/lib/primitives"
 import { ProjectProp, DomainProp } from "@/routes/types"
-import { getAllProjectDomainsOfProject } from "@/services/ project/db"
+import { getAllProjectDomainsOfProject } from "@/services/project/db"
 import { ProjectDomainSubpage } from "./project-domain-subpage"
 
-export async function ProjectDomainsList({ project }: & ProjectProp) {
+export async function ProjectDomainsList({ project }:
+  & ProjectProp
+) {
   const domains = await getAllProjectDomainsOfProject(project.id)
   return <>
     <List val={domains}>
@@ -15,7 +17,10 @@ export async function ProjectDomainsList({ project }: & ProjectProp) {
 }
 
 
-function ProjectDomainsListItem({ domain, project }: & DomainProp & ProjectProp) {
+function ProjectDomainsListItem({ domain, project }:
+  & DomainProp
+  & ProjectProp
+) {
 
   const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
   const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')

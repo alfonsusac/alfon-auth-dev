@@ -1,5 +1,5 @@
 import { createForm } from "@/lib/formv2/form"
-import { updateProjectKey, type Project, type ProjectKey } from "@/services/ project/db"
+import { updateProjectKey, type Project, type ProjectKey } from "@/services/project/db"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export function editProjectKeyForm(project: Project, key: ProjectKey) {

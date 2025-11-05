@@ -1,5 +1,5 @@
 import { createForm } from "@/lib/formv2/form"
-import { createDomain, type Project } from "@/services/ project/db"
+import { createDomain, type Project } from "@/services/project/db"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export function addProjectDomainForm(project: Project) {

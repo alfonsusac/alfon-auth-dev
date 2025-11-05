@@ -1,6 +1,6 @@
 import { createForm } from "@/lib/formv2/form"
 import { createAction } from "@/module/action/action"
-import { createProjectKey, type Project } from "@/services/ project/db"
+import { createProjectKey, type Project } from "@/services/project/db"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export function createProjectKeyForm(project: Project) {

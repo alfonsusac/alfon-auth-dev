@@ -2,7 +2,7 @@ import { DataGridDisplay } from "@/lib/DataGrid"
 import { DateTime } from "@/lib/date.ui"
 import { page } from "@/lib/next/next-page"
 import { Header, HelperText, Section, SectionTitle, Title } from "@/lib/primitives"
-import { getProject } from "@/services/ project/db"
+import { getProject } from "@/services/project/db"
 import { projectNotFound } from "./not-found"
 import { ModalButton } from "@/lib/dialogsv2/modal.client"
 import { IconAdd, IconSettings } from "@/shared/icons"
@@ -13,7 +13,6 @@ import { ProjectKeyCreateModalDialog } from "./project-key-create-dialog"
 import { ProjectSettingsModal } from "./project-settings-dialog"
 import { AdminOnly } from "@/shared/auth/admin-only"
 import { DetailPage } from "@/lib/page-templates"
-import { Spacer } from "@/lib/spacer"
 
 export default page('/[projectid]', async page => {
 

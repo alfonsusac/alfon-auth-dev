@@ -1,14 +1,17 @@
 import { createForm } from "@/lib/formv2/form"
-import { createProject } from "@/services/ project/db"
+import { action } from "@/services/project/actions"
+import { createProject } from "@/services/project/db"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 
 export const createProjectForm = createForm({
-  action: async input => {
-    "use server"
-    const user = await adminOnlyAction()
-    return await createProject(input, user.user_id)
-  },
+  action: action({
+    adminOnly: true,
+    fn: async context => {
+      "use server"
+      return await createProject(context.input, context.user.id)
+    }
+  }),
   fields: {
     name: {
       type: "text", required: true, autoFocus: true,

@@ -1,5 +1,5 @@
 import { createForm } from "@/lib/formv2/form"
-import { updateProject, type Project } from "@/services/ project/db"
+import { updateProject, type Project } from "@/services/project/db"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export function editProjectForm(project: Project) {

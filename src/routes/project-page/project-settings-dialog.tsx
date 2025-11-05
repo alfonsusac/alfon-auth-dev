@@ -11,7 +11,7 @@ import { isError } from "@/module/action/error"
 import { action } from "@/module/action/action"
 import { projectPageRoute } from "../routes"
 import { Form } from "@/module/form"
-import { deleteProject } from "@/services/ project/db"
+import { deleteProject } from "@/services/project/db"
 
 export async function ProjectSettingsModal({ project, children }:
   & ProjectProp

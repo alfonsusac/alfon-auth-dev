@@ -1,5 +1,5 @@
 import { createForm } from "@/lib/formv2/form"
-import { updateDomain } from "@/services/ project/db"
+import { updateDomain } from "@/services/project/db"
 import type { DomainProp, ProjectProp } from "../types"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 
