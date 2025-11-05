@@ -1,4 +1,4 @@
-import { getAllProjectKeysByProjectID } from "@/services/projects"
+import { getAllProjectKeysByProjectID } from "@/services/ project/db"
 import { ProjectProp } from "../types"
 import { CopyButton } from "@/lib/CopyButton"
 import { DateTime } from "@/lib/date.ui"

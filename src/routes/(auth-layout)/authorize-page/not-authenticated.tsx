@@ -1,6 +1,5 @@
 import { Header, Section, Title } from "@/lib/primitives"
 import { Spacer } from "@/lib/spacer"
-import { route } from "@/routes/routes"
 import type { ProjectProp } from "@/routes/types"
 import { LogInDevelopmentButton, LogInViaGoogleButton } from "@/shared/auth/login-button"
 import type { SVGProps } from "react"

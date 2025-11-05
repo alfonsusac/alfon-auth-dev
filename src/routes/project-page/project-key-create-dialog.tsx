@@ -2,10 +2,10 @@ import { DialogSurface, DialogTitle } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { Props, searchParams } from "@/lib/next/next-page"
 import { ProjectProp } from "../types"
-import { Form } from "@/lib/formv2/form-component"
 import { createProjectKeyForm } from "./project-key-create-form"
-import { route } from "../routes"
+import { projectPageRoute } from "../routes"
 import { navigate } from "@/module/navigation"
+import { Form } from "@/module/form"
 
 export async function ProjectKeyCreateModalDialog({ project, children }:
   & ProjectProp
@@ -23,10 +23,11 @@ export async function ProjectKeyCreateModalDialog({ project, children }:
             Project keys are used to authorize your application to use the authentication services.
           </p>
           <Form
+            context={dialog.context}
             form={createProjectKeyForm(project)}
-            onSubmit={async () => {
+            onSuccess={async () => {
               "use server"
-              navigate.push(route.projectPage(project.id), { success: 'key_added' })
+              navigate.push(projectPageRoute(project.id), { success: 'key_added' })
             }}
             searchParams={sp}
           />

@@ -3,15 +3,15 @@ import { Header, HelperText, Row, Section, SectionTitle, Title } from "@/lib/pri
 import { DomainProp, ProjectProp } from "@/routes/types"
 import { DeleteButton } from "@/shared/dialog-delete"
 import { deleteDomainAction } from "./project-domain-delete-action"
-import { Form } from "@/lib/formv2/form-component"
+import { Form } from "@/module/form"
 import { editProjectDomainForm } from "./project-domain-edit-form"
-import { route } from "../routes"
 import { EditFormDialog } from "@/shared/dialog-edit"
 import { CodeBlock } from "@/lib/code-block/code-blocks"
 import { DetailPage } from "@/lib/page-templates"
 import { isError } from "@/module/action/error"
 import { action } from "@/module/action/action"
 import { Link } from "@/module/link"
+import { authorizePageRoute, projectPageRoute } from "../routes"
 
 
 export async function ProjectDomainSubpage({ project, domain, context }:
@@ -39,9 +39,10 @@ export async function ProjectDomainSubpage({ project, domain, context }:
           {() => <>
             <Form
               form={editProjectDomainForm({ project, domain })}
-              onSubmit={async () => {
+              context={context}
+              onSuccess={async () => {
                 "use server"
-                action.success('replace', route.projectPage(project.id), 'updated', context)
+                action.success('replace', projectPageRoute(project.id), 'updated', context)
               }}
             />
           </>}
@@ -56,7 +57,7 @@ export async function ProjectDomainSubpage({ project, domain, context }:
             "use server"
             const res = await deleteDomainAction(domain.id)
             if (isError(res)) action.error(res, context)
-            action.success('replace', route.projectPage(project.id), 'domain_deleted')
+            action.success('replace', projectPageRoute(project.id), 'domain_deleted')
           }}
         />
       </Row>
@@ -71,11 +72,11 @@ export async function ProjectDomainSubpage({ project, domain, context }:
         </HelperText>
       </Header>
       <Link
-        href={route.authorizePage(project.id)} _blank
+        href={authorizePageRoute(project.id)} _blank
         context={{
           redirect_uri: domain.redirect_url,
           code: "S256_example_code_challenge",
-          next: route.projectPage(project.id)
+          next: projectPageRoute(project.id)
         }}
         className="button small primary"
       >

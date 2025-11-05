@@ -2,7 +2,7 @@ import { SubpageOverlay } from "@/lib/dialogsv2/dialog.templates"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { List } from "@/lib/primitives"
 import { ProjectProp, DomainProp } from "@/routes/types"
-import { getAllProjectDomainsOfProject } from "@/services/projects"
+import { getAllProjectDomainsOfProject } from "@/services/ project/db"
 import { ProjectDomainSubpage } from "./project-domain-subpage"
 
 export async function ProjectDomainsList({ project }: & ProjectProp) {

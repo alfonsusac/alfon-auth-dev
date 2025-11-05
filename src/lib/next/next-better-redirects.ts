@@ -7,6 +7,7 @@ const SLASH_RESOLVE_PATH_PREFIX = '/___resolve___?url='
 
 export function nextBetterRedirect(path: string, mode: "push" | "replace" = "push"): never {
 
+
   if (mode === "push")
     redirect(SLASH_RESOLVE_PATH_PREFIX + path, RedirectType.push)
   else

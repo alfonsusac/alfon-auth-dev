@@ -16,26 +16,28 @@ const routeNamesMap = {
   '/test-response': 'testResponsePage',
 } as const satisfies { [key in AppRoutes]: string }
 
-export const route = {
-  home: '/' as const,
-  projectPage: id => `/${ id }` as const,
-  authorizePage: id => `/${ id }/authorize` as const,
-  createProjectPage: '/create-project' as const,
-  registerPage: '/register' as const,
-  unauthorizedPage: '/unauthorized' as const,
-  sessionExpiredPage: '/session-expired' as const,
-  notRegisteredPage: '/not-registered' as const,
-  testNavigatePage: '/test-navigate' as const,
-  testResponsePage: '/test-response' as const,
-} satisfies { [key in RouteNames]: string | ((...args: string[]) => string) }
-
-
-type RouteNameMap = typeof routeNamesMap
-type RouteNames = RouteNameMap[keyof RouteNameMap]
-
-export function withContext(route: `/${ string }`, context: { [key: string]: string | undefined }) {
+export function withContext(route: `/${ string }`, ...context: { [key: string]: string | undefined }[]) {
   if (!context) return route
   if (Object.keys(context).length === 0) return route
-  const sp = toNativeSearchParams(context)
+  const mergedContext = Object.assign({}, ...context)
+  const sp = toNativeSearchParams(mergedContext)
   return (route + (sp.toString() ? '?' + sp.toString() : '')) as `/${ string }`
 }
+
+function createRouteWithContext(route: `/${ string }`) {
+  return route
+  // return (...context: { [key: string]: string | undefined }[]) => withContext(route, ...context)
+}
+
+export type routeNames = typeof routeNamesMap[keyof typeof routeNamesMap] 
+
+// navigate.push('registerPage(asdfas)?success:project_created') 
+
+export const homeRoute = createRouteWithContext('/')
+export const projectPageRoute = (id: string) => createRouteWithContext(`/${ id }`)
+export const authorizePageRoute = (id: string) => createRouteWithContext(`/${ id }/authorize`)
+export const createProjectPageRoute = createRouteWithContext('/create-project')
+export const registerPageRoute = createRouteWithContext('/register')
+export const unauthorizedPageRoute = createRouteWithContext('/unauthorized')
+export const sessionExpiredPageRoute = createRouteWithContext('/session-expired')
+export const notRegisteredPageRoute = createRouteWithContext('/not-registered')

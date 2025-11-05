@@ -5,7 +5,7 @@ import { List } from "@/lib/primitives"
 import { LogInDevelopmentButton, LogInViaGoogleButton, LogOutButton } from "@/shared/auth/login-button"
 import { AdminOnly } from "@/shared/auth/admin-only"
 import { getUser } from "@/shared/auth/auth"
-import { getAllProjects } from "@/services/projects"
+import { getAllProjects } from "@/services/ project/db"
 
 export default async function Home() {
 

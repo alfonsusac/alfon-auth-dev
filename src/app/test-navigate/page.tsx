@@ -1,4 +1,4 @@
-import { ActionButton } from "@/lib/formv2/form-component"
+import { ActionButton } from "@/module/form"
 import { page } from "@/lib/next/next-page"
 import { navigate } from "@/module/navigation"
 import { refresh } from "next/cache"

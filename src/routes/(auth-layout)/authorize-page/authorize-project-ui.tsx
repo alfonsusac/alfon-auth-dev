@@ -1,4 +1,4 @@
-import { ActionButton } from "@/lib/formv2/form-component"
+import { ActionButton } from "@/module/form"
 import { Header, Row, Section, Title } from "@/lib/primitives"
 import { Spacer } from "@/lib/spacer"
 import { LogOutButton } from "@/shared/auth/login-button"

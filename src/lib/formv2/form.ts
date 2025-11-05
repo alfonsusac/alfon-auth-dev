@@ -1,6 +1,6 @@
+import type { ExtractErrorMessageMapFromRes } from "../next/next-search-param-toast.client"
 import type { Action } from "./form-action"
 import type { ErrorMessages } from "./form-action-results"
-import type { ExtractErrorMessageMapFromRes } from "../next/next-search-param-toast.client"
 import type { FieldMap } from "./input-fields/input-fields"
 
 
@@ -30,7 +30,7 @@ export const createForm = <
 }) => (
   opts2: { // Still logic, just slightly improve DX for errorMessage auto completion.
     errorMessages?: ExtractErrorMessageMapFromRes<Action<I, R>>
-  }
+  }  
 ) => {
     return {
       fields: opts.fields,

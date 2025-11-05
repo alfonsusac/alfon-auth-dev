@@ -1,5 +1,5 @@
 import { createForm } from "@/lib/formv2/form"
-import { createDomain, type Project } from "@/services/projects"
+import { createDomain, type Project } from "@/services/ project/db"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 
 export function addProjectDomainForm(project: Project) {
@@ -43,8 +43,6 @@ export function addProjectDomainForm(project: Project) {
       domain_exists: "domain already exists for this project.",
       domain_in_use: "domain is already in use by another project: $1",
 
-      // "invalid_origin_new_url()_requires_a_protocol": "origin must include http:// or https://",
-      // "invalid_redirect_url_new_url()_requires_a_protocol": "redirect url must include http:// or https://",
       invalid_origin_empty_url: "origin cannot be empty.",
       invalid_origin_insecure_protocol: "origin must use https unless using localhost.",
       invalid_origin_invalid_protocol: "origin has an invalid protocol.",

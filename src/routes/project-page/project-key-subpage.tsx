@@ -1,18 +1,19 @@
 import { CopyButton } from "@/lib/CopyButton"
 import { DataGridDisplay } from "@/lib/DataGrid"
-import { actionResolveError } from "@/lib/redirects"
-import { regenerateProjectKeySecret, deleteProjectKey } from "@/services/projects"
 import { DeleteButton } from "@/shared/dialog-delete"
 import type { ProjectKeyProp, ProjectProp } from "../types"
-import { ActionButton, Form } from "@/lib/formv2/form-component"
 import { editProjectKeyForm } from "./project-key-edit-form"
-import { route } from "../routes"
 import { searchParams } from "@/lib/next/next-page"
 import { Header, Row, Title } from "@/lib/primitives"
 import { EditFormDialog } from "@/shared/dialog-edit"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 import { DetailPage } from "@/lib/page-templates"
 import { navigate } from "@/module/navigation"
+import { isError } from "@/module/action/error"
+import { action } from "@/module/action/action"
+import { ActionButton, Form } from "@/module/form"
+import { deleteProjectKey, regenerateProjectKeySecret } from "@/services/ project/db"
+import { projectPageRoute } from "../routes"
 
 export async function ProjectKeySubpage({ project, projectKey, context }:
   & ProjectProp
@@ -42,8 +43,8 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
             "use server"
             await adminOnlyAction()
             const res = await regenerateProjectKeySecret(key.id)
-            actionResolveError(res, context)
-            navigate.replace(route.projectPage(project.id), { success: 'updated' }, context)
+            if (isError(res)) action.error(res, context)
+            action.success('replace', projectPageRoute(project.id), 'updated', context)
           }}
           loading="Regenerating..."
         >
@@ -55,9 +56,9 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
         >
           {dialog => <Form
             form={editProjectKeyForm(project, projectKey)}
-            onSubmit={async () => {
+            onSuccess={async () => {
               'use server'
-              navigate.replace(route.projectPage(project.id), { success: 'updated' }, context)
+              navigate.replace(projectPageRoute(project.id), { success: 'updated' }, context)
             }}
             searchParams={sp}
           />}
@@ -72,8 +73,8 @@ export async function ProjectKeySubpage({ project, projectKey, context }:
             "use server"
             await adminOnlyAction()
             const res = await deleteProjectKey(key.id)
-            actionResolveError(res, context)
-            navigate.replace(route.projectPage(project.id), { success: 'domain_deleted' }, context)
+            if (isError(res)) action.error(res, context)
+            navigate.replace(projectPageRoute(project.id), { success: 'domain_deleted' }, context)
           }}
         />
       </Row>

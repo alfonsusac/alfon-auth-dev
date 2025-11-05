@@ -3,10 +3,10 @@ import { Modal } from "@/lib/dialogsv2/modal"
 import { ModalContent } from "@/lib/dialogsv2/modal.client"
 import { Props } from "@/lib/next/next-page"
 import { ProjectProp } from "../types"
-import { Form } from "@/lib/formv2/form-component"
+import { Form } from "@/module/form"
 import { addProjectDomainForm } from "./project-domain-add-form"
-import { route } from "../routes"
 import { navigate } from "@/module/navigation"
+import { projectPageRoute } from "../routes"
 
 export async function ProjectDomainAddModalDialog({ project, children }:
   & ProjectProp
@@ -23,9 +23,10 @@ export async function ProjectDomainAddModalDialog({ project, children }:
             <DialogTitle>Add Project URL</DialogTitle>
             <Form
               form={addProjectDomainForm(project)}
-              onSubmit={async () => {
+              context={dialog.context}
+              onSuccess={async () => {
                 "use server"
-                navigate.push(route.projectPage(project.id), { success: 'domain_added' }, dialog.context)
+                navigate.push(projectPageRoute(project.id), { success: 'domain_added' }, dialog.context)
               }}
             />
           </DialogSurface>

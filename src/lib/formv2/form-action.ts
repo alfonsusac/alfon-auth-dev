@@ -1,3 +1,4 @@
+import type { action } from "@/module/action/action"
 import type { FieldMap } from "./input-fields/input-fields"
 
 export type ActionParameter<F extends FieldMap>
@@ -7,5 +8,5 @@ export type Action<
   F extends FieldMap,
   R
 > = (
-  formInput: ActionParameter<F>,
+  ctx: ActionParameter<F>
 ) => Promise<R>

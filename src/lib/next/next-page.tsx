@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 import { getUser } from "@/shared/auth/auth"
 import type { AppRoutes } from "@/../.next/dev/types/routes"
-import { interpolatePath } from "../interpolate-path"
+import { interpolatePath } from "./next-interpolate-path"
 import { UnauthorizedLayout } from "../NotFound"
 import { fromPageSearchParamsToString } from "./next-search-params"
 import { resolveNextPageProps } from "./next-page-props"
@@ -17,7 +17,7 @@ async function getPageRouteContext<R extends PageRoutes>(props: PageProps<R>, ro
   const pageProps = await resolveNextPageProps(props)
   const user = await getUser()
   const path = interpolatePath(route, pageProps.params)
-  const pathQuery = path + fromPageSearchParamsToString(pageProps.searchParams)
+  const pathQuery = path + '?' + fromPageSearchParamsToString(pageProps.searchParams)
   const context = { ...pageProps, path, pathQuery, user, ...pageProps.params }
   return context
 }

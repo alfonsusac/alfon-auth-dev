@@ -1,4 +1,4 @@
-import { ActionButton } from "@/lib/formv2/form-component"
+import { ActionButton } from "@/module/form"
 import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
 import { signIn, signOut } from "./auth"

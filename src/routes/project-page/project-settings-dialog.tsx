@@ -1,16 +1,17 @@
 import { DialogCloseButton, DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { Props, searchParams } from "@/lib/next/next-page"
-import { actionResolveError } from "@/lib/redirects"
-import { deleteProject } from "@/services/projects"
 import { DeleteButton } from "@/shared/dialog-delete"
 import { revalidatePath } from "next/cache"
 import { ProjectProp } from "../types"
-import { Form } from "@/lib/formv2/form-component"
 import { editProjectForm } from "./project-edit-form"
-import { route } from "../routes"
 import { adminOnlyAction } from "@/shared/auth/admin-only"
 import { navigate } from "@/module/navigation"
+import { isError } from "@/module/action/error"
+import { action } from "@/module/action/action"
+import { projectPageRoute } from "../routes"
+import { Form } from "@/module/form"
+import { deleteProject } from "@/services/ project/db"
 
 export async function ProjectSettingsModal({ project, children }:
   & ProjectProp
@@ -29,9 +30,9 @@ export async function ProjectSettingsModal({ project, children }:
             <h3 className="category-header">project details ↓</h3>
             <Form
               form={editProjectForm(project)}
-              onSubmit={async () => {
+              onSuccess={async () => {
                 "use server"
-                navigate.replace(route.projectPage(project.id), { success: "updated" }, modal.context)
+                navigate.replace(projectPageRoute(project.id), { success: "updated" }, modal.context)
               }}
               searchParams={sp}
             />
@@ -48,8 +49,8 @@ export async function ProjectSettingsModal({ project, children }:
                 "use server"
                 await adminOnlyAction()
                 const res = await deleteProject(project.id)
-                actionResolveError(res, { delete: '' })
-                revalidatePath('/', 'layout')
+                if (isError(res))
+                  action.error(res, modal.context)
                 navigate.push('/?success=deleted')
               }}
             />

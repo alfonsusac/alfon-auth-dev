@@ -46,6 +46,10 @@ export function SuccessCallout(props: {
 type ExtractErrorFromRes<T extends (...args: any) => any> = Extract<Awaited<ReturnType<T>>, string>
 type ExtractErrorKeysFromRes<T extends string> = T extends `${ infer V }=${ string }` ? V : T
 export type GetErrorValueFromErrorRes<T extends string> = T extends `${ string }=${ string }` ? `${ string }$1${ string }` : string
+
+export type ExtractErorrMessageMapFromRes2<T extends string> = {
+  [K in T as ExtractErrorKeysFromRes<K>]: GetErrorValueFromErrorRes<K>
+}
 export type ExtractErrorMessageMapFromRes<T extends (...args: any) => any> = {
   [K in ExtractErrorFromRes<T> as ExtractErrorKeysFromRes<K>]: GetErrorValueFromErrorRes<K>
 }

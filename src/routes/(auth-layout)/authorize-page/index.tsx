@@ -1,11 +1,11 @@
 import { AuthorizePageInvalidParameter, AuthorizeProjectNotFoundContent } from "./errors"
 import { AuthorizeProjectNotAuthenticated } from "./not-authenticated"
 import { authPage } from "../layout"
-import { route, withContext } from "@/routes/routes"
+import { authorizePageRoute, withContext } from "@/routes/routes"
 import { requireUesr } from "@/shared/auth/admin-only"
 import { validateAuthorizeCode, validateRedirectUri } from "@/services/auth/validations"
 import { isError } from "@/module/action/error"
-import { getAllProjectDomainsOfProject, getProject, getProjectDomainByOrigin } from "@/services/projects"
+import { getAllProjectDomainsOfProject, getProject, getProjectDomainByOrigin } from "@/services/ project/db"
 import { AuthorizeProjectUI } from "./authorize-project-ui"
 import { allowProjectAuthorization, denyProjectAuthorization } from "@/services/auth/logic"
 import {  getUser } from "@/shared/auth/auth"
@@ -28,7 +28,7 @@ const authorizePage = authPage('/[projectid]/authorize', async page => {
   if (!project_domain) return <AuthorizePageInvalidParameter message="redirect_uri does not match any registered domain" />
   if (isError(code)) return <AuthorizePageInvalidParameter message={code} />
   if (isError(next)) return <AuthorizePageInvalidParameter message={next} />
-  if (!page.user) return <AuthorizeProjectNotAuthenticated project={project} redirectTo={withContext(route.authorizePage(project.id), { redirect_uri: redirect_uri.toString(), code: code.val, next: next.val })} />
+  if (!page.user) return <AuthorizeProjectNotAuthenticated project={project} redirectTo={withContext(authorizePageRoute(project.id), { redirect_uri: redirect_uri.toString(), code: code.val, next: next.val })} />
 
   return <>
     <AuthorizeProjectUI

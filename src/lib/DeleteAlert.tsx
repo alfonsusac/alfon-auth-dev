@@ -2,7 +2,7 @@ import type { ReactNode } from "react"
 import { DangerSymbol } from "./DangerSymbol"
 import { Link } from "../module/link"
 import { FormButton } from "./FormButton"
-import { ActionButton } from "./formv2/form-component"
+import { ActionButton } from "../module/form"
 
 export function DeleteAlert(props: {
   title: ReactNode,

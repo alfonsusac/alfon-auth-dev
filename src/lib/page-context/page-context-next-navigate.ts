@@ -1,5 +1,5 @@
-import { fromPageSearchParamsToString } from "./next/next-search-params"
-import { nextBetterRedirect } from "./next/next-better-redirects"
+import { fromPageSearchParamsToString } from "../next/next-search-params"
+import { nextBetterRedirect } from "../next/next-better-redirects"
 
 
 

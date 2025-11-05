@@ -1,11 +1,11 @@
 import { page, unauthorized } from "@/lib/next/next-page"
-import { Title, Section } from "@/lib/primitives"
+import { Title } from "@/lib/primitives"
 import { createProjectForm } from "./project-create-form"
-import { Form } from "@/lib/formv2/form-component"
-import { route } from "../routes"
+import { Form } from "@/module/form"
 import { DetailPage } from "@/lib/page-templates"
-import { Spacer } from "@/lib/spacer"
 import { navigate } from "@/module/navigation"
+import { projectPageRoute } from "../routes"
+import { createProjectAction } from "@/services/ project/actions"
 
 export default page('/create-project', async page => {
 
@@ -13,14 +13,20 @@ export default page('/create-project', async page => {
     return unauthorized('Back to Home', '/')
 
   return <>
-    <DetailPage back={['Home', '/']}> 
+    <DetailPage back={['Home', '/']}>
       <Title>Create Project</Title>
-      <Form form={createProjectForm}
-        onSubmit={async ({ inputs }) => {
+      <Form
+        form={createProjectForm}
+        onSuccess={async action => {
           "use server"
-          navigate.push(route.projectPage(inputs.id), { success: 'created' })
+          navigate.push(projectPageRoute(action.inputs.id), { success: 'project_created' })
         }}
       />
+
+      <form action={createProjectAction.bind(null)}>
+      </form>
     </DetailPage>
   </>
+
 })
+

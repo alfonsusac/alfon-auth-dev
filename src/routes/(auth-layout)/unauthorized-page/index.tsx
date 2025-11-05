@@ -1,6 +1,6 @@
 import { Link } from "@/module/link"
 import { Header, Title } from "@/lib/primitives"
-import { route } from "../../routes"
+import { homeRoute } from "../../routes"
 import { authPage } from "../layout"
 
 export default authPage('/unauthorized', async page => {
@@ -11,6 +11,6 @@ export default authPage('/unauthorized', async page => {
         You do not have the necessary permissions to access this page or perform this action.
       </div>
     </Header>
-    <Link className="button primary" href={route.home}>Back to Home</Link>
+    <Link className="button primary" href={homeRoute}>Back to Home</Link>
   </>
 })

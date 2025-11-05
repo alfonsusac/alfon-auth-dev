@@ -15,14 +15,14 @@ export type Field = {
       defaultValue?: string
       required?: boolean
       placeholder?: string
-      autoFocus?: boolean
+      autoFocus?: boolean         
     } & (
       { // TextInput
         type: "text",
         prefix?: string,
       }
     )
-    | { // Non-Inputtables
+    | { // Non-Inputtables 
       type: "readonly",
       value: string
     }
@@ -54,7 +54,7 @@ export function InputField<F extends Field>(props: {
 
   const id = props.name + '_' + name
 
-  const inputProps = {
+  const inputProps = {                  
     name,
     id,
     defaultValue: props.searchParams?.get(name) ?? field.defaultValue ?? '',

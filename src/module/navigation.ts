@@ -1,4 +1,4 @@
-import { navigateWithContext } from "@/lib/navigate"
+import { navigateWithContext } from "@/lib/page-context/page-context-next-navigate"
 import { refresh } from "next/cache"
 
 export const navigate = {

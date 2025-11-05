@@ -27,5 +27,5 @@ export function fromPageSearchParamsToString(sp: PageSearchParams) {
       for (const vv of v) asp.push([k, vv])
     } else asp.push([k, v])
   }
-  return `?` + asp.map(([k, v]) => `${ k }=${ v }`).join('&')
+  return asp.map(([k, v]) => `${ k }=${ v }`).join('&')
 }
