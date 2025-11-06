@@ -59,16 +59,33 @@ export function ModalBase(props: {
 // #2
 export function ModalButton(props: ComponentProps<typeof Link> & { name?: string }) {
   const { name, ...rest } = props
-  const modal = use(modalContext.context)
-  const parentContext = use(modalContentContext.context)
+  const modal = use(modalContext.context) // will process the openHref according to 1) the modal it is in, and 2) all the necessary context from above the <Modal> boundary.
+  const parentContext = use(modalContentContext.context) // get the context from above the <Modal> boundary.
+  return <>
+    <ModalButtonBase {...rest} modal={modal} parentContext={parentContext} />
+  </>
+}
+
+export function ModalButtonBase(props:
+  & ComponentProps<typeof Link>
+  & { name?: string }
+  & { modal: ModalContext | null }
+  & { parentContext: ModalContentContext | null }
+) {
+  const { name, modal, parentContext, ...rest } = props
   const hrefName = name || modal?.name
   return <>
-    <Link {...rest} href={`?${ hrefName }`} scroll={false} client context={parentContext?.context} />
+    <Link {...rest}
+      href={`?${ hrefName }`}
+      scroll={false}
+      client
+      context={parentContext?.context}
+    />
   </>
 }
 
 export function ModalClose(props: ComponentProps<typeof Link>) {
-  const modal = useSearchParamModal()
+  const modal = useModalContext()
   const parentContext = use(modalContentContext.context)
   const context = { ...parentContext?.context }
   delete context[modal.name]
@@ -107,7 +124,7 @@ export function ModalBackdrop(props: ComponentProps<typeof ModalClose> & { show:
 // - Modal Backdrop is a must otherwise the rest of the page is still interactive
 
 export function ModalContent(props: { children?: ReactNode, className?: string }) {
-  const modal = useSearchParamModal()
+  const modal = useModalContext()
   const parentContext = use(modalContentContext.context)
   const context = { ...parentContext?.context, [modal.name]: '' }
   return <>
@@ -130,8 +147,8 @@ export function ModalContent(props: { children?: ReactNode, className?: string }
 
 
 // #4
-export const useSearchParamModal = modalContext.use
-export const useSearchParamModalContent = modalContentContext.use
+export const useModalContext = modalContext.use
+export const useModalContentContext = modalContentContext.use
 
 
 

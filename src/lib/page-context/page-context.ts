@@ -26,6 +26,9 @@ function resolveFragmentlessHref(nofragmenthref: string | undefined, context: Pa
     return nofragmenthref + '?' + new URLSearchParams(context).toString()
 
   const [path, sp] = nofragmenthref.split('?', 2)
+
+  if (!sp)
+    return path + '?' + new URLSearchParams(context).toString()
   return path + '?' + new URLSearchParams(context).toString() + '&' + sp
 
 }

@@ -4,18 +4,23 @@ import type { ComponentProps } from "react"
 export function ListBase(props: ComponentProps<'ul'>) {
   return <ul {...props} className={cn("list", props.className)} />
 }
-export function List<T>(
+export async function List<T>(
   props: Omit<ComponentProps<'ul'>, 'children'> & {
-    val: T[],
+    values: T[] | Promise<T[]>,
     children: (item: T, index: number) => React.ReactNode,
     fallback?: React.ReactNode
   }
 ) {
-  const { val, children, ...rest } = props
+  const { values, children, ...rest } = props
+  const items = await values
   return <ListBase {...rest}>
-    {val.length === 0 && <div className="list-empty ml-2 my-1">{props.fallback}</div>}
-    {props.val.map((item, index) => props.children(item, index))}
+    {items.length === 0 && <div className="list-empty ml-2 my-1">{props.fallback}</div>}
+    {items.map((item, index) => props.children(item, index))}
   </ListBase>
+}
+
+export async function ListItem(props: ComponentProps<'li'>) {
+  return <li {...props} className={cn("relative group list-row", props.className)} />
 }
 
 export function SectionTitle(props: ComponentProps<'h2'>) {
@@ -26,8 +31,10 @@ export function HelperText(props: ComponentProps<'p'>) {
   return <p {...props} className={cn("category-header text-xxs", props.className)} />
 }
 
-export function Section(props: ComponentProps<'section'>) {
-  return <section {...props} className={cn("section flex flex-col gap-2.5", props.className)} />
+
+
+export function Group(props: ComponentProps<'div'>) {
+  return <div {...props} className={cn("section flex flex-col gap-2.5", props.className)} />
 }
 
 export function Header(props: ComponentProps<'header'> & {
@@ -64,8 +71,16 @@ export function Semibold(props: ComponentProps<'span'>) {
   return <span {...props} className={cn("font-semibold", props.className)} />
 }
 
-export function ListItem(props: ComponentProps<"li">) {
-  return (
-    <li {...props} className={cn("relative group")} />
-  )
+export function Section(props: ComponentProps<'section'> & {
+  title?: React.ReactNode,
+  description?: React.ReactNode
+}) {
+  const { title, description, ...rest } = props
+  return <section {...rest} className={cn("section flex flex-col gap-2.5", props.className)}>
+    {(props.title || props.description) && <header className="flex flex-col gap-0.5">
+      {props.title && <SectionTitle>{props.title}</SectionTitle>}
+      {props.description && <HelperText>{props.description}</HelperText>}
+    </header>}
+    {props.children}
+  </section>
 }

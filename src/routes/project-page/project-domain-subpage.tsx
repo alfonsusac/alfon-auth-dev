@@ -39,7 +39,6 @@ export async function ProjectDomainSubpage({ project, domain, context }:
           {() => <>
             <Form
               form={editProjectDomainForm({ project, domain })}
-              context={context}
               onSuccess={async () => {
                 "use server"
                 action.success('replace', projectPageRoute(project.id), 'updated', context)

@@ -1,17 +1,20 @@
 import type { ComponentProps } from "react"
 import { FormWithClientRedirect } from "./form-redirect-client"
 import { throwRedirectIfNextBetterRedirectErrorAtServer } from "../next/next-better-redirects"
+import { FormClient } from "./form-client"
+import type { FormActionFirstlyBinded } from "@/module/form-action"
 
-export function FormWithProgressiveRedirect(props: Omit<ComponentProps<"form">, "action"> & {
-  action: (form: FormData) => Promise<void>
-}) {
+export function FormWithProgressiveRedirect(props:
+  & Omit<ComponentProps<"form">, "action">
+  & { action: FormActionFirstlyBinded }
+) {
   const { action, ...rest } = props
-  return <FormWithClientRedirect {...rest}
-    action={async form => {
+  return <FormClient {...rest}
+    action={async (context, form) => {
       "use server"
       try {
-        
-        await props.action(form)
+
+        await props.action(context, form)
 
       } catch (error) {
 

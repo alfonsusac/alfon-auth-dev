@@ -8,15 +8,26 @@ import type { ResultHandler } from "./form"
 
 
 export async function formAction<F extends FormType>(
-  formContext: { // .binded by dev-land <Form> component
+  formContext: { // .binded by <Form> server component
     form: F,
-    context: PageContext | undefined
     onSuccess: ResultHandler<F, void>,
+  },
+  formClientContext: { // .binded by <FormClientBase> client component
+    context: PageContext | undefined
   },
   form: FormData // passed down to native <form action="">
 ) {
   const inputs = formDataToTypedInput(form, formContext.form.fields as F['fields'])
   const response = await formContext.form.action(inputs) as F['$result']
-  if (isError(response)) action.error(response, formContext.context, inputs)
+  if (isError(response)) action.error(response, formClientContext.context, inputs)
   await formContext.onSuccess({ result: response, inputs })
 }
+
+export type FormActionFirstlyBinded = (
+  formClientContext: { context: PageContext | undefined },
+  form: FormData
+) => Promise<void>
+
+export type FormActionSecondlyBinded = (
+  form: FormData
+) => Promise<void>

@@ -9,20 +9,34 @@ export type ModalServerContext = {
   __modal: true,
 }
 
-export function Modal(props: {
+export type ModalProps = {
   name: string,
   context?: PageContext,
-  button: (button: typeof ModalButton) => ReactNode,
-  content: (modal: ModalServerContext) => ReactNode
-  children?: (modal: ModalServerContext) => ReactNode
-}) {
-  const { name, context, children } = props
+  button?: ((button: typeof ModalButton) => ReactNode) | ReactNode,
+  content: ((modal: ModalServerContext) => ReactNode) | ReactNode,
+}
+
+const ModalRoot = (props:
+  & ModalProps
+) => {
+  const { name, context } = props
 
   const newContext = { ...context, [name]: '' }
   const openHref = `?${ new URLSearchParams(newContext).toString() }`
   const closeContext = { ...context }
   delete closeContext[name]
   const closeHref = `?${ new URLSearchParams(closeContext).toString() }`
+
+  const modalContext: ModalServerContext = {
+    name,
+    context: newContext,
+    openHref,
+    closeHref,
+    __modal: true,
+  }
+
+  const modalButton = typeof props.button === 'function' ? props.button(ModalButton) : props.button
+  const content = typeof props.content === 'function' ? props.content(modalContext) : props.content
 
   // No need to pass context here again because any nesting of <Modal>
   // will get the context from the parent using useModal() in ModalBase.
@@ -31,12 +45,18 @@ export function Modal(props: {
       name={name}
       must_be_called_in_Modal_Component="must_be_called_in_Modal_Component"
     >
-      {props.button?.(ModalButton)}
+      {modalButton}
       {props.content && <ModalContent>
-        {props.content({ name, context: newContext, openHref, closeHref, __modal: true })}
+        {content}
       </ModalContent>}
-      {children?.({ name, context: newContext, openHref, closeHref, __modal: true })}
     </ModalBase>
   )
 }
+
+const Modal = ModalRoot as typeof ModalRoot & {
+  Button: typeof ModalButton
+}
+Modal.Button = ModalButton
+
+export { Modal }
 

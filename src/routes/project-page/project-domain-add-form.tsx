@@ -8,17 +8,13 @@ export function addProjectDomainForm(project: Project) {
       "use server"
       await adminOnlyAction()
       const res = await createDomain({
-        project_id: inputs.project_id,
+        project_id: project.id,
         origin: inputs.origin,
         redirect_url: inputs.origin + inputs.redirect_url,
       })
       return res
     },
     fields: {
-      project_id: {
-        type: 'readonly',
-        value: project.id
-      },
       origin: {
         label: "domain",
         helper: "the domain where your application is hosted. (no trailing slash)",

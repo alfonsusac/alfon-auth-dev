@@ -23,7 +23,6 @@ export async function ProjectKeyCreateModalDialog({ project, children }:
             Project keys are used to authorize your application to use the authentication services.
           </p>
           <Form
-            context={dialog.context}
             form={createProjectKeyForm(project)}
             onSuccess={async () => {
               "use server"

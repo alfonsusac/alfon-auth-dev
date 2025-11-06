@@ -1,7 +1,7 @@
 import { Form } from "@/module/form"
 import { page } from "@/lib/next/next-page"
 import { DetailPage } from "@/lib/page-templates"
-import { Header, Row, Section, Semibold, Title } from "@/lib/primitives"
+import { Header, Row, Semibold, Title } from "@/lib/primitives"
 import { registerUserForm } from "./user-register-form"
 import { getCurrentUserSessionProvider } from "@/shared/auth/auth"
 import { LogOutButton } from "@/shared/auth/login-button"
@@ -43,16 +43,13 @@ export default page('/register', async page => {
         </Row>
       </Header>
 
-
-      <Section>
-        <Form
-          form={registerUserForm(session)}
-          onSuccess={async () => {
-            "use server"
-            navigate.push(homeRoute, { success: 'registered' })
-          }}
-        />
-      </Section>
+      <Form
+        form={registerUserForm(session)}
+        onSuccess={async () => {
+          "use server"
+          navigate.push(homeRoute, { success: 'registered' })
+        }}
+      />
 
     </DetailPage>
   </>

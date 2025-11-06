@@ -7,13 +7,11 @@ import { Modal } from "@/lib/dialogsv2/modal"
 import { SubpageOverlay } from "@/lib/dialogsv2/dialog.templates"
 import { ProjectKeySubpage } from "./project-key-subpage"
 
-export async function ProjectKeysList({ project }:
+export function ProjectKeysListWithSubpages({ project }:
   & ProjectProp
 ) {
-  const project_keys = await getAllProjectKeysByProjectID(project.id)
-
   return (
-    <List val={project_keys} fallback="No API keys present">
+    <List values={getAllProjectKeysByProjectID(project.id)} fallback="No API keys present">
       {key =>
         <li className="relative group" key={key.id}>
           <div className="absolute top-1 right-1">

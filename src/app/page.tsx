@@ -51,7 +51,7 @@ export default async function Home() {
       <section className="category">
         <p className="category-header">my projects ↓</p>
 
-        <List val={projects} fallback="no projects found">
+        <List values={projects} fallback="no projects found">
           {project => {
             return <li key={project.id}>
               <Link

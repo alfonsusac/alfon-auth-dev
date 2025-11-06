@@ -159,6 +159,7 @@ export const getAllProjectDomainsOfProject = datacache(getAllUncachedProjectDoma
 const revalidateProjectDomainsOfProject = (projectid: string) => updateTag(`project_${ projectid }_domains`)
 
 async function getAllUncachedProjectDomainsOfProject(project_id: string) {
+  console.log("fetching domains for project", project_id)
   return prisma.domain.findMany({ where: { project_id }, orderBy: { createdAt: 'desc' } }).then(serializeDate)
 }
 

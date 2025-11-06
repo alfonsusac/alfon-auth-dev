@@ -1,4 +1,4 @@
-import type { ComponentProps } from "react"
+import { use, type ComponentProps } from "react"
 import { FormButton } from "../lib/FormButton"
 import { toNativeSearchParams } from "../lib/next/next-search-params"
 import { ErrorCallout } from "../lib/next/next-search-param-toast.client"
@@ -40,7 +40,6 @@ export type FormProps<F extends FormType> = {
   form: F,
   searchParams?: PageSearchParams
   onSuccess: ResultHandler<F, void>,
-  context?: PageContext | undefined
 }
 
 
@@ -52,7 +51,6 @@ export async function Form<F extends FormType>(props:
   return <FormWithProgressiveRedirect
     className="flex flex-col gap-6"
     action={formAction.bind(null, {
-      context: props.context,
       form: props.form,
       onSuccess: props.onSuccess,
     })}

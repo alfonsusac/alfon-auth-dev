@@ -17,19 +17,16 @@ export async function ProjectDomainAddModalDialog({ project, children }:
       name="add_url"
       button={() => children}
       content={dialog => <>
-        <ModalContent>
-          <DialogSurface wide>
-            <DialogTitle>Add Project URL</DialogTitle>
-            <Form
-              form={addProjectDomainForm(project)}
-              context={dialog.context}
-              onSuccess={async () => {
-                "use server"
-                navigate.push(projectPageRoute(project.id), { success: 'domain_added' }, dialog.context)
-              }}
-            />
-          </DialogSurface>
-        </ModalContent>
+        <DialogSurface wide>
+          <DialogTitle>Add Project URL</DialogTitle>
+          <Form
+            form={addProjectDomainForm(project)}
+            onSuccess={async () => {
+              "use server"
+              navigate.push(projectPageRoute(project.id), { success: 'domain_added' }, dialog.context)
+            }}
+          />
+        </DialogSurface>
       </>}
     />
   )
