@@ -35,35 +35,89 @@ export function taggeddatacache<
 
 // Base
 
+type JSONables = string | number | boolean | null | { [key: string]: JSONables } | JSONables[]
+type Tags<I extends JSONables[]> = string | string[] | ((...i: I) => (string | string[]))
+type TagsParameter<I extends JSONables[], T extends Tags<I>> = T extends ((...i: I) => (string | string[])) ? Parameters<T> : []
+type DataCachedFn<
+  I extends JSONables[],
+  O extends JSONables,
+  T extends Tags<I>
+> = {
+  (...args: I): Promise<O>,
+  revalidate: (...args: TagsParameter<I, T>) => void
+  }
+type AnyDataCachedFn = DataCachedFn<JSONables[], JSONables, Tags<JSONables[]>>
+
 export function datacache<
   I extends JSONables[],
   O extends JSONables,
-  // T extends ()[] | string | string[] | ((...i: I) => (string | string[]))
-  T extends string | string[] | ((...i: I) => (string | string[]))
+  T extends Tags<I>
 >(
   fn: (...args: I) => Promise<O>,
   tag: T,
-) {
-  const id = fn.name
-
+): DataCachedFn<I, O, T> {
   const cachedFn = cache(
     (...args: I) => {
       const tempTag: string | string[] = typeof tag === "function" ? tag(...args) : tag
       const resolvedTags = Array.isArray(tempTag) ? tempTag : [tempTag]
-
       return unstable_cache(fn, undefined, {
         tags: resolvedTags
       })(...args)
-
     }
   )
 
-  Object.assign(cachedFn, {
-    __datacache_id: fn.name + fn.toString()
+  const resolvedTagsFn = (() => {
+    if (typeof tag === 'string')
+      return () => updateTag(tag)
+
+    if (typeof tag === 'function')
+      return (...args: TagsParameter<I, T>) => {
+        const tempTag = tag(...args as I)
+        const resolvedTags = Array.isArray(tempTag) ? tempTag[0] : tempTag
+        updateTag(resolvedTags)
+      }
+
+    if (Array.isArray(tag))
+      return () => updateTag(tag[0])
+
+    throw new Error('Invalid tag type')
+  })()
+
+  const datacachedFn = Object.assign(cachedFn, {
+    revalidate: resolvedTagsFn
   })
 
-
-  return cachedFn
+  return datacachedFn
 }
 
-type JSONables = string | number | boolean | null | { [key: string]: JSONables } | JSONables[]
+
+export function revalidate(fn: AnyDataCachedFn | AnyDataCachedFn[]) {
+  if (Array.isArray(fn)) {
+    fn.forEach(f => f.revalidate())
+  } else {
+    fn.revalidate()
+  }
+}
+
+
+/// test
+
+// const getSomething = datacache(async (a: string, b: string) => {
+//   return ""
+// })
+
+// type Result<A extends JSONables> = {
+//   a: A
+// }
+
+// function makeResult<R extends Result<JSONables>>(opts: {
+//   r: R
+// }) {
+//   return {}
+// }
+
+// const myResult = makeResult({
+//   r: {
+//     a: 2
+//   }
+// })

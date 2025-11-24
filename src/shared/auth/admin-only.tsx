@@ -23,7 +23,8 @@ export async function adminOnlyService() {
 }
 
 export async function adminOnlyAction(context?: PageContext, unauthenticated_path: string = '.',) {
-  const { user, from } = await getActionContext()
+  const { from } = await getActionContext()
+  const user = await getUser()
   if (!user) sessionExpired(from)
   if (!user?.isAdmin)
     return navigate.replace(unauthenticated_path, context, { unauthorized: '' })
@@ -39,7 +40,8 @@ export async function notAuthenticated() {
   return user
 }
 export async function requireUesr(unauthenticated_path: string = '.',) {
-  const { user, from } = await getActionContext()
+  const { from } = await getActionContext()
+  const user = await getUser()
   if (!user) sessionExpired(from)
   return user
 }

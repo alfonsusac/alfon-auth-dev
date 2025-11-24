@@ -1,8 +1,8 @@
-import { ActionButton } from "@/module/form"
 import { cn } from "lazy-cn"
 import type { SVGProps } from "react"
 import { signIn, signOut } from "./auth"
 import { navigate } from "@/module/navigation"
+import { ActionButton } from "@/module/button"
 
 export function LogOutButton(props: {
   className?: string,

@@ -1,6 +1,8 @@
+import type { Action, ActionFn, SerializedAction } from "@/lib/core/action"
 import { DeleteAlert } from "@/lib/DeleteAlert"
 import { DialogSurface } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal } from "@/lib/dialogsv2/modal"
+import { ErrorCallout } from "@/lib/next/next-search-param-toast.client"
 
 export function DeleteButton(props: {
   what?: string,
@@ -8,15 +10,15 @@ export function DeleteButton(props: {
   label?: string,
   alertTitle?: string,
   alertDescription?: string,
-  action: () => Promise<void>,
   context?: PageContext
+  action: SerializedAction<[], any>,
 }) {
   return <>
     <Modal name={"delete_" + props.name} context={props.context}
-      button={Button =>
-        <Button className="button destructive small">
+      button={
+        <Modal.Trigger className="button destructive small">
           {props.label ?? `Delete ${ props.what }`}
-        </Button>
+        </Modal.Trigger>
       }
       content={dialog =>
         <DialogSurface>
@@ -26,6 +28,9 @@ export function DeleteButton(props: {
             backHref={dialog.closeHref}
             actionLabel={`Permanently Delete ${ props.what }`}
             action={props.action}
+          />
+          <ErrorCallout
+            messages={props.action.errors}
           />
         </DialogSurface>
       }

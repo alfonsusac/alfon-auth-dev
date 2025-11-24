@@ -14,6 +14,7 @@ const routeNamesMap = {
   "/not-registered": "notRegisteredPage",
   "/test-navigate": "testNavigatePage",
   '/test-response': 'testResponsePage',
+  '/test-form': 'testFormPage',
 } as const satisfies { [key in AppRoutes]: string }
 
 export function withContext(route: `/${ string }`, ...context: { [key: string]: string | undefined }[]) {

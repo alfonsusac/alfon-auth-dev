@@ -1,7 +1,13 @@
 import type { FieldMap } from "./input-fields"
 
+export type FormTypedInput<T extends FieldMap> = {
+  [K in keyof T]: string
+}
+
+
+
 export function formDataToTypedInput<T extends FieldMap>(form: FormData, fields: T) {
-  const inputs: { [K in keyof T]: string } = {} as any
+  const inputs: Partial<FormTypedInput<T>> = {}
   for (const key in fields) {
     const value = form.get(key)
     if (typeof value === 'string') {
@@ -10,7 +16,9 @@ export function formDataToTypedInput<T extends FieldMap>(form: FormData, fields:
       throw new Error(`Invalid value for field ${ key }`)
     }
   }
-  return inputs
+  return inputs as {
+    [K in keyof T]: string
+  }
 }
 
 

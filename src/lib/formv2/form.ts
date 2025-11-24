@@ -1,41 +1,23 @@
-import type { ExtractErrorMessageMapFromRes } from "../next/next-search-param-toast.client"
-import type { Action } from "./form-action"
-import type { ErrorMessages } from "./form-action-results"
-import type { FieldMap } from "./input-fields/input-fields"
+import type { FieldMap } from "@/lib/formv2/input-fields/input-fields"
 
+type OmitKeyIfReadonly<F extends FieldMap, Key extends keyof F> =
+  F[Key]['type'] extends 'readonly' ? never : Key
 
-// Form definition type
-
-export type FormType<
-  F extends FieldMap = any,
-  R = any,
-> = {
-  fields: F,
-  action: Action<F, R>,
-  errorMessages: ErrorMessages<R>,
-  $result: R,
+type FieldMapToInput<F extends FieldMap> = {
+  [key in keyof F as OmitKeyIfReadonly<F, key>]: string
 }
 
 
 
+export type NextForm<F extends FieldMap> = {
+  fields: F,
+  action: (input: FieldMapToInput<F>) => Promise<any>,
+}
 
-// Factory function to create a form definition
+export function createForm<F extends FieldMap>(opts: {
+  fields: F,
+  action: (input: FieldMapToInput<F>) => Promise<any>,
+}) {
+  return opts as NextForm<F>
+}
 
-export const createForm = <
-  I extends FieldMap,
-  R,
->(opts: { // Logic layer
-  fields: I,
-  action: Action<I, R>,
-}) => (
-  opts2: { // Still logic, just slightly improve DX for errorMessage auto completion.
-    errorMessages?: ExtractErrorMessageMapFromRes<Action<I, R>>
-  }  
-) => {
-    return {
-      fields: opts.fields,
-      action: opts.action,
-      errorMessages: opts2.errorMessages ?? {},
-      $result: undefined as unknown as R,
-    }
-  }

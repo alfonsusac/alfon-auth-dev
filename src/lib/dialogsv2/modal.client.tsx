@@ -37,7 +37,7 @@ import { reactContext } from "../react/react-context"
 export type ModalContext = { name: string, show: boolean }
 export type ModalContentContext = { context: { [key: string]: string } }
 const modalContext = reactContext<ModalContext>()
-const modalContentContext = reactContext<ModalContentContext>()
+export const modalContentContext = reactContext<ModalContentContext>()
 
 export function ModalBase(props: {
   name: string, // initialize the key of the search params

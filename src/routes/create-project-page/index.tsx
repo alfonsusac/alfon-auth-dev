@@ -1,10 +1,10 @@
 import { page, unauthorized } from "@/lib/next/next-page"
 import { Title } from "@/lib/primitives"
-import { createProjectForm } from "./project-create-form"
-import { Form } from "@/module/form"
 import { DetailPage } from "@/lib/page-templates"
 import { navigate } from "@/module/navigation"
 import { projectPageRoute } from "../routes"
+import { Form } from "@/module/form2"
+import { createProjectForm } from "@/services/project/forms"
 
 export default page('/create-project', async page => {
 
@@ -15,11 +15,13 @@ export default page('/create-project', async page => {
     <DetailPage back={['Home', '/']}>
       <Title>Create Project</Title>
       <Form
-        form={createProjectForm}
-        onSuccess={async action => {
-          "use server"
-          navigate.push(projectPageRoute(action.inputs.id), { success: 'project_created' })
-        }}
+        form={createProjectForm()}
+        onSuccess={
+          async action => {
+            "use server"
+            navigate.push(projectPageRoute(action.inputs.id), { success: 'project_created' })
+          }
+        }
       />
     </DetailPage>
   </>

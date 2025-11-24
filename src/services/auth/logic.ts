@@ -1,10 +1,11 @@
 // auth as provider
 
-import { getCurrentUserSessionProvider, type Session, type User } from "@/shared/auth/auth"
-import { getProject, getProjectDomainByOrigin, type Project, type ProjectDomain } from "../project/db"
+import { type User } from "@/shared/auth/auth"
+import {  } from "../project/db"
 import { type ValidatedURL } from "@/lib/core/url"
 import { generateSecret } from "@/module/generate-secret"
 import prisma from "@/lib/db"
+import type { Project, ProjectDomain } from "../types"
 
 
 export async function allowProjectAuthorization({ user, project, domain, redirect_uri, code, next }: {

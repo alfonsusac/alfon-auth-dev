@@ -28,6 +28,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  console.log('\n\n\n\n\n\n\n\n---')
   return (
     <html lang="en">
       <body

@@ -1,14 +1,12 @@
-import { adminOnlyAction } from "@/shared/auth/admin-only"
+import { getActionContext } from "@/lib/next/next-actions"
 import { navigate } from "../navigation"
 import { isError } from "./error"
+import { createAction, type ActionErrorMap, type ActionFn } from "@/lib/core/action"
+import { getUser, type User } from "@/shared/auth/auth"
+import { sessionExpired } from "@/routes/(auth-layout)/session-expired-page/interface"
 
-export function actionResolveError<T>(res: T, ...extraParams: (Record<string, string> | undefined)[]) {
-  if (typeof res === "string")
-    navigate.replace('', { error: res }, ...extraParams)
-  else return res as Exclude<T, string>
-}
 
-export const action = {
+export const resolveAction = {
   success: (type: 'replace' | 'push', route: string, successMessage: string, ...extraParams: (Record<string, string> | undefined)[]) => {
     navigate[type](route, { success: successMessage }, ...extraParams)
   },
@@ -17,18 +15,55 @@ export const action = {
 }
 
 
-export function createAction<I extends any[], O>(props: {
-  execute: (...args: I) => Promise<O>,
-  admin?: boolean
-  onSuccess?: (result: O) => void,
+async function adminOnlyAction(context?: PageContext, unauthenticated_path: string = '.',) {
+  const { from } = await getActionContext()
+  const user = await getUser()
+  if (!user) sessionExpired(from)
+  if (!user?.isAdmin)
+    return navigate.replace(unauthenticated_path, context, { unauthorized: '' })
+  return user
+}
+
+
+
+export function action<
+  I extends any[],
+  O,
+>(opts: {
+  adminOnly: boolean,
+  fn: (context: {
+    user: User | null
+  }) => ActionFn<I, O>,
+  errors: ActionErrorMap<O>
 }) {
+  return createAction({
+    fn: async (...input: I) => {
+      if (opts.adminOnly)
+        await adminOnlyAction()
 
-  return async (...args: I) => {
-    "use server"
-    if (props.admin)
-      await adminOnlyAction()
+      const user = await getUser()
 
-    const res = await props.execute(...args)
+      const response = opts.fn({ user })(...input)
+
+      if (isError(response))
+        throw new ActionError(response)
+
+      return response
+    },
+    errors: opts.errors,
+  }).serialize()
+}
+
+
+
+
+
+
+
+export class ActionError extends Error {
+  constructor(
+    public readonly error_code: string
+  ) {
+    super(`Action Error: ${ error_code }`)
   }
-
 }

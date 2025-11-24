@@ -1,28 +1,29 @@
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { DateTime } from "@/lib/date.ui"
 import { page } from "@/lib/next/next-page"
-import { Header, HelperText, List, ListItem, Section, SectionTitle, Title } from "@/lib/primitives"
-import { getAllProjectDomainsOfProject, getProject } from "@/services/project/db"
+import { List, ListItem, Section, Title } from "@/lib/primitives"
+import { getAllProjectDomainsOfProject, getAllProjectKeysByProjectID, getProject } from "@/services/project/db"
 import { projectNotFound } from "./not-found"
-import { ModalButton } from "@/lib/dialogsv2/modal.client"
 import { IconAdd, IconSettings } from "@/shared/icons"
-import { ProjectDomainAddModalDialog } from "./project-domain-add-dialog"
-import { ProjectKeysListWithSubpages } from "./project-keys-list"
-import { ProjectKeyCreateModalDialog } from "./project-key-create-dialog"
-import { ProjectSettingsModal } from "./project-settings-dialog"
 import { AdminOnly } from "@/shared/auth/admin-only"
 import { DetailPage } from "@/lib/page-templates"
 import { Modal } from "@/lib/dialogsv2/modal"
 import { SubpageOverlay } from "@/lib/dialogsv2/dialog.templates"
 import { ProjectDomainSubpage } from "./project-domain-subpage"
-import { ProjectDomainListItem } from "./project-domains-list"
-import { DialogSurface, DialogTitle } from "@/lib/dialogsv2/dialog.primitives"
-import { Form } from "@/module/form"
-import { addProjectDomainForm } from "./project-domain-add-form"
 import { navigate } from "@/module/navigation"
 import { projectPageRoute } from "../routes"
-import { FormDialogButton } from "@/module/dialogs/add-dialog"
 import { Dialog } from "@/lib/dialogsv2/dialog"
+import { ProjectKeySubpage } from "./project-key-subpage"
+import type { ComponentProps } from "react"
+import type { DomainProp, ProjectKeyProp } from "../types"
+import { Button } from "@/module/button"
+import { deleteProjectAction } from "@/services/project/actions"
+import { DeleteButton } from "@/module/dialogs/dialog-delete"
+import { Form } from "@/module/form2"
+import { bindAction } from "@/lib/core/action"
+import { createProjectKeyForm } from "@/services/project-key/forms"
+import { addProjectDomainForm } from "@/services/project-domain/forms"
+import { updateProjectForm } from "@/services/project/forms"
 
 export default page('/[projectid]', async page => {
 
@@ -58,25 +59,27 @@ export default page('/[projectid]', async page => {
           authentication and also used to validate incoming requests.">
           <List
             values={getAllProjectDomainsOfProject(project.id)}
+            fallback="No URLs present"
             children={domain =>
               <Modal
                 key={domain.id}
                 name={"domain_" + domain.id}
-                button={<Modal.Button><ProjectDomainListItem domain={domain} /></Modal.Button>}
-                content={modal => <SubpageOverlay><ProjectDomainSubpage context={modal.context} domain={domain} project={project} /></SubpageOverlay>} />}
+                button={
+                  <ProjectDomainListItem domain={domain} />}
+                content={modal =>
+                  <SubpageOverlay children={<ProjectDomainSubpage context={modal.context} domain={domain} project={project} />} />} />}
           />
           <Modal
             name="add_domain"
             button={
-              <Modal.Button className="button small"><IconAdd className="icon" /> Add URL</Modal.Button>}
+              <Button using={Modal.Trigger} icon={IconAdd} className="small">Add URL</Button>}
             content={
-              <Dialog
+              <Dialog wide
                 title="Add Project URL"
                 children={
                   <Form
-                    form={addProjectDomainForm(project)}
-                    onSuccess={async () => { "use server"; navigate.push(projectPageRoute(project.id), { success: 'domain_added' }) }} />
-                } />} />
+                    form={addProjectDomainForm({ project_id: project.id })}
+                    onSuccess={async () => { "use server"; navigate.push(projectPageRoute(project.id), { success: 'domain_added' }) }} />} />} />
         </Section>
       </AdminOnly >
 
@@ -87,25 +90,123 @@ export default page('/[projectid]', async page => {
           description="you can create multiple keys for different environments (e.g. development, staging, production). 
           this will be used to validate requests to /token endpoints."
         >
-          {/* <ProjectKeysListWithSubpages project={project} /> */}
-          <ProjectKeyCreateModalDialog project={project}>
-            <ModalButton className="button small">
-              <IconAdd className="icon" /> Create Key
-            </ModalButton>
-          </ProjectKeyCreateModalDialog>
+          <List
+            values={getAllProjectKeysByProjectID(project.id)}
+            fallback="No API keys present"
+            children={key =>
+              <Modal
+                key={key.id}
+                name={"key_" + key.id}
+                button={
+                  <ProjectKeyLIteItem projectKey={key} />}
+                content={modal =>
+                  <SubpageOverlay>
+                    <ProjectKeySubpage context={modal.context} project={project} projectKey={key} />
+                  </SubpageOverlay>} />
+            }
+          />
+          <Modal
+            name="create_key"
+            button={
+              <Button className="small" using={Modal.Trigger} icon={IconAdd}>Create Key</Button>}
+            content={
+              <Dialog wide
+                title="Create Secret Key"
+                description="Project keys are used to authorize your application to use the authentication services."
+                children={<Form
+                  form={createProjectKeyForm({ project_id: project.id })}
+                  onSuccess={async () => {
+                    "use server"
+                    navigate.push(projectPageRoute(project.id), { success: 'key_added' })
+                  }}
+                />}
+              />
+            }
+          />
         </Section>
       </AdminOnly>
 
-
       <AdminOnly>
-        <ProjectSettingsModal project={project} >
-          <ModalButton className="button small ghost">
+        <Modal
+          name={`project_setting`}
+          button={<Button using="div" icon={IconSettings}>Settings</Button>}
+          content={modal =>
+            <Dialog wider title="Project Settings">
+              <Section
+                title="project details"
+                children={
+                  <Form
+                    form={updateProjectForm(project.id)()}
+                    onSuccess={async () => {
+                      "use server"
+                      navigate.replace(projectPageRoute(project.id), { success: "updated" }, modal.context)
+                    }}
+                  />
+                }
+              />
+              <Section
+                title="danger zone"
+                children={
+                  <DeleteButton
+                    context={modal.context}
+                    name={`project-${ project.id }`}
+                    what="Project"
+                    alertDescription="This action cannot be undone. All associated data, including users and keys, will be permanently removed."
+                    action={bindAction(deleteProjectAction, project.id)}
+                  />
+                }
+              />
+            </Dialog>
+          }
+        />
+        {/* <ProjectSettingsModal project={project} > */}
+        {/* <ModalButton className="button small ghost">
             <IconSettings className="icon icon-start" />
             Settings
-          </ModalButton>
-        </ProjectSettingsModal>
+          </ModalButton> */}
+        {/* </ProjectSettingsModal> */}
       </AdminOnly>
 
-    </DetailPage>
+    </DetailPage >
   </>
 })
+
+
+
+function ProjectDomainListItem({ domain, ...rest }:
+  & ComponentProps<'div'>
+  & DomainProp
+) {
+  const protocol = domain.redirect_url.startsWith('https://') ? 'https://' : 'http://'
+  const origin = new URL(domain.redirect_url)?.origin.replace('http://', '').replace('https://', '')
+
+  return <>
+    <ListItem className="text-foreground-body/75 leading-3 text-[0.813rem]" {...rest}>
+      <span className="text-foreground-body/50">{protocol}</span>
+      <span className="font-medium text-foreground">{origin}</span>
+      <span>{domain.redirect_url.replace(domain.origin, '')}</span>
+    </ListItem>
+  </>
+}
+
+function ProjectKeyLIteItem({ projectKey, ...rest }:
+  & ComponentProps<'div'>
+  & ProjectKeyProp
+) {
+  const key = projectKey
+  return <>
+    <ListItem>
+      <div className="flex flex-col gap-1 min-w-0">
+        <div className="text-foreground-body font-semibold leading-3 text-xs">
+          🔑 {key.name}
+          <span className="text-foreground-body/75 font-normal leading-3 text-xs">
+            {' - '}<DateTime date={key.createdAt} />
+          </span>
+        </div>
+        <div className="text-foreground-body/75 font-mono leading-3 text-xs rounded-sm truncate min-w-0">
+          {key.client_secret}
+        </div>
+      </div>
+    </ListItem>
+  </>
+}

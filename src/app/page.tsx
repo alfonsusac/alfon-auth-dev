@@ -53,20 +53,19 @@ export default async function Home() {
 
         <List values={projects} fallback="no projects found">
           {project => {
-            return <li key={project.id}>
-              <Link
-                href={`/${ project.id }`}
-                className="list-row">
-                <div>
-                  <p className="font-medium text-sm leading-tight tracking-tight">
-                    {project.name}
-                  </p>
-                  <p className="text-sm min-h-lh leading-3 line-clamp-1 text-foreground-body/75 text-xs">
-                    <span className="text-foreground-body/50 font-normal text-xs">/{project.id}</span> - {project.description ? project.description : <span className=" text-foreground-body/50 text-xs">No description</span>}
-                  </p>
-                </div>
-              </Link>
-            </li>
+            return <Link
+              key={project.id}
+              href={`/${ project.id }`}
+              className="list-row">
+              <div>
+                <p className="font-medium text-sm leading-tight tracking-tight">
+                  {project.name}
+                </p>
+                <p className="text-sm min-h-lh leading-3 line-clamp-1 text-foreground-body/75 text-xs">
+                  <span className="text-foreground-body/50 font-normal text-xs">/{project.id}</span> - {project.description ? project.description : <span className=" text-foreground-body/50 text-xs">No description</span>}
+                </p>
+              </div>
+            </Link>
           }}
         </List>
 

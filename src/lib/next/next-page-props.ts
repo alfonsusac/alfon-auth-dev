@@ -1,4 +1,4 @@
-import type { AppRoutes, ParamMap } from "@/../.next/types/routes"
+import type { AppRoutes, ParamMap } from "../../../.next/dev/types/routes"
 
 export async function resolveNextPageProps<
   R extends AppRoutes,

@@ -43,24 +43,22 @@ export function SuccessCallout(props: {
 
 
 
-type ExtractErrorFromRes<T extends (...args: any) => any> = Extract<Awaited<ReturnType<T>>, string>
-type ExtractErrorKeysFromRes<T extends string> = T extends `${ infer V }=${ string }` ? V : T
-export type GetErrorValueFromErrorRes<T extends string> = T extends `${ string }=${ string }` ? `${ string }$1${ string }` : string
+type ExtractErrorsFromRes<T extends (...args: any) => any> = Extract<Awaited<ReturnType<T>>, string>
+type ExtractErrorKeysFromRes<T> = T extends `${ infer V }=${ string }` ? V : T extends string ? T : never
+type GetErrorValueForErrorMap<T> = T extends `${ string }=${ string }` ? `${ string }$1${ string }` : string
 
-export type ExtractErorrMessageMapFromRes2<T extends string> = {
-  [K in T as ExtractErrorKeysFromRes<K>]: GetErrorValueFromErrorRes<K>
-}
-export type ExtractErrorMessageMapFromRes<T extends (...args: any) => any> = {
-  [K in ExtractErrorFromRes<T> as ExtractErrorKeysFromRes<K>]: GetErrorValueFromErrorRes<K>
+export type ExtractErrorMapFromRes<T> = {
+  [K in Extract<T, string> as ExtractErrorKeysFromRes<K>]: GetErrorValueForErrorMap<K>
 }
 
 export function ErrorCallout<T extends (...args: any) => any>(props: {
-  messages: ExtractErrorMessageMapFromRes<T>
+  messages: ExtractErrorMapFromRes<Awaited<ReturnType<T>>>
 }) {
   const sp = useSearchParams()
   const error = sp.get('error')
   if (typeof error === 'string') {
-    const messageOrMessageFn = props.messages?.[error.split('=')[0] as ExtractErrorKeysFromRes<ExtractErrorFromRes<T>>] ?? error
+    const error_sp_key = error.split('=')[0] as ExtractErrorsFromRes<T>
+    const messageOrMessageFn = props.messages?.[error_sp_key] ?? error
 
     if (error.includes('=')) {
       const [, msg] = error.split('=')

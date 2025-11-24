@@ -1,17 +1,17 @@
 import { DataGridDisplay } from "@/lib/DataGrid"
 import { Header, HelperText, Row, Section, SectionTitle, Title } from "@/lib/primitives"
 import { DomainProp, ProjectProp } from "@/routes/types"
-import { DeleteButton } from "@/shared/dialog-delete"
-import { deleteDomainAction } from "./project-domain-delete-action"
-import { Form } from "@/module/form"
-import { editProjectDomainForm } from "./project-domain-edit-form"
-import { EditFormDialog } from "@/shared/dialog-edit"
+import { DeleteButton } from "@/module/dialogs/dialog-delete"
+import { EditFormDialogButton } from "@/module/dialogs/dialog-edit"
 import { CodeBlock } from "@/lib/code-block/code-blocks"
 import { DetailPage } from "@/lib/page-templates"
 import { isError } from "@/module/action/error"
-import { action } from "@/module/action/action"
+import { resolveAction } from "@/module/action/action"
 import { Link } from "@/module/link"
 import { authorizePageRoute, projectPageRoute } from "../routes"
+import { updateProjectDomainForm } from "@/services/project-domain/forms"
+import { bindAction } from "@/lib/core/action"
+import { deleteProjectDomainAction } from "@/services/project-domain/actions"
 
 
 export async function ProjectDomainSubpage({ project, domain, context }:
@@ -32,32 +32,23 @@ export async function ProjectDomainSubpage({ project, domain, context }:
         'updated at': new Date(domain.updatedAt)
       }} />
       <Row>
-        <EditFormDialog
+        <EditFormDialogButton
           name={'Domain'}
           context={context}
-        >
-          {() => <>
-            <Form
-              form={editProjectDomainForm({ project, domain })}
-              onSuccess={async () => {
-                "use server"
-                action.success('replace', projectPageRoute(project.id), 'updated', context)
-              }}
-            />
-          </>}
-        </EditFormDialog>
+          form={updateProjectDomainForm(domain)({ project_id: project.id })}
+          extend={{
+            origin: { defaultValue: domain.origin },
+            redirect_url: { defaultValue: domain.redirect_url.replace(domain.origin, '') }
+          }}
+          onSuccess={async () => { "use server"; resolveAction.success('replace', projectPageRoute(project.id), 'updated', context) }}
+        />
         <DeleteButton
           name={`domain-${ domain.id }`}
           context={context}
           label="Delete Project Domain"
           alertTitle="Are you sure you want to permanently delete this domain?"
           alertDescription="This action cannot be undone. Any applications using this domain will no longer be able to access the project."
-          action={async () => {
-            "use server"
-            const res = await deleteDomainAction(domain.id)
-            if (isError(res)) action.error(res, context)
-            action.success('replace', projectPageRoute(project.id), 'domain_deleted')
-          }}
+          action={bindAction(deleteProjectDomainAction, domain.id)}
         />
       </Row>
     </Header>
@@ -99,10 +90,7 @@ redirect('${ process.env.BASE_URL }/${ project.id }/authorize'
 )
           `}
       />
-
     </Section>
-
-
   </DetailPage>
 
 }

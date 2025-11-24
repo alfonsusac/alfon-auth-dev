@@ -1,6 +1,6 @@
-import { ActionButton } from "@/module/form"
 import { Header, Row, Section, Title } from "@/lib/primitives"
 import { Spacer } from "@/lib/spacer"
+import { ActionButton } from "@/module/button"
 import { LogOutButton } from "@/shared/auth/login-button"
 import { IconRight } from "@/shared/icons"
 import { LogoIcon } from "@/shared/logo"

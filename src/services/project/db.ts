@@ -1,52 +1,31 @@
-import { datacache } from "@/lib/next/next-cache"
+import { datacache, revalidate } from "@/lib/next/next-cache"
 import prisma, { serializeDate } from "@/lib/db"
 import { generateSecret } from "@/module/generate-secret"
-import { validateSecureURLwithLocalhost } from "@/lib/core/url"
-import { validation } from "@/lib/core/validation"
 import { adminOnlyService } from "@/shared/auth/admin-only"
 import { updateTag } from "next/cache"
-
-// Types
-
-export type Project = NonNullable<Awaited<ReturnType<typeof getProject>>>
-export type ProjectDomain = NonNullable<Awaited<ReturnType<typeof getProjectDomainByID>>>
-export type ProjectKey = NonNullable<Awaited<ReturnType<typeof getProjectKey>>>
-
-
+import { projectInput, type ProjectInput } from "./validations"
+import { isError } from "@/module/action/error"
+import { projectKeyInput, type ProjectKeyInput } from "../project-key/validations"
+import { projectDomainInputValidation, type DomainInput } from "../project-domain/validations"
 
 // Project
-// Project > fetchers (status: over-fetching)
-
-export const getAllProjects = datacache(getAllUncachedProjects, 'projects')
-const revalidateProjects = () => updateTag('projects')
 
 async function getAllUncachedProjects() {
   return prisma.project.findMany({ orderBy: { createdAt: 'desc' } }).then(serializeDate)
 }
 
-
-// Project > helpers
+export const getAllProjects = datacache(getAllUncachedProjects, 'projects')
 
 export async function getProject(id: string) {
   const projects = await getAllProjects()
   return projects.find(p => p.id === id)
 }
 
-
-// Project > mutations
-
-export type ProjectInput = { id: string, name: string, description: string }
-
-const validateProjectInput = validation(async (input: ProjectInput) => {
-  if (!input.name || !input.id) return "missing_fields"
-  if (!/^[a-zA-Z0-9-_]+$/.test(input.id)) return "invalid_id"
-  return input
-})
-
-export async function createProject(input: ProjectInput, user_id: string) {
+export async function createProject(user_id: string, input: ProjectInput) {
   await adminOnlyService()
-  const { error, data } = await validateProjectInput(input)
-  if (error) return error
+  const data = await projectInput.validate(input)
+  if (isError(data)) return data
+
   if (await getProject(data.id)) return "id_exists"
   const res = await prisma.project.create({
     data: {
@@ -54,26 +33,27 @@ export async function createProject(input: ProjectInput, user_id: string) {
       keys: { create: { name: "Default Key", client_secret: generateSecret(), } }
     }
   })
-  revalidateProjects()
+  revalidate(getAllProjects)
   return res
 }
 
-export async function updateProject(input: ProjectInput, id: string) {
-  await adminOnlyService()
-  const { error, data } = await validateProjectInput(input)
-  if (error) return error
-  if (!await getProject(id)) return "not_found"
-  if (id !== input.id && await getProject(data.id)) return "id_exists"
-  const res = await prisma.project.update({ where: { id }, data })
-  revalidateProjects()
+export async function updateProject(project_id: string, input: ProjectInput) {
+  const data = await projectInput.validate(input)
+  if (isError(data)) return data
+
+  if (!await getProject(project_id)) return "not_found"
+  if (project_id !== input.id && await getProject(data.id)) return "id_exists"
+
+  const res = await prisma.project.update({ where: { id: project_id }, data })
+  revalidate(getAllProjects)
   return res
 }
 
-export async function deleteProject(id: string) {
+export async function deleteProject(project_id: string) {
   await adminOnlyService()
-  if (!await getProject(id)) return "not_found"
-  await prisma.project.delete({ where: { id } })
-  revalidateProjects()
+  if (!await getProject(project_id)) return "not_found"
+  await prisma.project.delete({ where: { id: project_id } })
+  revalidate(getAllProjects)
 }
 
 
@@ -102,33 +82,21 @@ async function getUncachedProjectKey(id: string) {
 
 // Project Keys > helpers
 
-// -
-
-// Project Keys Mutations
-
-export type ProjectKeyInput = { name: string, project_id: string }
-
-const validateProjectKeyInput = validation(async (input: ProjectKeyInput) => {
-  if (!input.name || !input.project_id) return "missing_fields"
-  if (!await getProject(input.project_id)) return "project_not_found"
-  return input
-})
-
 export async function createProjectKey(input: ProjectKeyInput) {
   await adminOnlyService()
-  const { error, data } = await validateProjectKeyInput(input)
-  if (error) return error
+  const data = await projectKeyInput.validate(input)
+  if (isError(data)) return data
   const res = await prisma.projectKey.create({ data: { ...data, client_secret: generateSecret() } })
   revalidateProjectProjectKeys(res.project_id)
   revalidateProjectKey(res.id)
 }
 
-export async function updateProjectKey(input: ProjectKeyInput, id: string) {
+export async function updateProjectKey(input: ProjectKeyInput & { project_key_id: string }) {
   await adminOnlyService()
-  const { error, data } = await validateProjectKeyInput(input)
-  if (error) return error
-  if (!await getProjectKey(id)) return "not_found"
-  const res = await prisma.projectKey.update({ where: { id }, data })
+  const data = await projectKeyInput.validate(input)
+  if (isError(data)) return data
+  if (!await getProjectKey(input.project_key_id)) return "not_found"
+  const res = await prisma.projectKey.update({ where: { id: input.project_key_id }, data })
   revalidateProjectProjectKeys(res.project_id)
   revalidateProjectKey(res.id)
 }
@@ -182,38 +150,10 @@ async function getUncachedProjectDomainByOrigin(origin: string) {
 
 // Project Domains Mutations
 
-type DomainInput = { project_id: string, origin: string, redirect_url: string }
-
-const validateProjectDomainInput = validation(async (input: DomainInput) => {
-  if (!input.project_id || !input.origin || !input.redirect_url) return "missing_fields"
-  if (!await getProject(input.project_id)) return "project_not_found"
-
-  // Check that origin and redirect_url are valid URLs and secure (https or localhost)
-  const origin = validateSecureURLwithLocalhost(input.origin)
-  if (typeof origin === 'string') return `invalid_origin_${ origin }` as const
-  const redirectURL = validateSecureURLwithLocalhost(input.redirect_url)
-  if (typeof redirectURL === 'string') return `invalid_redirect_url_${ redirectURL }` as const
-  if (redirectURL.host !== origin.host) return "mismatched_domains"
-
-  // Check if the domain already exists
-  const existing = await getProjectDomainByOrigin(input.origin)
-  if (existing) {
-    // Domain exists! now we check whether if its from the same project or not (or localhost)
-    if (existing.project_id === input.project_id) return "domain_exists"
-    if (existing.project_id !== input.project_id && !input.origin.includes('localhost')) return `domain_in_use=${ existing.project_id }` as const
-  }
-
-  return {
-    project_id: input.project_id,
-    origin: origin.origin,
-    redirect_url: redirectURL.href,
-  }
-})
-
 export async function createDomain(input: DomainInput) {
   await adminOnlyService()
-  const { error, data } = await validateProjectDomainInput(input)
-  if (error) return error
+  const data = await projectDomainInputValidation.validate(input)
+  if (isError(data)) return data
   if (!await getProject(data.project_id)) return "project_not_found"
   const res = await prisma.domain.create({ data })
   revalidateProjectDomainsOfProject(data.project_id)
@@ -221,11 +161,11 @@ export async function createDomain(input: DomainInput) {
   revalidateProjectDomainByOrigin(data.origin)
 }
 
-export async function updateDomain(input: DomainInput, id: string) {
+export async function updateDomain(domain_id: string, input: DomainInput) {
   await adminOnlyService()
-  const { error, data } = await validateProjectDomainInput(input)
-  if (error) return error
-  const res = await prisma.domain.update({ where: { id }, data })
+  const data = await projectDomainInputValidation.validate(input)
+  if (isError(data)) return data
+  const res = await prisma.domain.update({ where: { id: domain_id }, data })
   revalidateProjectDomainsOfProject(res.project_id)
   revalidateProjectDomainByID(res.id)
   revalidateProjectDomainByOrigin(data.origin)

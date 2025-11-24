@@ -5,12 +5,14 @@ import { ReactNode } from "react"
 import { NavigationBar } from "./NavigationBar"
 import { Spacer } from "./spacer"
 import { SuccessCallout } from "./next/next-search-param-toast.client"
+import { Title } from "./primitives"
 
 export function DetailPage(props: {
   children?: ReactNode,
   toasts?: Record<string, ReactNode>,
   back?: [label: string, href: `/${ string }`]
   className?: string,
+  title?: string,
 }) {
   return <>
     <SuccessCallout messages={props.toasts ?? {}} />
@@ -19,6 +21,9 @@ export function DetailPage(props: {
       <Spacer />
     </>}
     <div className={cn("flex flex-col gap-12 max-w-120 text-sm grow", props.className)}>
+      {props.title && <header>
+        <Title>{props.title}</Title>
+      </header>}
       {props.children}
     </div>
   </>

@@ -15,12 +15,12 @@ export async function List<T>(
   const items = await values
   return <ListBase {...rest}>
     {items.length === 0 && <div className="list-empty ml-2 my-1">{props.fallback}</div>}
-    {items.map((item, index) => props.children(item, index))}
+    {items.map((item, index) => <li key={index}>{props.children(item, index)}</li>)}
   </ListBase>
 }
 
-export async function ListItem(props: ComponentProps<'li'>) {
-  return <li {...props} className={cn("relative group list-row", props.className)} />
+export async function ListItem(props: ComponentProps<'div'>) {
+  return <div {...props} className={cn("relative group list-row", props.className)} />
 }
 
 export function SectionTitle(props: ComponentProps<'h2'>) {

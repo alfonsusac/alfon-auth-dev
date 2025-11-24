@@ -1,25 +1,34 @@
-import { adminOnlyAction } from "@/shared/auth/admin-only"
-import { getUser, type User } from "@/shared/auth/auth"
+"use server"
 
-export function action<I extends any[], O, A extends boolean, F>(opts: {
-  adminOnly: A,
-  fn: (
-    context: {
-      input: F,
-      user: A extends true ? User : A extends false ? (User | null) : never
-    }
-  ) => Promise<O>,
-}) {
+import { createProject, deleteProject, updateProject } from "./db"
+import { projectInput } from "./validations"
+import { action } from "@/module/action/action"
 
-  type UserParamType = A extends true ? User : A extends false ? (User | null) : never
-
-  return async (formInput: F) => {
-    "use server"
-    if (opts.adminOnly) {
-      const user = await adminOnlyAction()
-      return await opts.fn({ input: formInput, user: user as unknown as UserParamType })
-    }
-    const user = await getUser()
-    return await opts.fn({ input: formInput, user: user as unknown as UserParamType })
+export const deleteProjectAction = action({
+  adminOnly: true,
+  fn: () => deleteProject,
+  errors: {
+    not_found: "project not found.",
   }
-}
+})
+
+export const updateProjectAction = action({
+  adminOnly: true,
+  fn: () => updateProject,
+  errors: {
+    id_exists: "project id already exists.",
+    not_found: "project not found.",
+    ...projectInput.errors,
+  }
+})
+
+export const createProjectAction = action({
+  adminOnly: true,
+  fn: context => createProject.bind(null, context.user?.id!),
+  errors: {
+    id_exists: "project id already exists.",
+    ...projectInput.errors,
+  }
+})
+
+

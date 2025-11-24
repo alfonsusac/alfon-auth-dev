@@ -1,25 +1,27 @@
-import { DialogSurface, DialogTitle } from "@/lib/dialogsv2/dialog.primitives"
 import { Modal, type ModalProps } from "@/lib/dialogsv2/modal"
-import { Form, type FormProps } from "../form"
-import type { FormType } from "@/lib/formv2/form"
 import { Dialog } from "@/lib/dialogsv2/dialog"
+import { Form, type FormProps } from "../form2"
+import type { FormFields } from "../action/form-action"
 
-export function FormDialogButton<F extends FormType>(opts:
+export function FormDialogButton<
+  O,
+  F extends FormFields,
+>(opts:
   & { title: string }
   & Omit<ModalProps, "content">
-  & FormProps<F>
+  & FormProps<O, F>
 ) {
+  const { form, extend, onSuccess, ...rest } = opts
   return <>
     <Modal
-      name={opts.name}
-      context={opts.context}
-      button={opts.button}
+      {...rest}
       content={modal => <Dialog
         title={opts.title}
       >
         <Form
-          form={opts.form}
-          onSuccess={opts.onSuccess}
+          form={form}
+          onSuccess={onSuccess}
+          extend={extend}
         />
       </Dialog>}
     />

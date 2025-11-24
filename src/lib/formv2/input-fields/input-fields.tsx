@@ -1,30 +1,51 @@
 import { cn } from "lazy-cn"
 import { InputGroup } from "./input-fields-primitives"
-import type { ReactNode } from "react"
 
 
 
 export type FieldMap = Record<string, Field>
+export type Fields<F extends string | symbol | number> = Record<F, Field>
+
+type PartialField<F extends { type: Field['type'] }> =
+  Partial<Omit<Extract<Field, { type: F['type'] }>, 'type'>>
+
+export type PartialFields<
+  F extends { [key: string]: { type: Field['type'] } }
+> =
+  { [K in keyof F]?: PartialField<F[K]> }
+
+type A = PartialFields<{
+  a: {
+    type: "text",
+    label: "aaa"
+  },
+  b: {
+    type: "readonly",
+    label: "bbb"
+  }
+}>
+
 
 export type Field = {
   render?: (name: string) => React.ReactNode
 } & (
-    | { // Inputtables
-      label: string
-      helper?: string,
-      defaultValue?: string
-      required?: boolean
-      placeholder?: string
-      autoFocus?: boolean         
-    } & (
-      { // TextInput
-        type: "text",
-        prefix?: string,
-      }
-    )
-    | { // Non-Inputtables 
+    | (
+      { // Inputtables
+        label: string
+        helper?: string,
+        defaultValue?: string
+        required?: boolean
+        placeholder?: string
+        autoFocus?: boolean
+      } & (
+        { // TextInput
+          type: "text",
+          prefix?: string,
+        }
+      )
+    ) | { // Non-Inputtables 
       type: "readonly",
-      value: string
+      value?: string
     }
   )
 
@@ -38,11 +59,26 @@ type InputFieldClassNames = {
   prefix?: string,
 }
 
+// Producer
+
+export function field(opts: Field): Field {
+  return opts
+}
+export function fieldMap<F extends FieldMap>(opts: F): F {
+  return opts
+}
+
+
+
+
+// Consumer
+
+
 export function InputField<F extends Field>(props: {
   name: string,
   field: F,
   classNames?: InputFieldClassNames,
-  searchParams?: URLSearchParams
+  searchParams?: URLSearchParams,
 }) {
   const { name, field } = props
 
@@ -54,7 +90,7 @@ export function InputField<F extends Field>(props: {
 
   const id = props.name + '_' + name
 
-  const inputProps = {                  
+  const inputProps = {
     name,
     id,
     defaultValue: props.searchParams?.get(name) ?? field.defaultValue ?? '',

@@ -1,8 +1,6 @@
-import { Form } from "@/module/form"
 import { page } from "@/lib/next/next-page"
 import { DetailPage } from "@/lib/page-templates"
 import { Header, Row, Semibold, Title } from "@/lib/primitives"
-import { registerUserForm } from "./user-register-form"
 import { getCurrentUserSessionProvider } from "@/shared/auth/auth"
 import { LogOutButton } from "@/shared/auth/login-button"
 import { ProviderIcons } from "@/lib/auth/providers"
@@ -10,6 +8,8 @@ import { Spacer } from "@/lib/spacer"
 import { obfuscateEmail } from "@/shared/obfuscated"
 import { navigate } from "@/module/navigation"
 import { homeRoute } from "../routes"
+import { Form } from "@/module/form2"
+import { registerUserForm } from "@/services/auth/forms"
 
 export default page('/register', async page => {
 
@@ -44,7 +44,11 @@ export default page('/register', async page => {
       </Header>
 
       <Form
-        form={registerUserForm(session)}
+        form={registerUserForm()}
+        extend={{
+          name: { defaultValue: session.providerInfo.name || '' },
+          avatarUrl: { defaultValue: session.providerInfo.picture || '' }
+        }}
         onSuccess={async () => {
           "use server"
           navigate.push(homeRoute, { success: 'registered' })

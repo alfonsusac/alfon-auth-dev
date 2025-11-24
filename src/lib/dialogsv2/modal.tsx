@@ -9,10 +9,15 @@ export type ModalServerContext = {
   __modal: true,
 }
 
-export type ModalProps = {
-  name: string,
-  context?: PageContext,
-  button?: ((button: typeof ModalButton) => ReactNode) | ReactNode,
+export type ModalProps =
+  & {
+    name: string,
+    context?: PageContext,
+    button?: ReactNode,
+  }
+  & ContentModalProp
+
+export type ContentModalProp = {
   content: ((modal: ModalServerContext) => ReactNode) | ReactNode,
 }
 
@@ -35,7 +40,7 @@ const ModalRoot = (props:
     __modal: true,
   }
 
-  const modalButton = typeof props.button === 'function' ? props.button(ModalButton) : props.button
+  const modalButton = props.button
   const content = typeof props.content === 'function' ? props.content(modalContext) : props.content
 
   // No need to pass context here again because any nesting of <Modal>
@@ -45,7 +50,9 @@ const ModalRoot = (props:
       name={name}
       must_be_called_in_Modal_Component="must_be_called_in_Modal_Component"
     >
-      {modalButton}
+      <ModalButton>
+        {modalButton}
+      </ModalButton>
       {props.content && <ModalContent>
         {content}
       </ModalContent>}
@@ -54,9 +61,9 @@ const ModalRoot = (props:
 }
 
 const Modal = ModalRoot as typeof ModalRoot & {
-  Button: typeof ModalButton
+  Trigger: typeof ModalButton
 }
-Modal.Button = ModalButton
+Modal.Trigger = ModalButton
 
 export { Modal }
 
