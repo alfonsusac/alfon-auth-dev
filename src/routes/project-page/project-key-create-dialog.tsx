@@ -4,7 +4,7 @@ import { Props, searchParams } from "@/lib/next/next-page"
 import { ProjectProp } from "../types"
 import { projectPageRoute } from "../routes"
 import { navigate } from "@/module/navigation"
-import { Form } from "@/module/form2"
+import { Form } from "@/module/form"
 import { createProjectKeyForm } from "@/services/project-key/forms"
 
 export async function ProjectKeyCreateModalDialog({ project, children }:

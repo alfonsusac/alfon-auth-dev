@@ -1,6 +1,6 @@
 import { Modal, type ModalProps } from "@/lib/dialogsv2/modal"
 import { Dialog } from "@/lib/dialogsv2/dialog"
-import { Form, type FormProps } from "../form2"
+import { Form, type FormProps } from "../form"
 import type { FormFields } from "../action/form-action"
 
 export function FormDialogButton<

@@ -6,7 +6,7 @@ import { ProjectProp } from "../types"
 import { navigate } from "@/module/navigation"
 import { projectPageRoute } from "../routes"
 import { deleteProjectAction } from "@/services/project/actions"
-import { Form } from "@/module/form2"
+import { Form } from "@/module/form"
 import { updateProjectForm } from "@/services/project/forms"
 import { bindAction } from "@/lib/core/action"
 

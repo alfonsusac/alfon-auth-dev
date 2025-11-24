@@ -20,3 +20,8 @@ export function FormWithProgressiveRedirect(props:
     clientAction={props.action}
   />
 }
+
+export type FormActionFirstlyBinded = (
+  formClientContext: { context: PageContext | undefined },
+  form: FormData
+) => Promise<void>

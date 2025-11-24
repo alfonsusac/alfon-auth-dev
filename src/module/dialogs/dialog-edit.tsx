@@ -1,7 +1,7 @@
 import { Modal } from "@/lib/dialogsv2/modal"
 import { IconEdit } from "../../shared/icons"
 import { Dialog } from "@/lib/dialogsv2/dialog"
-import { Form, type FormProps } from "@/module/form2"
+import { Form, type FormProps } from "@/module/form"
 import type { FormFields } from "@/module/action/form-action"
 
 export function EditFormDialogButton<

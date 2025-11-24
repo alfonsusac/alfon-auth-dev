@@ -3,7 +3,7 @@ import { Title } from "@/lib/primitives"
 import { DetailPage } from "@/lib/page-templates"
 import { navigate } from "@/module/navigation"
 import { projectPageRoute } from "../routes"
-import { Form } from "@/module/form2"
+import { Form } from "@/module/form"
 import { createProjectForm } from "@/services/project/forms"
 
 export default page('/create-project', async page => {

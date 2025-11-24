@@ -8,7 +8,7 @@ import { Spacer } from "@/lib/spacer"
 import { obfuscateEmail } from "@/shared/obfuscated"
 import { navigate } from "@/module/navigation"
 import { homeRoute } from "../routes"
-import { Form } from "@/module/form2"
+import { Form } from "@/module/form"
 import { registerUserForm } from "@/services/auth/forms"
 
 export default page('/register', async page => {
